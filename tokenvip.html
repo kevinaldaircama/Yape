@@ -1,84 +1,80 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Generar Token VIP</title>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-  <style>
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #1e3c72, #2a5298);
-      color: #fff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      padding: 20px;
-    }
-    .container {
-      background: rgba(255,255,255,0.1);
-      padding: 30px;
-      border-radius: 20px;
-      max-width: 400px;
-      width: 100%;
-      text-align: center;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
-      backdrop-filter: blur(10px);
-    }
-    h2 {
-      margin-bottom: 20px;
-      font-size: 1.6rem;
-    }
-    input {
-      width: 100%;
-      padding: 12px;
-      margin-bottom: 15px;
-      border: none;
-      border-radius: 10px;
-      font-size: 1rem;
-    }
-    button {
-      width: 100%;
-      padding: 12px;
-      border: none;
-      border-radius: 10px;
-      background: #ff9800;
-      color: white;
-      font-size: 1.1rem;
-      cursor: pointer;
-      transition: 0.3s;
-    }
-    button:hover {
-      background: #e68900;
-    }
-    .token-box {
-      margin-top: 20px;
-      background: rgba(0,0,0,0.3);
-      padding: 15px;
-      border-radius: 10px;
-      word-wrap: break-word;
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <h2><i class="fa-solid fa-key"></i> Generar Token</h2>
-    <input type="email" id="email" placeholder="Ingresa tu correo" required />
-    <button onclick="generarToken()"><i class="fa-solid fa-bolt"></i> Generar Token</button>
-    <div id="resultado" class="token-box" style="display:none;"></div>
-  </div>
+<meta charset="UTF-8">
+<title>Generar Token Admin</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+  body {
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(to right, #4e9af1, #6ec1e4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  .container {
+    background: #fff;
+    padding: 30px 40px;
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    text-align: center;
+    width: 400px;
+  }
+  h2 {
+    margin-bottom: 20px;
+    color: #333;
+  }
+  input {
+    width: 90%;
+    padding: 12px;
+    margin: 10px 0;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+    outline: none;
+  }
+  input:focus {
+    border-color: #4e9af1;
+  }
+  button {
+    padding: 12px 25px;
+    margin-top: 15px;
+    background: #4e9af1;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: 0.3s;
+  }
+  button:hover {
+    background: #357ae8;
+  }
+  .token-message {
+    margin-top: 20px;
+    background: #e6f7ff;
+    padding: 15px;
+    border-radius: 10px;
+    text-align: left;
+    color: #333;
+    line-height: 1.6;
+    white-space: pre-line;
+  }
+  .copy-btn {
+    background: #34a853;
+    margin-top: 10px;
+  }
+  .copy-btn:hover {
+    background: #0f9d58;
+  }
+</style>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+  import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
 
-  <script type="module">
-    // Importar Firebase
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-    import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
-    import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
-
-    // 🔹 Configuración Firebase (pon aquí tu config)
-    const firebaseConfig = {
-      apiKey: "AIzaSyBHbUTYykUxlJWl6QF6L9YwhC5kNFKpwV0",
+  const firebaseConfig = {
+    apiKey: "AIzaSyBHbUTYykUxlJWl6QF6L9YwhC5kNFKpwV0",
     authDomain: "apps-d075e.firebaseapp.com",
     databaseURL: "https://apps-d075e-default-rtdb.firebaseio.com",
     projectId: "apps-d075e",
@@ -88,53 +84,59 @@
     measurementId: "G-6DK205T44V"
   };
 
-    // Inicializar Firebase
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
 
-    // Autenticación anónima
-    signInAnonymously(auth).catch((error) => {
-      console.error("Error en login anónimo:", error);
-    });
+  let lastMessage = "";
 
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        console.log("Autenticado como:", user.uid);
-      }
-    });
+  // Función expuesta a window para poder llamarla desde onclick
+  window.generateToken = function() {
+    const adminEmail = document.getElementById("adminEmail").value.trim();
+    const userEmail = document.getElementById("userEmail").value.trim();
+    const userPassword = document.getElementById("userPassword").value.trim();
+    const userName = document.getElementById("userName").value.trim();
 
-    // Función para generar token aleatorio
-    function generarCodigo() {
-      return Math.random().toString(36).substring(2, 10).toUpperCase();
+    if(!adminEmail || !userEmail || !userPassword || !userName){
+      alert("Rellena todos los campos");
+      return;
     }
 
-    // Guardar token en Firestore
-    async function generarToken() {
-      const email = document.getElementById("email").value;
-      if (!email) {
-        alert("Por favor ingresa un correo.");
-        return;
-      }
+    const token = Math.random().toString(36).substring(2,12);
 
-      const token = generarCodigo();
+    set(ref(db, 'tokens/' + token), {
+      userEmail,
+      userPassword,
+      userName,
+      used: false,
+      createdBy: adminEmail,
+      createdAt: Date.now()
+    }).then(() => {
+      lastMessage = `Felicidades, tu token se ha generado con éxito.\nDatos de acceso:\nCorreo: ${userEmail}\nContraseña: ${userPassword}\nUsuario: ${userName}\nToken: ${token}`;
+      document.getElementById("tokenOutput").textContent = lastMessage;
+    }).catch((err) => {
+      alert("Error al generar token: " + err);
+    });
+  }
 
-      try {
-        await addDoc(collection(db, "tokens"), {
-          email: email,
-          token: token,
-          used: false,
-          createdAt: serverTimestamp()
-        });
-
-        const resultado = document.getElementById("resultado");
-        resultado.style.display = "block";
-        resultado.innerHTML = `<i class="fa-solid fa-check-circle"></i> Token generado: <b>${token}</b>`;
-      } catch (error) {
-        console.error("Error al guardar el token:", error);
-        alert("Error al guardar el token: " + error.message);
-      }
-    }
-  </script>
+  // Función para copiar al portapapeles
+  window.copyMessage = function() {
+    if(!lastMessage) return;
+    navigator.clipboard.writeText(lastMessage)
+      .then(() => alert("Mensaje copiado al portapapeles ✅"))
+      .catch(err => alert("Error al copiar: " + err));
+  }
+</script>
+</head>
+<body>
+<div class="container">
+  <h2><i class="fa-solid fa-user-shield"></i> Admin Generar Token</h2>
+  <input type="email" id="adminEmail" placeholder="Tu correo de Admin"><br>
+  <input type="email" id="userEmail" placeholder="Correo del usuario"><br>
+  <input type="password" id="userPassword" placeholder="Contraseña del usuario"><br>
+  <input type="text" id="userName" placeholder="Nombre del usuario"><br>
+  <button onclick="generateToken()"><i class="fa-solid fa-key"></i> Generar Token</button>
+  <div id="tokenOutput" class="token-message"></div>
+  <button class="copy-btn" onclick="copyMessage()"><i class="fa-solid fa-copy"></i> Copiar mensaje</button>
+</div>
 </body>
 </html>
