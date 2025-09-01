@@ -6,7 +6,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
   body {
-    font-family: 'Arial', sans-serif;
+    font-family: Arial, sans-serif;
     background: linear-gradient(to right, #4e9af1, #6ec1e4);
     display: flex;
     justify-content: center;
@@ -16,76 +16,50 @@
   }
   .container {
     background: #fff;
-    padding: 30px 40px;
+    padding: 20px;
     border-radius: 15px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    width: 90%;
+    max-width: 400px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.2);
     text-align: center;
-    width: 400px;
-    max-width: 90%;
   }
   h2 {
-    margin-bottom: 20px;
+    margin-bottom: 15px;
     color: #333;
-    font-size: 1.6em;
+    font-size: 1.5em;
   }
   input {
     width: 90%;
     padding: 12px;
-    margin: 10px 0;
+    margin: 8px 0;
     border-radius: 8px;
     border: 1px solid #ccc;
     font-size: 1em;
-    outline: none;
-  }
-  input:focus {
-    border-color: #4e9af1;
   }
   button {
     width: 90%;
     padding: 12px;
-    margin-top: 15px;
-    background: #4e9af1;
-    color: #fff;
+    margin-top: 12px;
     border: none;
     border-radius: 10px;
-    cursor: pointer;
     font-size: 1em;
-    transition: 0.3s;
+    color: #fff;
+    background: #4e9af1;
+    cursor: pointer;
   }
-  button:hover {
-    background: #357ae8;
-  }
+  button:hover { background: #357ae8; }
   .token-message {
-    margin-top: 20px;
+    margin-top: 15px;
     background: #e6f7ff;
-    padding: 15px;
+    padding: 12px;
     border-radius: 10px;
     text-align: left;
-    color: #333;
-    line-height: 1.6;
+    font-size: 0.95em;
     white-space: pre-line;
     word-break: break-word;
   }
-  .copy-btn {
-    background: #34a853;
-    margin-top: 10px;
-  }
-  .copy-btn:hover {
-    background: #0f9d58;
-  }
-
-  @media screen and (max-width: 480px) {
-    .container {
-      padding: 20px;
-    }
-    input, button {
-      font-size: 0.95em;
-      padding: 10px;
-    }
-    h2 {
-      font-size: 1.4em;
-    }
-  }
+  .copy-btn { background: #34a853; margin-top: 10px; }
+  .copy-btn:hover { background: #0f9d58; }
 </style>
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
@@ -106,7 +80,7 @@
   const db = getDatabase(app);
   let lastMessage = "";
 
-  window.generateToken = function() {
+  window.generateToken = function(){
     const adminEmail = document.getElementById("adminEmail").value.trim();
     const userEmail = document.getElementById("userEmail").value.trim();
     const userPassword = document.getElementById("userPassword").value.trim();
@@ -120,25 +94,18 @@
     const token = Math.random().toString(36).substring(2,12);
 
     set(ref(db, 'tokens/' + token), {
-      userEmail,
-      userPassword,
-      userName,
-      used: false,
-      createdBy: adminEmail,
-      createdAt: Date.now()
-    }).then(() => {
+      userEmail, userPassword, userName, used:false, createdBy:adminEmail, createdAt:Date.now()
+    }).then(()=>{
       lastMessage = `Felicidades, tu token se ha generado con éxito.\nDatos de acceso:\nCorreo: ${userEmail}\nContraseña: ${userPassword}\nUsuario: ${userName}\nToken: ${token}`;
       document.getElementById("tokenOutput").textContent = lastMessage;
-    }).catch((err) => {
-      alert("Error al generar token: " + err);
-    });
+    }).catch(err=>alert("Error al generar token: " + err));
   }
 
-  window.copyMessage = function() {
+  window.copyMessage = function(){
     if(!lastMessage) return;
     navigator.clipboard.writeText(lastMessage)
-      .then(() => alert("Mensaje copiado al portapapeles ✅"))
-      .catch(err => alert("Error al copiar: " + err));
+      .then(()=>alert("Mensaje copiado al portapapeles ✅"))
+      .catch(err=>alert("Error al copiar: " + err));
   }
 </script>
 </head>
