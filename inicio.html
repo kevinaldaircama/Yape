@@ -262,7 +262,7 @@
           if (pinIngresado === datos.pin) {
             localStorage.setItem("nombreUsuario", datos.nombre);
             localStorage.setItem("saldoUsuario", datos.monto);
-            window.location.href = "home.html";
+            window.location.href = "home";
           } else {
             modalContent.innerHTML = "su clave es incorrecta,después de 3 intentos incorrectos el acceso se bloqueará,en caso no recordar tu clave cámbialo";
             setTimeout(() => {
