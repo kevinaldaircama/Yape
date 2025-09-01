@@ -1,0 +1,182 @@
+<!DOCTYPE html>  
+<html lang="es">  
+<head>  
+  <meta charset="UTF-8">  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">  
+  <title>Registro</title>  
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>  
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>  
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>   
+  <link rel="manifest" href="manifest.json" />  
+  <meta name="theme-color" content="#720e9e" />  
+  <link rel="icon" type="image/png" href="imagen/app_icon_xxxhdpi.png">   
+
+  <style>  
+    body {  
+      font-family: Arial, sans-serif;  
+      background: linear-gradient(135deg, #6a0dad, #9c27b0);  
+      padding: 20px;  
+      display: flex;  
+      justify-content: center;  
+      align-items: center;  
+      height: 100vh;  
+    }  
+    .container {  
+      width: 100%;  
+      max-width: 400px;  
+      background: #fff;  
+      padding: 25px;  
+      border-radius: 12px;  
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15);  
+      animation: fadeIn 0.5s ease-in-out;  
+    }  
+    @keyframes fadeIn {  
+      from {opacity: 0; transform: scale(0.95);}  
+      to {opacity: 1; transform: scale(1);}  
+    }  
+    h2 {  
+      text-align: center;  
+      color: #6a0dad;  
+      margin-bottom: 15px;  
+    }  
+    input {  
+      width: 100%;  
+      padding: 12px;  
+      margin: 8px 0;  
+      border-radius: 6px;  
+      border: 1px solid #ccc;  
+      outline: none;  
+      transition: 0.3s;  
+    }  
+    input:focus {  
+      border-color: #6a0dad;  
+      box-shadow: 0 0 5px rgba(106,13,173,0.4);  
+    }  
+    input.error {  
+      border-color: red;  
+    }  
+    button {  
+      width: 100%;  
+      padding: 12px;  
+      margin-top: 10px;  
+      background: #6a0dad;  
+      color: #fff;  
+      border: none;  
+      border-radius: 6px;  
+      font-weight: bold;  
+      cursor: pointer;  
+      transition: 0.3s;  
+    }  
+    button:hover {  
+      background: #520b8f;  
+    }  
+
+    /* Modal */  
+    .modal {  
+      display: none;  
+      position: fixed;  
+      top: 0;  
+      left: 0;  
+      width: 100%;  
+      height: 100%;  
+      background: rgba(0,0,0,0.5);  
+      justify-content: center;  
+      align-items: center;  
+    }  
+    .modal-content {  
+      background: #fff;  
+      padding: 30px;  
+      border-radius: 12px;  
+      text-align: center;  
+      max-width: 350px;  
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);  
+      animation: slideDown 0.4s ease;  
+    }  
+    @keyframes slideDown {  
+      from {transform: translateY(-30px); opacity: 0;}  
+      to {transform: translateY(0); opacity: 1;}  
+    }  
+  </style>  
+</head>  
+<body>  
+  <div class="container">  
+    <h2>Registro de Usuario</h2>  
+    <p>Completa los campos para registrarte:</p>  
+    <input type="text" id="usuario" placeholder="Nombre de usuario" required>  
+    <input type="email" id="correo" placeholder="Correo electrónico" required>  
+    <input type="password" id="clave" placeholder="Contraseña" required>  
+    <input type="number" id="monto" placeholder="Monto inicial" required>  
+    <input type="password" id="pin" placeholder="PIN de 6 dígitos" maxlength="6" required>  
+    <button onclick="registrarUsuario()">Registrarse</button>  
+  </div>  
+  
+  <div class="modal" id="modal">  
+    <div class="modal-content" id="modal-content">  
+      ⏳ Registrando, espere un momento...  
+    </div>  
+  </div>  
+  
+  <script>  
+    // Configuración Firebase  
+    const firebaseConfig = {  
+      apiKey: "AIzaSyCHzOEwhFHQo9boQjRLLu18XJNFKXQU06A",
+    authDomain: "yape-5f8d6.firebaseapp.com",
+    projectId: "yape-5f8d6",
+    storageBucket: "yape-5f8d6.firebasestorage.app",
+    messagingSenderId: "609053449523",
+    appId: "1:609053449523:web:80a334f896f2fba834b246",
+    measurementId: "G-TNYNH4G14G"
+  };
+    
+    firebase.initializeApp(firebaseConfig);  
+    const auth = firebase.auth();  
+    const db = firebase.firestore();  
+  
+    function registrarUsuario() {  
+      const usuario = document.getElementById('usuario');  
+      const correo = document.getElementById('correo');  
+      const clave = document.getElementById('clave');  
+      const monto = document.getElementById('monto');  
+      const pin = document.getElementById('pin');  
+
+      // Reset de errores visuales  
+      [usuario, correo, clave, monto, pin].forEach(el => el.classList.remove("error"));  
+
+      // Validación  
+      if (!usuario.value || !correo.value || !clave.value || !monto.value || !pin.value || pin.value.length !== 6) {  
+        [usuario, correo, clave, monto, pin].forEach(el => {  
+          if (!el.value || (el.id === "pin" && el.value.length !== 6)) el.classList.add("error");  
+        });  
+        return;  
+      }  
+  
+      const modal = document.getElementById("modal");  
+      const modalContent = document.getElementById("modal-content");  
+      modal.style.display = "flex";  
+      modalContent.innerHTML = "⏳ Registrando, espere un momento...";  
+  
+      auth.createUserWithEmailAndPassword(correo.value, clave.value)  
+        .then(userCredential => {  
+          const user = userCredential.user;  
+          return db.collection("usuarios").doc(user.uid).set({  
+            nombre: usuario.value,  
+            correo: correo.value,  
+            monto: parseFloat(monto.value).toFixed(2),  
+            pin: pin.value,  
+            fechaRegistro: new Date().toLocaleString()  
+          });  
+        })  
+        .then(() => {  
+          modalContent.innerHTML = "🎉 <b>¡Felicidades!</b><br>Tu cuenta fue creada con éxito.";  
+          setTimeout(() => {  
+            window.location.href = "index.html";  
+          }, 2500);  
+        })  
+        .catch(error => {  
+          modalContent.innerHTML = `<p style='color:red'>⚠️ Error: ${error.message}</p>`;  
+        });  
+    }  
+  </script>  
+</body>  
+</html>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mis direcciones</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #fff;
+    }
+
+    /* Encabezado morado */
+    .header {
+      background: #6a1b9a; /* morado */
+      color: white;
+      padding: 15px;
+      display: flex;
+      align-items: center;
+      font-size: 18px;
+      font-weight: bold;
+    }
+    .header .back {
+      margin-right: 10px;
+      font-size: 22px;
+      cursor: pointer;
+    }
+
+    /* Botón Nueva dirección */
+    .new-address {
+      display: flex;
+      align-items: center;
+      padding: 15px;
+      font-size: 16px;
+      border-bottom: 1px solid #ddd;
+      cursor: pointer;
+    }
+    .new-address span {
+      margin-left: 8px;
+      color: #333;
+    }
+    .new-address .plus {
+      color: #2e7d32; /* verde */
+      font-weight: bold;
+      font-size: 20px;
+    }
+
+    /* Lista de direcciones */
+    .address {
+      padding: 15px;
+      border-bottom: 1px solid #eee;
+    }
+    .address-title {
+      font-weight: bold;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .address-sub {
+      color: #666;
+      font-size: 14px;
+      margin-left: 23px; /* para alinear con el ícono */
+    }
+    .address .icon {
+      color: #6a1b9a; /* morado */
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <div class="header">
+    <div class="back" onclick="window.location.href='inicio.html'">←</div>
+    Mis direcciones
+  </div>
+
+  <!-- Nueva dirección -->
+  <div class="new-address" onclick="window.location.href='#'">
+    <div class="plus">＋</div>
+    <span>Nueva dirección</span>
+  </div>
+
+  <!-- Lista de direcciones -->
+  <div class="address">
+    <div class="address-title">
+      <span class="icon">📍</span>
+      Casa
+    </div>
+    <div class="address-sub">Pueb el lima Mz</div>
+  </div>
+
+</body>
+</html>

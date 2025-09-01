@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Yapear</title>
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#720e9e" />
+  <link rel="icon" type="image/png" href="imagen/app_icon_xxxhdpi.png">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Arial', sans-serif;
+      background-color: #fff;
+    }
+
+    .topbar {
+      background-color: #720e9e;
+      color: white;
+      padding: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .topbar h1 {
+      font-size: 20px;
+      margin: 0;
+      flex: 1;
+      text-align: center;
+    }
+
+    .icon {
+      font-size: 20px;
+      padding: 0 10px;
+      cursor: pointer;
+    }
+
+    .tabs {
+      display: flex;
+      background-color: #f2f2f2;
+      border-bottom: 2px solid #ccc;
+    }
+
+    .tab {
+      flex: 1;
+      padding: 10px;
+      text-align: center;
+      font-weight: bold;
+      color: #6a1b9a;
+      border-bottom: 3px solid #6a1b9a;
+    }
+
+    .tab.inactive {
+      color: #999;
+      border-bottom: none;
+    }
+
+    .search-bar {
+      padding: 10px;
+    }
+
+    .search-bar input {
+      width: 100%;
+      padding: 10px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+    }
+
+    .contact-list {
+      padding: 10px;
+    }
+
+    .contact {
+      border-bottom: 1px solid #eee;
+      padding: 10px 0;
+      cursor: pointer;
+    }
+
+    .contact-name {
+      font-weight: bold;
+      font-size: 16px;
+    }
+
+    .contact-number {
+      color: #777;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="topbar">
+    <div class="icon">✕</div>
+    <h1>Yapear</h1>
+    <div class="icon"></div>
+  </div>
+
+  <div class="tabs">
+    <div class="tab">Contactos</div>
+    <div class="tab inactive">Yapeos pendientes</div>
+  </div>
+
+  <div class="search-bar">
+    <input type="text" placeholder="Ingresa celular o busca contacto">
+  </div>
+
+  <div class="contact-list">
+    <!-- Se llena dinámicamente -->
+  </div>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCHzOEwhFHQo9boQjRLLu18XJNFKXQU06A",
+    authDomain: "yape-5f8d6.firebaseapp.com",
+    projectId: "yape-5f8d6",
+    storageBucket: "yape-5f8d6.firebasestorage.app",
+    messagingSenderId: "609053449523",
+    appId: "1:609053449523:web:80a334f896f2fba834b246",
+    measurementId: "G-TNYNH4G14G"
+  };
+
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    const contactList = document.querySelector(".contact-list");
+
+    function renderizarContactos(datos) {
+      contactList.innerHTML = "";
+
+      if (!datos || Object.keys(datos).length === 0) {
+        contactList.innerHTML = `
+          <div class="contact">
+            <div class="contact-name">No tienes contactos hasta el momento.</div>
+          </div>
+        `;
+        return;
+      }
+
+      Object.entries(datos).forEach(([apodo, contacto]) => {
+        const nombre = contacto.nombre?.trim();
+        const numero = contacto.numero?.trim();
+
+        if (!numero) return;
+
+        let mostrarNombre = (!apodo.startsWith("sin_apodo_") && apodo !== nombre) ? apodo : nombre || "Sin nombre";
+
+        contactList.innerHTML += `
+          <div class="contact" onclick="window.location.href='envio.html?apodo=${encodeURIComponent(apodo)}'">
+            <div class="contact-name">${mostrarNombre}</div>
+            <div class="contact-number">${numero}</div>
+          </div>
+        `;
+      });
+    }
+
+    db.ref("contactos").on("value", snapshot => {
+      const datos = snapshot.val();
+      renderizarContactos(datos);
+    });
+  </script>
+
+</body>
+</html>

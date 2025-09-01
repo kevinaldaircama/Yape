@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Guardar QR</title>
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#720e9e" />
+  <link rel="icon" type="image/png" href="imagen/app_icon_xxxhdpi.png"> 
+  <style>
+    body { font-family: Arial, sans-serif; background-color: #f3f4f6; padding: 1rem; }
+    .form { background: white; padding: 1rem; max-width: 400px; margin: auto; border-radius: 1rem; box-shadow: 0 0 10px rgba(0,0,0,0.05); }
+    input, button { width: 100%; margin: 0.5rem 0; padding: 0.7rem; font-size: 16px; border-radius: 8px; border: 1px solid #ccc; }
+    button { background-color: #7b1fa2; color: white; font-weight: bold; border: none; cursor: pointer; }
+    h2 { text-align: center; }
+  </style>
+</head>
+<body>
+  <div class="form">
+    <h2>Guardar QR localmente</h2>
+    <input type="text" id="codigoQR" placeholder="Código único (contenido del QR)" />
+    <input type="text" id="nombreQR" placeholder="Nombre visible" />
+    <input type="text" id="destinoQR" placeholder="Destino (ej: Yape)" />
+    <input type="file" id="fotoQR" accept="image/*" />
+    <button onclick="guardarQR()">Guardar QR</button>
+  </div>
+
+  <script>
+    let lista = [];
+
+    function guardarQR() {
+      const codigo = document.getElementById("codigoQR").value.trim();
+      const nombre = document.getElementById("nombreQR").value.trim();
+      const destino = document.getElementById("destinoQR").value.trim();
+      const archivo = document.getElementById("fotoQR").files[0];
+
+      if (!codigo || !nombre || !archivo) {
+        alert("Completa todos los campos y sube una imagen.");
+        return;
+      }
+
+      const lector = new FileReader();
+      lector.onload = function(e) {
+        const imagenBase64 = e.target.result;
+        const qr = {
+          id: Date.now(),
+          codigo,
+          nombre,
+          destino,
+          imagen: imagenBase64
+        };
+        lista.unshift(qr);
+        localStorage.setItem("qrLista", JSON.stringify(lista));
+        alert("✅ QR guardado correctamente.");
+      };
+      lector.readAsDataURL(archivo);
+
+      document.getElementById("codigoQR").value = "";
+      document.getElementById("nombreQR").value = "";
+      document.getElementById("destinoQR").value = "";
+      document.getElementById("fotoQR").value = "";
+    }
+
+    window.onload = () => {
+      const data = localStorage.getItem("qrLista");
+      if (data) lista = JSON.parse(data);
+    };
+  </script>
+</body>
+</html>

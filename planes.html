@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Planes</title>
+  <!-- Font Awesome para iconos -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background: #fceefe;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      padding: 15px;
+      background: #f2d4f8;
+      color: #000;
+      font-weight: bold;
+      font-size: 18px;
+    }
+
+    header span {
+      margin-left: 10px;
+    }
+
+    .container {
+      padding: 20px;
+      padding-bottom: 80px; /* espacio para footer */
+    }
+
+    .plan {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    .plan h2 {
+      margin-top: 0;
+      padding: 10px;
+      border-radius: 6px 6px 0 0;
+      font-size: 20px;
+    }
+
+    .plan-basico h2 {
+      background: #d9b3e6;
+    }
+
+    .plan-medium h2 {
+      background: #f7b3bb;
+    }
+
+    .details {
+      margin: 15px 0;
+    }
+
+    .price {
+      font-size: 22px;
+      font-weight: bold;
+      color: #9c27b0;
+    }
+
+    .price del {
+      color: red;
+      font-size: 16px;
+      margin-left: 8px;
+    }
+
+    .btn-comprar {
+      display: inline-block;
+      background: #9c27b0;
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: bold;
+      margin-top: 10px;
+      transition: 0.3s;
+    }
+
+    .btn-comprar:hover {
+      background: #7b1fa2;
+    }
+
+    footer {
+      display: flex;
+      justify-content: center;
+      padding: 15px;
+      background: #fff;
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      border-top: 1px solid #ccc;
+    }
+
+    footer a {
+      margin: 0 15px;
+      font-size: 26px;
+      color: #9c27b0;
+      text-decoration: none;
+      transition: 0.3s;
+    }
+
+    footer a:hover {
+      color: #7b1fa2;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <span>Planes</span>
+  </header>
+
+  <div class="container">
+    <div class="plan plan-basico">
+      <h2>Plan admin</h2>
+      <p>Podras realizar multiples yapeos</p>
+      <div class="details"</div>
+      <p>Recibiras un correo del pago a tu Gmail.</p>
+        <p>- todas las versiones</p>
+        <p>- Contactos autoconpletado</p>
+        <p>- yapeos ilimitado</p>
+        <p>- Contactos Ilimitados</p>
+        <p>- Escaner QR (Texto)</p>
+        <p>- Almacenamiento Local</p>
+      </div>
+      <p class="price">S/30</p>
+      <a href="https://wa.me/message/LEEIPCTGLOHIL1" class="btn-comprar">Comprar</a>
+    </div>
+
+    <div class="plan plan-medium">
+      <h2>Plan desarrollador</h2>
+      <div class="details">
+        <p>- todas las versiones</p>
+        <p>- Contactos autoconpletado</p>
+        <p>- integración de web a app</p>
+        <p>- grupo de desarrollador</p>
+        <p>- código de la app</p>
+      </div>
+      <p class="price">S/60</p>
+      <a href="https://wa.me/message/LEEIPCTGLOHIL1" class="btn-comprar">Comprar</a>
+    </div>
+  </div>
+
+  <footer>
+    <!-- WhatsApp -->
+    <a href="https://wa.me/message/LEEIPCTGLOHIL1" target="_blank">
+      <i class="fab fa-whatsapp"></i>
+    </a>
+    <!-- Página web (icono globo terráqueo) -->
+    <a href="https://www.kevintechtutorials.store/?m=1" target="_blank">
+      <i class="fas fa-globe"></i>
+    </a>
+    <!-- YouTube (icono YouTube) -->
+    <a href="https://youtube.com/@kevintechtutorials?si=7J8ZWekMhlRYt-q5" target="_blank">
+      <i class="fab fa-youtube"></i>
+    </a>
+  </footer>
+
+</body>
+</html>

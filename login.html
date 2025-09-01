@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">  
+  <title>Login</title>  
+    
+  <!-- Firebase -->  
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>  
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>  
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>  
+    
+  <!-- Iconos -->  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>   
+    
+  <style>
+    * {
+      box-sizing: border-box; /* evita que los inputs se salgan */
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;  
+      background: linear-gradient(135deg, #6a11cb, #2575fc);  
+      margin: 0;  
+      height: 100vh;  
+      display: flex;  
+      justify-content: center;  
+      align-items: center;  
+      padding: 15px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 360px; /* 📱 ajustado a móviles */
+      background: #fff;
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+      animation: fadeIn 0.6s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(15px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    h2 {
+      text-align: center;
+      color: #6a11cb;
+      margin-bottom: 20px;
+      font-size: 20px;
+    }
+
+    .input-group {
+      position: relative;
+      margin-bottom: 12px;
+    }
+
+    .input-group input {
+      width: 100%;
+      max-width: 100%;
+      padding: 12px 40px 12px 12px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+      display: block;
+    }
+
+    .input-group input:focus {
+      border-color: #6a11cb;
+      outline: none;
+      box-shadow: 0 0 4px rgba(106,17,203,0.25);
+    }
+
+    .input-group i {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #999;
+      font-size: 14px;
+    }
+
+    button {
+      width: 100%;
+      max-width: 100%;
+      padding: 12px;
+      background: linear-gradient(135deg, #6a11cb, #2575fc);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 15px;
+      margin-top: 10px;
+      display: block;
+    }
+
+    button:hover {
+      opacity: 0.9;
+    }
+
+    .secondary-btn {
+      background: #2EC4B6;
+    }
+
+    .secondary-btn:hover {
+      background: #28a99b;
+    }
+
+    .message {
+      text-align: center;
+      margin-top: 12px;
+      font-size: 13px;
+      color: #333;
+      min-height: 18px;
+    }
+
+    /* 📱 Ajustes especiales solo móviles */
+    @media (max-width: 480px) {
+      body {
+        padding: 10px;
+      }
+      .container {
+        padding: 20px;
+        border-radius: 12px;
+      }
+      h2 {
+        font-size: 18px;
+      }
+      button {
+        font-size: 14px;
+        padding: 11px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2><i class="fa-solid fa-user-lock"></i> Iniciar Sesión</h2>
+
+    <div class="input-group">
+      <input type="email" id="correo" placeholder="Correo electrónico" required>
+      <i class="fa-solid fa-envelope"></i>
+    </div>
+
+    <div class="input-group">
+      <input type="password" id="clave" placeholder="Contraseña" required>
+      <i class="fa-solid fa-lock"></i>
+    </div>
+
+    <button onclick="iniciarSesion()"><i class="fa-solid fa-sign-in-alt"></i> Ingresar</button>
+    <button class="secondary-btn" onclick="window.location.href='planes'">  
+      <i class="fa-solid fa-user-plus"></i> Solicitar Cuenta  
+    </button>  
+
+    <div class="message" id="mensaje"></div>
+  </div>
+
+  <script>
+    const firebaseConfig = {  
+      apiKey: "AIzaSyCHzOEwhFHQo9boQjRLLu18XJNFKXQU06A",  
+      authDomain: "yape-5f8d6.firebaseapp.com",  
+      projectId: "yape-5f8d6",  
+      storageBucket: "yape-5f8d6.firebasestorage.app",  
+      messagingSenderId: "609053449523",  
+      appId: "1:609053449523:web:80a334f896f2fba834b246",  
+      measurementId: "G-TNYNH4G14G"  
+    };  
+
+    firebase.initializeApp(firebaseConfig);  
+    const auth = firebase.auth();  
+    const db = firebase.firestore();  
+
+    // 🔑 Redirigir si ya hay sesión
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        window.location.href = "inicio";
+      }
+    });
+
+    async function iniciarSesion() {  
+      const correo = document.getElementById('correo').value;  
+      const clave = document.getElementById('clave').value;  
+      const mensaje = document.getElementById('mensaje');  
+
+      mensaje.innerText = "🔄 Verificando...";  
+
+      try {  
+        const credenciales = await auth.signInWithEmailAndPassword(correo, clave);  
+        const uid = credenciales.user.uid;  
+        const doc = await db.collection("usuarios").doc(uid).get();  
+
+        if (doc.exists) {  
+          const usuario = doc.data();  
+          localStorage.setItem("nombreUsuario", usuario.nombre);  
+          localStorage.setItem("saldoUsuario", usuario.monto);  
+          window.location.href = "inicio.html";  
+        } else {  
+          mensaje.innerText = "⚠️ Usuario no encontrado. Solicite una cuenta.";  
+        }  
+      } catch (error) {  
+        mensaje.innerText = `❌ Error: ${error.message}`;  
+      }  
+    }  
+  </script>
+</body>
+</html>

@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Agenda de Contactos</title>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+   <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#720e9e" />
+  <link rel="icon" type="image/png" href="imagen/app_icon_xxxhdpi.png">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .container {
+      background: #fff;
+      padding: 40px 30px;
+      border-radius: 20px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+    }
+
+    h1 {
+      margin-bottom: 30px;
+      font-size: 28px;
+      color: #333;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px 15px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      font-size: 16px;
+      transition: border-color 0.3s ease;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #4285f4;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 10px;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      color: white;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    button:first-of-type {
+      background-color: #4285f4;
+    }
+
+    button:first-of-type:hover {
+      background-color: #3367d6;
+    }
+
+    button:last-of-type {
+      background-color: #e53935;
+    }
+
+    button:last-of-type:hover {
+      background-color: #c62828;
+    }
+
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 999;
+      left: 0; top: 0;
+      width: 100%; height: 100%;
+      background-color: rgba(0,0,0,0.4);
+    }
+
+    .modal-content {
+      background-color: #fff;
+      margin: 15% auto;
+      padding: 25px 30px;
+      border-radius: 15px;
+      width: 90%;
+      max-width: 400px;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+      text-align: center;
+    }
+
+    .modal-content h2 {
+      color: #4285f4;
+      margin-bottom: 10px;
+    }
+
+    .modal-content p {
+      font-size: 16px;
+      color: #555;
+    }
+
+    .close {
+      color: #e53935;
+      float: right;
+      font-size: 24px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>Guardar Contactos</h1>
+
+    <input type="text" id="apodo" placeholder="Apodo (opcional)" />
+    <input type="text" id="nombre" placeholder="Nombre *" />
+    <input type="text" id="numero" placeholder="Número Telefónico *" />
+
+    <button onclick="guardarContacto()">Guardar</button>
+    <button onclick="eliminarContacto()">Eliminar</button>
+  </div>
+
+  <!-- Modal -->
+  <div id="modal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="cerrarModal()">&times;</span>
+      <h2 id="modal-titulo">Título</h2>
+      <p id="modal-mensaje">Mensaje</p>
+    </div>
+  </div>
+
+  <script>
+    // 🔥 Configuración de Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyCHzOEwhFHQo9boQjRLLu18XJNFKXQU06A",
+    authDomain: "yape-5f8d6.firebaseapp.com",
+    projectId: "yape-5f8d6",
+    storageBucket: "yape-5f8d6.firebasestorage.app",
+    messagingSenderId: "609053449523",
+    appId: "1:609053449523:web:80a334f896f2fba834b246",
+    measurementId: "G-TNYNH4G14G"
+  };
+
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    function mostrarModal(titulo, mensaje) {
+      document.getElementById("modal-titulo").innerText = titulo;
+      document.getElementById("modal-mensaje").innerText = mensaje;
+      document.getElementById("modal").style.display = "block";
+    }
+
+    function cerrarModal() {
+      document.getElementById("modal").style.display = "none";
+    }
+
+    function guardarContacto() {
+      const apodo = document.getElementById("apodo").value.trim() || 'sin_apodo_' + Date.now();
+      const nombre = document.getElementById("nombre").value.trim();
+      const numero = document.getElementById("numero").value.trim();
+
+      if (!nombre || !numero) {
+        mostrarModal("Campos obligatorios", "Por favor, llena el nombre y número telefónico.");
+        return;
+      }
+
+      db.ref("contactos/" + apodo).set({
+        nombre: nombre,
+        numero: numero
+      })
+      .then(() => {
+        mostrarModal("Contacto guardado", "Contacto guardado con éxito.😎");
+      })
+      .catch(error => {
+        mostrarModal("Error", "No se pudo guardar: " + error.message);
+      });
+    }
+
+    function eliminarContacto() {
+      const apodo = document.getElementById("apodo").value.trim();
+      if (!apodo) {
+        mostrarModal("Falta apodo", "Para eliminar un contacto, escribe su apodo.");
+        return;
+      }
+
+      const ref = db.ref("contactos/" + apodo);
+      ref.get().then(snapshot => {
+        if (snapshot.exists()) {
+          ref.remove()
+          .then(() => {
+            mostrarModal("Eliminado", "Contacto eliminado correctamente.");
+          });
+        } else {
+          mostrarModal("No existe", "No existe un contacto con ese apodo.");
+        }
+      }).catch(err => {
+        mostrarModal("Error", err.message);
+      });
+    }
+  </script>
+</body>
+</html>

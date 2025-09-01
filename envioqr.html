@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Yapear a</title>
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#720e9e" />
+  <link rel="icon" type="image/png" href="imagen/app_icon_xxxhdpi.png"> 
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; background-color: #fff; color: #333; }
+    header {
+      background-color: #7b1fa2; color: white; padding: 10px 20px;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .back, .close { font-size: 24px; cursor: pointer; }
+    .title { font-size: 18px; }
+    .container { text-align: center; margin-top: 50px; padding: 0 20px; }
+    input[type="text"], input[type="number"] {
+      font-size: 18px; border: none; border-bottom: 1px solid #ccc;
+      text-align: center; margin: 10px 0; width: 100%;
+    }
+    .monto {
+      font-size: 48px; color: #7b1fa2;
+      margin: 20px 0 10px;
+    }
+    .limite { color: #888; font-size: 14px; margin-bottom: 40px; }
+    .mensaje {
+      width: 100%; border: none; border-top: 1px solid #ccc;
+      padding: 15px; font-size: 16px;
+    }
+    .btn-yapear {
+      background-color: #e0d7ec; color: #7b1fa2; font-size: 18px;
+      font-weight: bold; border: none; width: 100%; padding: 15px 0; cursor: pointer;
+    }
+    input[readonly] { background-color: #f0f0f0; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="back" onclick="window.history.back()">←</div>
+    <div class="title">Yapear a</div>
+    <div class="close" onclick="window.close()">✕</div>
+  </header>
+
+  <div class="container">
+    <input type="text" id="nombre" value="" readonly />
+    <div id="subtexto" style="color: gray;">Destino</div>
+
+    <div class="monto">
+      s/ <input type="number" id="monto" value="0" min="0" max="500" style="width: 80px; font-size: 48px; border: none; border-bottom: 2px solid #ccc;" />
+    </div>
+
+    <div class="limite">Puedes yapear hasta S/ 500 diarios</div>
+
+    <input type="text" id="mensaje" class="mensaje" placeholder="Agregar mensaje" />
+
+    <button class="btn-yapear" onclick="enviar()">YAPEAR</button>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const nombre = params.get("nombre");
+    const destino = params.get("destino");
+
+    if (nombre) document.getElementById("nombre").value = nombre;
+    if (destino) document.getElementById("subtexto").textContent = destino;
+
+    function enviar() {
+      const nombre = encodeURIComponent(document.getElementById("nombre").value);
+      const destino = encodeURIComponent(document.getElementById("subtexto").textContent);
+      const monto = encodeURIComponent(document.getElementById("monto").value);
+
+      window.location.href = `comprobanteqr.html?nombre=${nombre}&monto=${monto}&destino=${destino}`;
+    }
+  </script>
+</body>
+</html>

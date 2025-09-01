@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cambiar PIN</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f9;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .card {
+      background: #fff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      width: 320px;
+    }
+    h2 {
+      text-align: center;
+      color: #333;
+    }
+    label {
+      display: block;
+      margin: 12px 0 6px;
+      font-weight: bold;
+      color: #444;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      outline: none;
+    }
+    input:focus {
+      border-color: #6c2aa7;
+    }
+    button {
+      margin-top: 18px;
+      width: 100%;
+      padding: 12px;
+      background: #11c5a2;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #0da68a;
+    }
+    .error {
+      color: red;
+      font-size: 14px;
+      margin-top: 6px;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>Cambiar PIN</h2>
+    <form id="pinForm">
+      <label for="oldPin">PIN actual:</label>
+      <input type="password" id="oldPin" maxlength="6" required>
+
+      <label for="newPin">Nuevo PIN:</label>
+      <input type="password" id="newPin" maxlength="6" required>
+
+      <label for="confirmPin">Repetir nuevo PIN:</label>
+      <input type="password" id="confirmPin" maxlength="6" required>
+
+      <button type="submit">Guardar nuevo PIN</button>
+      <p id="message"></p>
+    </form>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-auth.js";
+    import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-firestore.js";
+
+    // 🔹 Configuración de Firebase (misma que en tu otro archivo)
+    const firebaseConfig = {
+      apiKey: "AIzaSyCHzOEwhFHQo9boQjRLLu18XJNFKXQU06A",
+      authDomain: "yape-5f8d6.firebaseapp.com",
+      projectId: "yape-5f8d6",
+      storageBucket: "yape-5f8d6.firebasestorage.app",
+      messagingSenderId: "609053449523",
+      appId: "1:609053449523:web:80a334f896f2fba834b246",
+      measurementId: "G-TNYNH4G14G"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth();
+    const db = getFirestore();
+
+    const form = document.getElementById("pinForm");
+    const message = document.getElementById("message");
+
+    let userUID = null;
+    let currentPin = null;
+
+    // 🔹 Obtener usuario y su PIN actual
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        userUID = user.uid;
+        const docRef = doc(db, "usuarios", userUID);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          currentPin = docSnap.data().pin;
+        }
+      } else {
+        message.textContent = "Debes iniciar sesión.";
+        message.className = "error";
+      }
+    });
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      const oldPin = document.getElementById("oldPin").value.trim();
+      const newPin = document.getElementById("newPin").value.trim();
+      const confirmPin = document.getElementById("confirmPin").value.trim();
+
+      // 🔹 Validaciones
+      if (oldPin !== currentPin) {
+        message.textContent = "El PIN actual no es correcto.";
+        message.className = "error";
+        return;
+      }
+
+      if (newPin.length < 4 || newPin.length > 6) {
+        message.textContent = "El nuevo PIN debe tener entre 4 y 6 dígitos.";
+        message.className = "error";
+        return;
+      }
+
+      if (newPin === oldPin) {
+        message.textContent = "El nuevo PIN no puede ser igual al actual.";
+        message.className = "error";
+        return;
+      }
+
+      if (newPin !== confirmPin) {
+        message.textContent = "El nuevo PIN y la confirmación no coinciden.";
+        message.className = "error";
+        return;
+      }
+
+      if (/^\d{7,}$/.test(newPin)) {
+        message.textContent = "El PIN no puede parecerse a un número telefónico.";
+        message.className = "error";
+        return;
+      }
+
+      if (/^(\d)\1+$/.test(newPin)) {
+        message.textContent = "El PIN no puede tener todos los dígitos iguales.";
+        message.className = "error";
+        return;
+      }
+
+      // ✅ Guardar en Firebase y redirigir
+      try {
+        await updateDoc(doc(db, "usuarios", userUID), { pin: newPin });
+        window.location.href = "exito.html"; // Redirige si todo salió bien
+      } catch (error) {
+        message.textContent = "Error al guardar el PIN: " + error.message;
+        message.className = "error";
+      }
+    });
+  </script>
+</body>
+</html>

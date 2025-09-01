@@ -1,0 +1,295 @@
+<!DOCTYPE html>  
+<html lang="es">  
+<head>  
+  <meta charset="UTF-8" />  
+  <meta name="viewport" content="width=device-width, initial-scale=1" />  
+  <title>Mis datos</title>  
+  <!-- Font Awesome -->  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />  
+  <link rel="manifest" href="manifest.json" />  
+  <meta name="theme-color" content="#720e9e" />  
+  <link rel="icon" type="image/png" href="imagen/app_icon_xxxhdpi.png">   
+  <style>  
+    body {  
+      margin: 0;  
+      font-family: sans-serif;  
+      background-color: #fff;  
+    }  
+    .header {  
+      background-color: #7B1FA2;  
+      color: white;  
+      padding: 15px;  
+      font-size: 20px;  
+      display: flex;  
+      align-items: center;  
+    }  
+    .back-arrow {  
+      margin-right: 10px;  
+      font-size: 22px;  
+      cursor: pointer;  
+      color: white;  
+      text-decoration: none;  
+    }  
+    .container {  
+      padding: 20px;  
+    }  
+    .label {  
+      font-weight: bold;  
+      margin-top: 20px;  
+      color: #3E206D;  
+    }  
+    .value, .input-group {  
+      color: #555;  
+      font-size: 16px;  
+      margin-top: 5px;  
+      display: flex;  
+      justify-content: space-between;  
+      align-items: center;  
+    }  
+    .icon-button {  
+      background: none;  
+      border: none;  
+      font-size: 18px;  
+      cursor: pointer;  
+      color: #7B1FA2;  
+    }  
+    .divider {  
+      border-bottom: 1px solid #ddd;  
+      margin-top: 10px;  
+    }  
+    input[type="text"], input[type="number"], input[type="password"] {  
+      flex-grow: 1;  
+      padding: 5px;  
+      font-size: 16px;  
+      border: 1px solid #ccc;  
+      border-radius: 4px;  
+    }  
+    .btn-editar, .btn-guardar {  
+      margin-top: 20px;  
+      padding: 10px 15px;  
+      background-color: #7B1FA2;  
+      color: white;  
+      border: none;  
+      border-radius: 5px;  
+      cursor: pointer;  
+      font-weight: bold;  
+    }  
+    .btn-guardar {  
+      display: none;  
+    }  
+    .btn-enlace {  
+      margin-top: 10px;  
+      padding: 10px 15px;  
+      background-color: #E0E0E0;  
+      color: #333;  
+      border: none;  
+      border-radius: 5px;  
+      cursor: pointer;  
+      font-weight: bold;  
+      width: 100%;  
+    }  
+    /* Modal */  
+    #modal {  
+      display: none;  
+      position: fixed;  
+      top: 0; left: 0;  
+      width: 100%; height: 100%;  
+      background: rgba(0, 0, 0, 0.5);  
+      justify-content: center;  
+      align-items: center;  
+      z-index: 9999;  
+    }  
+    #modal-content {  
+      background: white;  
+      padding: 20px;  
+      border-radius: 10px;  
+      max-width: 90%;  
+      text-align: center;  
+    }  
+    #modal-message {  
+      margin-bottom: 20px;  
+      font-size: 16px;  
+    }  
+    #modal button {  
+      padding: 8px 16px;  
+      background-color: #7B1FA2;  
+      color: white;  
+      border: none;  
+      border-radius: 5px;  
+      cursor: pointer;  
+    }  
+  </style>  
+</head>  
+<body>  
+  <div class="header">  
+    <a class="back-arrow" href="home.html">&#8592;</a>  
+    <span>Mis datos</span>  
+  </div>  
+
+  <div class="container">  
+    <div class="label">Nombre</div>  
+    <div class="input-group">  
+      <input type="text" id="nombre" disabled />  
+    </div>  
+    <div class="divider"></div>  
+
+    <div class="label">ID de identificación</div>  
+    <div class="value">  
+      <span id="uid-value" data-hidden="true">••••••••</span>  
+      <button class="icon-button" onclick="toggleVisibility('uid-value', 'uid-icon')">  
+        <i id="uid-icon" class="fas fa-eye-slash"></i>  
+      </button>  
+    </div>  
+    <div class="divider"></div>  
+
+    <div class="label">Correo electrónico</div>  
+    <div class="value">  
+      <span id="correo">Cargando...</span>  
+    </div>  
+    <div class="divider"></div>  
+
+    <div class="label">Saldo disponible</div>  
+    <div class="input-group">  
+      <input type="number" id="monto" disabled />  
+    </div>  
+    <div class="divider"></div>  
+
+    <div class="label">PIN actual</div>  
+    <div class="input-group">  
+      <input type="password" id="pin" disabled />  
+      <button class="icon-button" onclick="toggleVisibilityInput('pin', 'pin-icon')">  
+        <i id="pin-icon" class="fas fa-eye-slash"></i>  
+      </button>  
+    </div>  
+    <div class="divider"></div>  
+
+    <div class="label">Estado</div>  
+    <div class="value">Activo</div>  
+    <div class="divider"></div>  
+
+    <button class="btn-editar" onclick="activarEdicion()">Editar</button>  
+    <button class="btn-guardar" id="guardarBtn" onclick="guardarCambios()">Guardar cambios</button>  
+
+    <button class="btn-enlace" onclick="window.location.href='guarda.html'">guarda contacto</button>  
+    <button class="btn-enlace" onclick="window.location.href='qrsguarda.html'">guarda QR</button>  
+  </div>  
+
+  <!-- Modal -->  
+  <div id="modal">  
+    <div id="modal-content">  
+      <p id="modal-message"></p>  
+      <button onclick="cerrarModal()">Cerrar</button>  
+    </div>  
+  </div>  
+
+  <!-- Firebase Script -->  
+  <script type="module" defer>  
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-app.js";  
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-auth.js";  
+    import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.5.2/firebase-firestore.js";  
+
+    const firebaseConfig = {  
+      apiKey: "AIzaSyCHzOEwhFHQo9boQjRLLu18XJNFKXQU06A",  
+      authDomain: "yape-5f8d6.firebaseapp.com",  
+      projectId: "yape-5f8d6",  
+      storageBucket: "yape-5f8d6.firebasestorage.app",  
+      messagingSenderId: "609053449523",  
+      appId: "1:609053449523:web:80a334f896f2fba834b246",  
+      measurementId: "G-TNYNH4G14G"  
+    };  
+
+    const app = initializeApp(firebaseConfig);  
+    const auth = getAuth();  
+    const db = getFirestore();  
+
+    let userUID;  
+
+    onAuthStateChanged(auth, async (user) => {  
+      if (user) {  
+        userUID = user.uid;  
+        document.getElementById("uid-value").dataset.original = userUID;  
+        document.getElementById("correo").textContent = user.email;  
+
+        try {  
+          const docRef = doc(db, "usuarios", userUID);  
+          const docSnap = await getDoc(docRef);  
+          if (docSnap.exists()) {  
+            const data = docSnap.data();  
+            document.getElementById("nombre").value = data.nombre ?? "";  
+            document.getElementById("monto").value = data.monto ?? "";  
+            document.getElementById("pin").value = data.pin ?? "";  
+          }  
+        } catch (e) {  
+          mostrarModal("Error obteniendo datos");  
+        }  
+      }  
+    });  
+
+    window.toggleVisibility = (id, iconId) => {  
+      const span = document.getElementById(id);  
+      const icon = document.getElementById(iconId);  
+      const isHidden = span.dataset.hidden === "true";  
+      if (isHidden) {  
+        span.textContent = span.dataset.original;  
+        span.dataset.hidden = "false";  
+        icon.classList.replace("fa-eye-slash", "fa-eye");  
+      } else {  
+        span.textContent = "••••••••";  
+        span.dataset.hidden = "true";  
+        icon.classList.replace("fa-eye", "fa-eye-slash");  
+      }  
+    };  
+
+    window.toggleVisibilityInput = (inputId, iconId) => {  
+      const input = document.getElementById(inputId);  
+      const icon = document.getElementById(iconId);  
+      if (input.type === "text") {  
+        input.type = "password";  
+        icon.classList.replace("fa-eye", "fa-eye-slash");  
+      } else {  
+        input.type = "text";  
+        icon.classList.replace("fa-eye-slash", "fa-eye");  
+      }  
+    };  
+
+    // Editar solo nombre y monto (no el PIN)  
+    window.activarEdicion = () => {  
+      ["nombre", "monto"].forEach(id => {  
+        document.getElementById(id).disabled = false;  
+      });  
+      document.getElementById("guardarBtn").style.display = "inline-block";  
+    };  
+
+    // Guardar cambios sin modificar el PIN  
+    window.guardarCambios = async () => {  
+      const nombre = document.getElementById("nombre").value.trim();  
+      const monto = parseFloat(document.getElementById("monto").value);  
+
+      try {  
+        await updateDoc(doc(db, "usuarios", userUID), {  
+          nombre,  
+          monto  
+        });  
+        mostrarModal("Datos actualizados correctamente.");  
+
+        ["nombre", "monto"].forEach(id => {  
+          document.getElementById(id).disabled = true;  
+        });  
+        document.getElementById("guardarBtn").style.display = "none";  
+      } catch (e) {  
+        mostrarModal("Error al guardar: " + e.message);  
+      }  
+    };  
+
+    window.mostrarModal = (mensaje) => {  
+      document.getElementById("modal-message").textContent = mensaje;  
+      document.getElementById("modal").style.display = "flex";  
+      setTimeout(() => cerrarModal(), 3000);  
+    };  
+
+    window.cerrarModal = () => {  
+      document.getElementById("modal").style.display = "none";  
+    };  
+  </script>  
+</body>  
+</html>
