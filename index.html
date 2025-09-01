@@ -92,7 +92,7 @@
           update(tokenRef, { used: true }).then(() => {
             localStorage.setItem("tokenUsed", token);
             alert(`¡Bienvenido ${data.userName}! Redirigiendo...`);
-            window.location.href = "pagina_final.html"; // Cambiar por tu página
+            window.location.href = "login"; // Cambiar por tu página
           });
         }
       } else {
