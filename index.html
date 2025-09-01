@@ -12,6 +12,7 @@
     justify-content: center;
     align-items: center;
     height: 100vh;
+    margin: 0;
   }
   .container {
     background: #fff;
@@ -19,7 +20,8 @@
     border-radius: 20px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.2);
     text-align: center;
-    width: 380px;
+    width: 400px;
+    max-width: 90%;
     animation: fadeIn 1s ease;
   }
   @keyframes fadeIn {
@@ -29,6 +31,7 @@
   h2 {
     color: #333;
     margin-bottom: 20px;
+    font-size: 1.6em;
   }
   input {
     width: 90%;
@@ -37,24 +40,29 @@
     border-radius: 10px;
     border: 1px solid #ccc;
     outline: none;
-    font-size: 14px;
+    font-size: 1em;
   }
   input:focus {
     border-color: #ff758c;
   }
   button {
-    padding: 12px 25px;
+    width: 90%;
+    padding: 12px;
     margin-top: 15px;
     background: #ff758c;
     color: #fff;
     border: none;
     border-radius: 12px;
     cursor: pointer;
-    font-size: 16px;
+    font-size: 1em;
     transition: 0.3s;
   }
   button:hover {
     background: #ff4b7c;
+  }
+  @media screen and (max-width: 480px) {
+    h2 { font-size: 1.4em; }
+    input, button { font-size: 0.95em; padding: 10px; }
   }
 </style>
 <script type="module">
@@ -75,6 +83,7 @@
   const app = initializeApp(firebaseConfig);
   const db = getDatabase(app);
 
+  // Exponer función a window
   window.checkToken = function() {
     const token = document.getElementById("token").value.trim();
     if(!token){
@@ -90,20 +99,21 @@
           alert("Este token ya fue usado");
         } else {
           update(tokenRef, { used: true }).then(() => {
-            localStorage.setItem("tokenUsed", token);
+            localStorage.setItem("tokenUsed", token); // marcar usado localmente
             alert(`¡Bienvenido ${data.userName}! Redirigiendo...`);
-            window.location.href = "login"; // Cambiar por tu página
+            window.location.href = "login.html"; // Redirigir al login
           });
         }
       } else {
         alert("Token inválido");
       }
-    });
+    }).catch(err => alert("Error al verificar token: " + err));
   }
 
+  // Verificar si ya se usó token
   window.onload = function(){
     if(localStorage.getItem("tokenUsed")){
-      window.location.href = "login";
+      window.location.href = "login.html";
     }
   }
 </script>
