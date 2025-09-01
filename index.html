@@ -2,6 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- 🔹 Hace que escale en móviles -->
   <title>Ingresar Token</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
@@ -13,39 +14,47 @@
       align-items: center;
       height: 100vh;
       margin: 0;
+      padding: 20px;
     }
     .card {
       background: white;
-      padding: 30px;
+      padding: 30px 20px;
       border-radius: 15px;
       text-align: center;
       box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-      width: 350px;
+      width: 100%;
+      max-width: 400px; /* 🔹 No se pasa de ancho en móviles */
       animation: slideUp 1s ease-in-out;
     }
     h2 {
       color: #333;
       margin-bottom: 20px;
+      font-size: 1.5rem;
     }
     input {
       width: 100%;
-      padding: 10px;
+      padding: 12px;
       margin: 10px 0;
       border-radius: 10px;
       border: 1px solid #ccc;
       outline: none;
+      font-size: 1rem;
     }
     button {
       width: 100%;
-      padding: 12px;
+      padding: 14px;
       border: none;
       border-radius: 10px;
       background: #ff758c;
       color: white;
-      font-size: 16px;
+      font-size: 1rem;
       cursor: pointer;
       transition: 0.3s;
       margin-top: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
     }
     button:hover {
       background: #e94e77;
@@ -54,26 +63,42 @@
       from {opacity: 0; transform: translateY(20px);}
       to {opacity: 1; transform: translateY(0);}
     }
+
+    /* 🔹 Adaptación en pantallas muy pequeñas */
+    @media (max-width: 480px) {
+      .card {
+        padding: 20px 15px;
+      }
+      h2 {
+        font-size: 1.2rem;
+      }
+      input, button {
+        font-size: 0.9rem;
+        padding: 10px;
+      }
+    }
   </style>
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
     import { getFirestore, collection, query, where, getDocs, updateDoc, doc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
     const firebaseConfig = {
-      apiKey: "TU_API_KEY",
-      authDomain: "TU_DOMINIO.firebaseapp.com",
-      projectId: "TU_PROJECT_ID",
-      storageBucket: "TU_PROJECT_ID.appspot.com",
-      messagingSenderId: "TU_SENDER_ID",
-      appId: "TU_APP_ID"
-    };
+      apiKey: "AIzaSyBHbUTYykUxlJWl6QF6L9YwhC5kNFKpwV0",
+    authDomain: "apps-d075e.firebaseapp.com",
+    databaseURL: "https://apps-d075e-default-rtdb.firebaseio.com",
+    projectId: "apps-d075e",
+    storageBucket: "apps-d075e.firebasestorage.app",
+    messagingSenderId: "813273124209",
+    appId: "1:813273124209:web:81030c787f0992b19e7ad0",
+    measurementId: "G-6DK205T44V"
+  };
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
     // 🔹 Si ya está validado antes, redirigir directamente
     if (localStorage.getItem("token_validado") === "true") {
-      window.location.href = "login.html"; // cambia por tu página
+      window.location.href = "login"; // cambia por tu página
     }
 
     async function validarToken() {
@@ -102,7 +127,7 @@
           localStorage.setItem("token_validado", "true");
 
           alert("✅ Token válido. Redirigiendo...");
-          window.location.href = "login.html"; // cambia por tu página destino
+          window.location.href = "login"; // cambia por tu página destino
         }
       });
 
@@ -112,7 +137,7 @@
     }
 
     function solicitarAcceso() {
-      window.location.href = "https://tupagina.com"; // Cambia por tu web
+      window.location.href = "planes"; // Cambia por tu web
     }
 
     window.validarToken = validarToken;
@@ -127,4 +152,4 @@
     <button onclick="solicitarAcceso()"><i class="fa-solid fa-door-open"></i> Solicitar Acceso</button>
   </div>
 </body>
-                                       </html>
+</html>
