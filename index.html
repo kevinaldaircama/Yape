@@ -1,89 +1,68 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- 🔹 Hace que escale en móviles -->
-  <title>Ingresar Token</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <style>
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(135deg, #ff758c, #ff7eb3);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
-      padding: 20px;
-    }
-    .card {
-      background: white;
-      padding: 30px 20px;
-      border-radius: 15px;
-      text-align: center;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-      width: 100%;
-      max-width: 400px; /* 🔹 No se pasa de ancho en móviles */
-      animation: slideUp 1s ease-in-out;
-    }
-    h2 {
-      color: #333;
-      margin-bottom: 20px;
-      font-size: 1.5rem;
-    }
-    input {
-      width: 100%;
-      padding: 12px;
-      margin: 10px 0;
-      border-radius: 10px;
-      border: 1px solid #ccc;
-      outline: none;
-      font-size: 1rem;
-    }
-    button {
-      width: 100%;
-      padding: 14px;
-      border: none;
-      border-radius: 10px;
-      background: #ff758c;
-      color: white;
-      font-size: 1rem;
-      cursor: pointer;
-      transition: 0.3s;
-      margin-top: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-    }
-    button:hover {
-      background: #e94e77;
-    }
-    @keyframes slideUp {
-      from {opacity: 0; transform: translateY(20px);}
-      to {opacity: 1; transform: translateY(0);}
-    }
+<meta charset="UTF-8">
+<title>Ingresar Token</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+  body {
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(to right, #ff7eb3, #ff758c);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  .container {
+    background: #fff;
+    padding: 30px 40px;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    text-align: center;
+    width: 380px;
+    animation: fadeIn 1s ease;
+  }
+  @keyframes fadeIn {
+    from {opacity:0; transform: translateY(-20px);}
+    to {opacity:1; transform: translateY(0);}
+  }
+  h2 {
+    color: #333;
+    margin-bottom: 20px;
+  }
+  input {
+    width: 90%;
+    padding: 12px;
+    margin: 10px 0;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    outline: none;
+    font-size: 14px;
+  }
+  input:focus {
+    border-color: #ff758c;
+  }
+  button {
+    padding: 12px 25px;
+    margin-top: 15px;
+    background: #ff758c;
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: 0.3s;
+  }
+  button:hover {
+    background: #ff4b7c;
+  }
+</style>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+  import { getDatabase, ref, get, update } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
 
-    /* 🔹 Adaptación en pantallas muy pequeñas */
-    @media (max-width: 480px) {
-      .card {
-        padding: 20px 15px;
-      }
-      h2 {
-        font-size: 1.2rem;
-      }
-      input, button {
-        font-size: 0.9rem;
-        padding: 10px;
-      }
-    }
-  </style>
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-    import { getFirestore, collection, query, where, getDocs, updateDoc, doc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyBHbUTYykUxlJWl6QF6L9YwhC5kNFKpwV0",
+  const firebaseConfig = {
+    apiKey: "AIzaSyBHbUTYykUxlJWl6QF6L9YwhC5kNFKpwV0",
     authDomain: "apps-d075e.firebaseapp.com",
     databaseURL: "https://apps-d075e-default-rtdb.firebaseio.com",
     projectId: "apps-d075e",
@@ -93,63 +72,47 @@
     measurementId: "G-6DK205T44V"
   };
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
 
-    // 🔹 Si ya está validado antes, redirigir directamente
-    if (localStorage.getItem("token_validado") === "true") {
-      window.location.href = "login"; // cambia por tu página
+  window.checkToken = function() {
+    const token = document.getElementById("token").value.trim();
+    if(!token){
+      alert("Introduce un token");
+      return;
     }
 
-    async function validarToken() {
-      const tokenInput = document.getElementById("token").value.trim();
-      if (!tokenInput) {
-        alert("Por favor ingresa un token");
-        return;
-      }
-
-      const q = query(collection(db, "tokens"), where("token", "==", tokenInput));
-      const querySnapshot = await getDocs(q);
-
-      if (querySnapshot.empty) {
-        alert("❌ Token inválido");
-        return;
-      }
-
-      let valido = false;
-      querySnapshot.forEach(async (docSnap) => {
-        const data = docSnap.data();
-        if (!data.used) {
-          valido = true;
-          await updateDoc(doc(db, "tokens", docSnap.id), { used: true });
-
-          // 🔹 Guardamos en el navegador que ya se validó
-          localStorage.setItem("token_validado", "true");
-
-          alert("✅ Token válido. Redirigiendo...");
-          window.location.href = "login"; // cambia por tu página destino
+    const tokenRef = ref(db, 'tokens/' + token);
+    get(tokenRef).then((snapshot) => {
+      if(snapshot.exists()){
+        const data = snapshot.val();
+        if(data.used){
+          alert("Este token ya fue usado");
+        } else {
+          update(tokenRef, { used: true }).then(() => {
+            localStorage.setItem("tokenUsed", token);
+            alert(`¡Bienvenido ${data.userName}! Redirigiendo...`);
+            window.location.href = "pagina_final.html"; // Cambiar por tu página
+          });
         }
-      });
-
-      if (!valido) {
-        alert("❌ Token ya usado");
+      } else {
+        alert("Token inválido");
       }
-    }
+    });
+  }
 
-    function solicitarAcceso() {
-      window.location.href = "planes"; // Cambia por tu web
+  window.onload = function(){
+    if(localStorage.getItem("tokenUsed")){
+      window.location.href = "pagina_final.html";
     }
-
-    window.validarToken = validarToken;
-    window.solicitarAcceso = solicitarAcceso;
-  </script>
+  }
+</script>
 </head>
 <body>
-  <div class="card">
-    <h2><i class="fa-solid fa-key"></i> Ingresar Token</h2>
-    <input type="text" id="token" placeholder="Ingresa tu token">
-    <button onclick="validarToken()"><i class="fa-solid fa-unlock"></i> Ingresar Token</button>
-    <button onclick="solicitarAcceso()"><i class="fa-solid fa-door-open"></i> Solicitar Acceso</button>
-  </div>
+<div class="container">
+  <h2><i class="fa-solid fa-lock"></i> Acceso con Token</h2>
+  <input type="text" id="token" placeholder="Introduce tu token"><br>
+  <button onclick="checkToken()"><i class="fa-solid fa-arrow-right"></i> Ingresar</button>
+</div>
 </body>
 </html>
