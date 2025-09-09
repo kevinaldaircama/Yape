@@ -176,7 +176,7 @@
     // 🔑 Redirigir si ya hay sesión
     auth.onAuthStateChanged(user => {
       if (user) {
-        window.location.href = "inicio";
+        window.location.href = "login";
       }
     });
 
@@ -196,7 +196,7 @@
           const usuario = doc.data();  
           localStorage.setItem("nombreUsuario", usuario.nombre);  
           localStorage.setItem("saldoUsuario", usuario.monto);  
-          window.location.href = "inicio.html";  
+          window.location.href = "login";  
         } else {  
           mensaje.innerText = "⚠️ Usuario no encontrado. Solicite una cuenta.";  
         }  
