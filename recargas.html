@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Formulario de Recarga</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #732A8C;
+      color: white;
+      text-align: center;
+    }
+    .container {
+      margin: 40px auto;
+      background: white;
+      color: #732A8C;
+      padding: 20px;
+      border-radius: 15px;
+      max-width: 400px;
+    }
+    input, select {
+      width: 90%;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+    button {
+      width: 95%;
+      padding: 12px;
+      margin-top: 15px;
+      background: #00c6b1;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .mensaje {
+      display: none;
+      margin-top: 20px;
+      font-size: 18px;
+      font-weight: bold;
+      color: #732A8C; /* Ahora siempre se ve */
+      background: #f0f0f0;
+      padding: 10px;
+      border-radius: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h2>Recarga tu celular</h2>
+    <input type="text" id="telefono" placeholder="Número de celular" required>
+    <select id="operador">
+      <option value="">Selecciona operador</option>
+      <option>Claro</option>
+      <option>Movistar</option>
+      <option>Entel</option>
+      <option>Bitel</option>
+    </select>
+    <input type="number" id="monto" placeholder="Monto en S/" required>
+    <button onclick="procesar()">Recargar</button>
+    <div class="mensaje" id="mensaje"></div>
+  </div>
+
+  <script>
+    function procesar() {
+      const tel = document.getElementById("telefono").value;
+      const ope = document.getElementById("operador").value;
+      const mon = document.getElementById("monto").value;
+      const msg = document.getElementById("mensaje");
+
+      if (!tel || !ope || !mon) {
+        alert("Por favor complete todos los campos.");
+        return;
+      }
+
+      msg.style.display = "block";
+      msg.textContent = "Procesando datos...";
+
+      setTimeout(() => {
+        msg.textContent = "Generando voucher...";
+
+        setTimeout(() => {
+          // Redirigir al comprobante con datos
+          const url = "recargascomprobante.html?tel=" + encodeURIComponent(tel) +
+                      "&ope=" + encodeURIComponent(ope) +
+                      "&mon=" + encodeURIComponent(mon);
+          window.location.href = url;
+        }, 2000);
+
+      }, 2000);
+    }
+  </script>
+
+</body>
+</html>
