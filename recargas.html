@@ -10,26 +10,35 @@
       margin: 0;
       font-family: Arial, sans-serif;
       background-color: #732A8C;
-      color: white;
-      text-align: center;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      color: #732A8C;
     }
     .container {
-      margin: 40px auto;
       background: white;
-      color: #732A8C;
-      padding: 20px;
+      padding: 25px;
       border-radius: 15px;
       max-width: 400px;
+      width: 90%;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      text-align: center;
+    }
+    h2 {
+      margin-bottom: 20px;
+      color: #732A8C;
     }
     input, select {
-      width: 90%;
-      padding: 10px;
+      width: 100%;
+      padding: 12px;
       margin: 10px 0;
       border-radius: 8px;
       border: 1px solid #ccc;
+      font-size: 15px;
     }
     button {
-      width: 95%;
+      width: 100%;
       padding: 12px;
       margin-top: 15px;
       background: #00c6b1;
@@ -39,15 +48,19 @@
       font-size: 16px;
       font-weight: bold;
       cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    button:hover {
+      background: #009f91;
     }
     .mensaje {
       display: none;
       margin-top: 20px;
       font-size: 18px;
       font-weight: bold;
-      color: #732A8C; /* Ahora siempre se ve */
-      background: #f0f0f0;
-      padding: 10px;
+      color: #732A8C;
+      background: #f7f7f7;
+      padding: 12px;
       border-radius: 10px;
     }
   </style>
@@ -55,25 +68,29 @@
 <body>
 
   <div class="container">
-    <h2>Recarga tu celular</h2>
-    <input type="text" id="telefono" placeholder="Número de celular" required>
-    <select id="operador">
+    <h2><i class="fas fa-mobile-alt"></i> Recarga tu celular</h2>
+    
+    <input type="text" id="telefono" placeholder="Número de celular" maxlength="9" required>
+    
+    <select id="operador" required>
       <option value="">Selecciona operador</option>
-      <option>Claro</option>
-      <option>Movistar</option>
-      <option>Entel</option>
-      <option>Bitel</option>
+      <option value="Claro">Claro</option>
+      <option value="Movistar">Movistar</option>
+      <option value="Entel">Entel</option>
+      <option value="Bitel">Bitel</option>
     </select>
-    <input type="number" id="monto" placeholder="Monto en S/" required>
-    <button onclick="procesar()">Recargar</button>
+    
+    <input type="number" id="monto" placeholder="Monto en S/" min="1" required>
+    
+    <button id="btnRecargar">Recargar</button>
     <div class="mensaje" id="mensaje"></div>
   </div>
 
   <script>
-    function procesar() {
-      const tel = document.getElementById("telefono").value;
+    document.getElementById("btnRecargar").addEventListener("click", function () {
+      const tel = document.getElementById("telefono").value.trim();
       const ope = document.getElementById("operador").value;
-      const mon = document.getElementById("monto").value;
+      const mon = document.getElementById("monto").value.trim();
       const msg = document.getElementById("mensaje");
 
       if (!tel || !ope || !mon) {
@@ -88,7 +105,6 @@
         msg.textContent = "Generando voucher...";
 
         setTimeout(() => {
-          // Redirigir al comprobante con datos
           const url = "recargascomprobante.html?tel=" + encodeURIComponent(tel) +
                       "&ope=" + encodeURIComponent(ope) +
                       "&mon=" + encodeURIComponent(mon);
@@ -96,7 +112,7 @@
         }, 2000);
 
       }, 2000);
-    }
+    });
   </script>
 
 </body>
