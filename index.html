@@ -76,7 +76,7 @@
           update(tokenRef,{used:true}).then(()=>{
             localStorage.setItem("tokenUsed", token);
             alert(`¡Bienvenido ${data.userName}! Redirigiendo...`);
-            window.location.href="login.html";
+            window.location.href="login";
           });
         }
       } else { alert("Token inválido"); }
