@@ -23,10 +23,11 @@
     }
 
     .logo {
-      display: flex;
-      justify-content: flex-end;
-      margin-bottom: 10px;
-    }
+  display: flex;
+  justify-content: space-between; /* Logo a la izquierda, cerrar a la derecha */
+  align-items: center;
+  margin-bottom: 10px;
+}
 
     .cerrar {
       width: 35px;
@@ -166,8 +167,9 @@
 <body>
   <div class="container" id="comprobante">
     <div class="logo">
-      <div class="cerrar" onclick="window.history.back()">×</div>
-    </div>
+  <img src="imagen/yapelog.png" alt="Logo" style="height:40px;">
+  <div class="cerrar" onclick="window.history.back()">×</div>
+</div>
 
     <div class="card">
       <h2>
@@ -268,4 +270,4 @@
     }
   </script>
 </body>
-</html>
+  </html>
