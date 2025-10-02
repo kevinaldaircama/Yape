@@ -1,93 +1,20 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PIN cambiado</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background-color: #732A8C; /* Fondo morado */
-      color: #fff;
-      text-align: center;
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PIN cambiado</title>
 
-    .container {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      padding: 20px;
-    }
+<!-- Estilos -->
+<link rel="stylesheet" href="cc/exito.css">
 
-    .illustration {
-      max-width: 260px;
-      margin-bottom: 20px;
-    }
-
-    h1 {
-      font-size: 28px;
-      margin-bottom: 8px;
-    }
-
-    h2 {
-      font-size: 20px;
-      font-weight: normal;
-      margin-bottom: 25px;
-    }
-
-    .info {
-      text-align: left;
-      width: 100%;
-      max-width: 350px;
-      margin: 0 auto 20px auto;
-    }
-
-    .info p {
-      display: flex;
-      align-items: flex-start;
-      margin: 12px 0;
-      font-size: 15px;
-      line-height: 1.4;
-    }
-
-    .info i {
-      font-size: 18px;
-      margin-right: 10px;
-      margin-top: 2px;
-      color: #ddd;
-    }
-
-    .btn {
-      background: #00d1b2;
-      color: white;
-      border: none;
-      padding: 15px;
-      font-size: 16px;
-      font-weight: bold;
-      border-radius: 8px;
-      width: 100%;
-      max-width: 350px;
-      cursor: pointer;
-      margin-top: auto;
-      margin-bottom: 20px;
-    }
-
-    .btn:hover {
-      background: #00bfa0;
-    }
-  </style>
-  <!-- Íconos de FontAwesome -->
-  <script src="https://kit.fontawesome.com/5a8e0b6c2d.js" crossorigin="anonymous"></script>
+<!-- FontAwesome -->
+<script src="https://kit.fontawesome.com/5a8e0b6c2d.js" crossorigin="anonymous"></script>
 </head>
 <body>
+
   <div class="container">
-    <!-- Aquí podrías poner la ilustración en formato imagen -->
+    <!-- Ilustración -->
     <img src="imagen/1755913090379.png" alt="Ilustración" class="illustration">
 
     <h1>¡Listo!</h1>
@@ -98,7 +25,10 @@
       <p><i class="fas fa-lock"></i> Recuerda no compartir tu nueva clave secreta con nadie.</p>
       <p><i class="fas fa-shield-alt"></i> Además, puedes activar tu Biometría digital para ingresar a Yape.</p>
     </div>
-    <button class="btn" onclick="window.location.href='home'">IR AL INICIO</button>
+
+    <button class="btn" id="inicioBtn">IR AL INICIO</button>
   </div>
+
+<script src="app/exito.js"></script>
 </body>
 </html>

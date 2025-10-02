@@ -1,189 +1,40 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ingresar Token</title>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="manifest" href="manifest.json" />
-  <meta name="theme-color" content="#720e9e" />
-  <link rel="icon" type="image/png" href="imagen/app_icon_xxxhdpi.png">   
-<style>
-  /* Fondo con gradiente */
-  body {
-    font-family: 'Poppins', sans-serif;
-    background: linear-gradient(135deg, #667eea, #764ba2);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    margin: 0;
-    padding: 20px;
-  }
+  <meta charset="UTF-8">  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">  
+  <title>Ingresar Token</title>  
 
-  /* Caja principal */
-  .container {
-    background: #fff;
-    padding: 35px 25px;
-    border-radius: 20px;
-    width: 100%;
-    max-width: 360px;
-    box-shadow: 0 12px 30px rgba(0,0,0,0.15);
-    text-align: center;
-    animation: fadeIn 0.7s ease-in-out;
-  }
+  <!-- Iconos -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">  
 
-  h2 {
-    font-size: 1.6em;
-    margin-bottom: 20px;
-    color: #222;
-    font-weight: 600;
-  }
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json" />  
+  <meta name="theme-color" content="#720e9e" />  
+  <link rel="icon" type="image/png" href="imagen/app_icon_xxxhdpi.png">     
 
-  h2 i {
-    color: #667eea;
-  }
-
-  /* Grupo input */
-  .input-group {
-    display: flex;
-    align-items: center;
-    background: #f7f7f7;
-    border: 1.5px solid #ddd;
-    border-radius: 12px;
-    padding: 10px 14px;
-    margin-bottom: 18px;
-    transition: 0.3s;
-  }
-
-  .input-group:focus-within {
-    border-color: #667eea;
-    box-shadow: 0 0 6px rgba(102,126,234,0.25);
-  }
-
-  .input-group i {
-    color: #888;
-    font-size: 1.1em;
-    margin-right: 10px;
-  }
-
-  .input-group input {
-    flex: 1;
-    border: none;
-    outline: none;
-    background: transparent;
-    font-size: 1em;
-    padding: 6px 0;
-  }
-
-  /* Botones */
-  .btn {
-    width: 100%;
-    padding: 13px;
-    margin-top: 12px;
-    border: none;
-    border-radius: 12px;
-    font-size: 1em;
-    font-weight: 600;
-    color: #fff;
-    cursor: pointer;
-    transition: transform 0.2s ease, background 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-  }
-
-  .btn-primary {
-    background: linear-gradient(135deg, #667eea, #764ba2);
-  }
-
-  .btn-primary:hover {
-    background: linear-gradient(135deg, #5a6fd6, #693d96);
-    transform: translateY(-2px);
-  }
-
-  .btn-secondary {
-    background: linear-gradient(135deg, #ff758c, #ff7eb3);
-  }
-
-  .btn-secondary:hover {
-    background: linear-gradient(135deg, #e7547a, #ff5f9e);
-    transform: translateY(-2px);
-  }
-
-  /* Animación */
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(-20px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  /* Responsive */
-  @media (max-width: 480px) {
-    h2 { font-size: 1.4em; }
-    .container { padding: 28px 18px; }
-  }
-</style>
-
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-  import { getDatabase, ref, get, update } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
-
-  const firebaseConfig = {
-    apiKey: "AIzaSyBHbUTYykUxlJWl6QF6L9YwhC5kNFKpwV0",
-    authDomain: "apps-d075e.firebaseapp.com",
-    databaseURL: "https://apps-d075e-default-rtdb.firebaseio.com",
-    projectId: "apps-d075e",
-    storageBucket: "apps-d075e.firebasestorage.app",
-    messagingSenderId: "813273124209",
-    appId: "1:813273124209:web:81030c787f0992b19e7ad0",
-    measurementId: "G-6DK205T44V"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const db = getDatabase(app);
-
-  window.checkToken = function(){
-    const token = document.getElementById("token").value.trim();
-    if(!token){ alert("Introduce un token"); return; }
-
-    const tokenRef = ref(db, 'tokens/' + token);
-    get(tokenRef).then(snapshot=>{
-      if(snapshot.exists()){
-        const data = snapshot.val();
-        if(data.used){ alert("Este token ya fue usado"); }
-        else{
-          update(tokenRef,{used:true}).then(()=>{
-            localStorage.setItem("tokenUsed", token);
-            alert(`¡Bienvenido ${data.userName}! Redirigiendo...`);
-            window.location.href="login";
-          });
-        }
-      } else { alert("Token inválido"); }
-    }).catch(err=>alert("Error al verificar token: "+err));
-  }
-
-  window.onload=function(){
-    if(localStorage.getItem("tokenUsed")){ window.location.href="login"; }
-  }
-</script>
+  <!-- CSS externo -->
+  <link rel="stylesheet" href="cc/index.css">
 </head>
 <body>
-  <div class="container">
-    <h2><i class="fa-solid fa-shield-alt"></i> Acceso Seguro</h2>
+  <div class="container">  
+    <h2><i class="fa-solid fa-shield-alt"></i> Acceso Seguro</h2>  
 
-    <div class="input-group">
-      <i class="fa-solid fa-key"></i>
-      <input type="text" id="token" placeholder="Introduce tu token">
-    </div>
+    <div class="input-group">  
+      <i class="fa-solid fa-key"></i>  
+      <input type="text" id="token" placeholder="Introduce tu token">  
+    </div>  
 
-    <button class="btn btn-primary" onclick="checkToken()">
-      <i class="fa-solid fa-right-to-bracket"></i> Ingresar
-    </button>
+    <button class="btn btn-primary" onclick="checkToken()">  
+      <i class="fa-solid fa-right-to-bracket"></i> Ingresar  
+    </button>  
 
-    <button class="btn btn-secondary" onclick="window.location.href='planes'">
-      <i class="fa-solid fa-user-plus"></i> Solicitar Cuenta
-    </button>
-  </div>
+    <button class="btn btn-secondary" onclick="window.location.href='planes'">  
+      <i class="fa-solid fa-user-plus"></i> Solicitar Cuenta  
+    </button>  
+  </div>  
+
+  <!-- JS externo -->
+  <script type="module" src="app/index.js"></script>
 </body>
 </html>

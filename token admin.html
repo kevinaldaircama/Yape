@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Generar Token Admin</title>
+  <link rel="stylesheet" href="cc/toke admin.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <div class="container">
+    <h2><i class="fa-solid fa-user-shield"></i> Admin Generar Token</h2>
+    
+    <input type="email" id="adminEmail" placeholder="Tu correo de Admin"><br>
+    <input type="email" id="userEmail" placeholder="Correo del usuario"><br>
+    <input type="password" id="userPassword" placeholder="Contraseña del usuario"><br>
+    <input type="text" id="userName" placeholder="Nombre del usuario"><br>
+
+    <button id="generateBtn"><i class="fa-solid fa-key"></i> Generar Token</button>
+    
+    <div id="tokenOutput" class="token-message"></div>
+    
+    <button id="copyBtn" class="copy-btn">
+      <i class="fa-solid fa-copy"></i> Copiar mensaje
+    </button>
+  </div>
+
+  <!-- Firebase SDK -->
+  <script type="module" src="app/toke admin.js"></script>
+</body>
+</html>

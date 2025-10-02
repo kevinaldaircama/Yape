@@ -3,90 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>envio qr</title>
+  <title>Envío QR</title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <style>
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: 'Roboto', sans-serif;
-      background-color: #62027a;
-      color: #1c1c1c;
-    }
-    .container { padding: 16px; }
-    .comprobante-box {
-      background: #fff;
-      border-radius: 16px;
-      padding: 20px;
-      margin-bottom: 16px;
-      position: relative;
-    }
-    .titulo {
-      color: #833c94;
-      font-weight: 700;
-      font-size: 20px;
-    }
-    .compartir {
-      position: absolute;
-      right: 20px;
-      top: 20px;
-      color: #00b3ac;
-      font-size: 14px;
-      font-weight: 500;
-      cursor: pointer;
-    }
-    .compartir i { margin-right: 5px; }
-    .monto {
-      font-size: 40px;
-      font-weight: 700;
-      margin: 10px 0 4px;
-    }
-    .nombre {
-      font-size: 18px;
-      font-weight: 500;
-    }
-    .fecha-hora {
-      font-size: 14px;
-      color: #777;
-      margin-top: 6px;
-    }
-    .fecha-hora i { margin: 0 4px 0 0; }
-    .datos-transaccion {
-      margin-top: 20px;
-    }
-    .datos-transaccion h4 {
-      font-size: 13px;
-      color: #999;
-      margin-bottom: 10px;
-    }
-    .datos-transaccion div {
-      display: flex;
-      justify-content: space-between;
-      padding: 6px 0;
-      font-size: 15px;
-    }
-    .banner {
-      background: #62027a;
-      border-radius: 16px;
-      padding: 10px;
-    }
-    .banner img {
-      width: 100%;
-      border-radius: 12px;
-    }
-    .cerrar {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      font-size: 24px;
-      color: white;
-      text-decoration: none;
-    }
-  </style>
+  <link rel="stylesheet" href="cc/comprobanteqr.css">
 </head>
 <body>
-
   <a href="home.html" class="cerrar">✕</a>
 
   <div class="container">
@@ -122,34 +44,6 @@
     </div>
   </div>
 
-  <script>
-    const params = new URLSearchParams(window.location.search);
-    const nombre = decodeURIComponent(params.get("nombre") || "Desconocido");
-    const monto = decodeURIComponent(params.get("monto") || "0");
-    const destino = decodeURIComponent(params.get("destino") || "Sin destino");
-
-    document.getElementById("nombre").textContent = nombre;
-    document.getElementById("monto").textContent = `S/${monto}`;
-    document.getElementById("destino").textContent = destino;
-
-    const now = new Date();
-    document.getElementById("fecha").textContent = now.toLocaleDateString('es-PE', { day: '2-digit', month: 'short', year: 'numeric' });
-    document.getElementById("hora").textContent = now.toLocaleTimeString('es-PE', { hour: 'numeric', minute: '2-digit', hour12: true }).toLowerCase();
-
-    const numeroOperacion = Math.floor(4000000 + Math.random() * 1000000);
-    document.getElementById("operacion").textContent = numeroOperacion.toString().padStart(8, '0');
-
-    // Banner aleatorio
-    const banners = [
-      "imagen/1.jpg",
-      "imagen/2.jpg",
-      "imagen/3.jpg",
-      "imagen/4.jpg"
-    ];
-
-    const bannerEl = document.querySelector(".banner img");
-    const imagenAleatoria = banners[Math.floor(Math.random() * banners.length)];
-    bannerEl.src = imagenAleatoria;
-  </script>
+  <script src="app/comprobanteqr.js"></script>
 </body>
 </html>

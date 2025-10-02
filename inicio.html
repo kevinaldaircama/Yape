@@ -4,138 +4,20 @@
   <meta charset="UTF-8">  
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">  
   <title>Login</title>  
-    
-  <!-- Firebase -->  
+
+  <!-- Firebase (compatibilidad v9) -->  
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>  
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>  
   <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>  
     
   <!-- Iconos -->  
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>   
-   <link rel="manifest" href="manifest.json" />
+  <link rel="manifest" href="manifest.json" />
   <meta name="theme-color" content="#720e9e" />
   <link rel="icon" type="image/png" href="imagen/app_icon_xxxhdpi.png">    
-  <style>
-    * {
-      box-sizing: border-box; /* evita que los inputs se salgan */
-    }
 
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;  
-      background: linear-gradient(135deg, #6a11cb, #2575fc);  
-      margin: 0;  
-      height: 100vh;  
-      display: flex;  
-      justify-content: center;  
-      align-items: center;  
-      padding: 15px;
-    }
-
-    .container {
-      width: 100%;
-      max-width: 360px; /* 📱 ajustado a móviles */
-      background: #fff;
-      padding: 25px;
-      border-radius: 15px;
-      box-shadow: 0 6px 15px rgba(0,0,0,0.15);
-      animation: fadeIn 0.6s ease-in-out;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(15px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    h2 {
-      text-align: center;
-      color: #6a11cb;
-      margin-bottom: 20px;
-      font-size: 20px;
-    }
-
-    .input-group {
-      position: relative;
-      margin-bottom: 12px;
-    }
-
-    .input-group input {
-      width: 100%;
-      max-width: 100%;
-      padding: 12px 40px 12px 12px;
-      border-radius: 10px;
-      border: 1px solid #ccc;
-      font-size: 14px;
-      display: block;
-    }
-
-    .input-group input:focus {
-      border-color: #6a11cb;
-      outline: none;
-      box-shadow: 0 0 4px rgba(106,17,203,0.25);
-    }
-
-    .input-group i {
-      position: absolute;
-      right: 10px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: #999;
-      font-size: 14px;
-    }
-
-    button {
-      width: 100%;
-      max-width: 100%;
-      padding: 12px;
-      background: linear-gradient(135deg, #6a11cb, #2575fc);
-      color: #fff;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      font-weight: bold;
-      font-size: 15px;
-      margin-top: 10px;
-      display: block;
-    }
-
-    button:hover {
-      opacity: 0.9;
-    }
-
-    .secondary-btn {
-      background: #2EC4B6;
-    }
-
-    .secondary-btn:hover {
-      background: #28a99b;
-    }
-
-    .message {
-      text-align: center;
-      margin-top: 12px;
-      font-size: 13px;
-      color: #333;
-      min-height: 18px;
-    }
-
-    /* 📱 Ajustes especiales solo móviles */
-    @media (max-width: 480px) {
-      body {
-        padding: 10px;
-      }
-      .container {
-        padding: 20px;
-        border-radius: 12px;
-      }
-      h2 {
-        font-size: 18px;
-      }
-      button {
-        font-size: 14px;
-        padding: 11px;
-      }
-    }
-  </style>
+  <!-- Estilos -->
+  <link rel="stylesheet" href="cc/inicio.css">
 </head>
 <body>
   <div class="container">
@@ -153,59 +35,13 @@
 
     <button onclick="iniciarSesion()"><i class="fa-solid fa-sign-in-alt"></i> Ingresar</button>
     <button class="secondary-btn" onclick="window.location.href='registrovip'">  
-      <i class="fa-solid fa-user-plus"></i> crear cuenta 
+      <i class="fa-solid fa-user-plus"></i> Crear cuenta 
     </button>  
 
     <div class="message" id="mensaje"></div>
   </div>
 
-  <script>
-    const firebaseConfig = {  
-      apiKey: "AIzaSyBHbUTYykUxlJWl6QF6L9YwhC5kNFKpwV0",
-    authDomain: "apps-d075e.firebaseapp.com",
-    databaseURL: "https://apps-d075e-default-rtdb.firebaseio.com",
-    projectId: "apps-d075e",
-    storageBucket: "apps-d075e.firebasestorage.app",
-    messagingSenderId: "813273124209",
-    appId: "1:813273124209:web:81030c787f0992b19e7ad0",
-    measurementId: "G-6DK205T44V"
-  };
-
-    firebase.initializeApp(firebaseConfig);  
-    const auth = firebase.auth();  
-    const db = firebase.firestore();  
-
-    // 🔑 Redirigir si ya hay sesión
-    auth.onAuthStateChanged(user => {
-      if (user) {
-        window.location.href = "login";
-      }
-    });
-
-    async function iniciarSesion() {  
-      const correo = document.getElementById('correo').value;  
-      const clave = document.getElementById('clave').value;  
-      const mensaje = document.getElementById('mensaje');  
-
-      mensaje.innerText = "🔄 Verificando...";  
-
-      try {  
-        const credenciales = await auth.signInWithEmailAndPassword(correo, clave);  
-        const uid = credenciales.user.uid;  
-        const doc = await db.collection("usuarios").doc(uid).get();  
-
-        if (doc.exists) {  
-          const usuario = doc.data();  
-          localStorage.setItem("nombreUsuario", usuario.nombre);  
-          localStorage.setItem("saldoUsuario", usuario.monto);  
-          window.location.href = "login";  
-        } else {  
-          mensaje.innerText = "⚠️ Usuario no encontrado. Solicite una cuenta.";  
-        }  
-      } catch (error) {  
-        mensaje.innerText = `❌ Error: ${error.message}`;  
-      }  
-    }  
-  </script>
+  <!-- Lógica -->
+  <script src="app/inicio.js"></script>
 </body>
 </html>

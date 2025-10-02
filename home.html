@@ -1,451 +1,97 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Yape Home</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
-  <link rel="manifest" href="manifest.json" />
-  <meta name="theme-color" content="#720e9e" />
-  <link rel="icon" type="image/png" href="imagen/app_icon_xxxhdpi.png">   
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">  
-  <style>
-:root {
-  --morado: #732A8C;
-  --verde: #00c6a2;
-  --gris-claro: #f9f9f9;
-}
+  <meta charset="UTF-8" />  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>  
+  <title>Yape Home</title>  
 
-body {
-  font-family: 'Roboto', sans-serif;
-  margin: 0;
-  padding: 0;
-  background: white; /* 👈 el fondo general ahora blanco */
-  color: #333;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
+  <!-- Iconos y fuentes -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>  
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">    
 
-/* SECCIÓN SUPERIOR MORADA */
-.top-section {
-  background: var(--morado);
-  border-bottom-left-radius: 20px;
-  border-bottom-right-radius: 20px;
-  padding-bottom: 1rem;
-}
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json" />  
+  <meta name="theme-color" content="#720e9e" />  
+  <link rel="icon" type="image/png" href="imagen/app_icon_xxxhdpi.png">     
 
-/* HEADER */
-.header {
-  padding: 1rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  color: white;
-}
-
-.username a {
-  text-decoration: none;
-  color: white;
-  font-size: 1.1rem;
-  font-weight: 600;
-}
-
-.gratis-label {
-  background:#ffd700;
-  color:black;
-  border-radius:10px;
-  padding:2px 8px;
-  font-size:0.7rem;
-  margin-left: 0.5rem;
-  font-weight: bold;
-}
-
-.icons {
-  display: flex;
-  gap: 1rem;
-  font-size: 1.3rem;
-}
-
-.icons i {
-  color: white;
-  cursor: pointer;
-  transition: transform 0.2s ease;
-}
-.icons i:hover {
-  transform: scale(1.2);
-}
-
-/* GRID */
-.grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 1rem;
-  padding: 1rem;
-  margin-top: 0.5rem;
-}
-.icon-btn {
-  background: none;
-  color: white;
-  text-align: center;
-  font-size: 0.8rem;
-  cursor: pointer;
-  transition: transform 0.2s ease;
-}
-.icon-btn:hover { transform: scale(1.08); }
-.icon-btn img {
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  background: white;
-  padding: 10px;
-  object-fit: contain;
-  margin-bottom: 6px;
-}
-.icon-btn span {
-  display: block;
-  font-weight: 500;
-}
-
-/* CAROUSEL */
-.carousel {
-  width: 100%;
-  overflow: hidden;
-  display: flex;
-  justify-content: center;
-  margin-top: .5rem;
-}
-.slides {
-  display: flex;
-  width: 300%;
-  transition: transform 1s ease-in-out;
-}
-.slide {
-  flex: 1 0 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-.slide img {
-  width: 92%;
-  max-width: 750px;
-  height: auto;
-  max-height: 180px;
-  border-radius: 20px;
-  object-fit: cover;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.2);
-}
-.dots {
-  text-align: center;
-  margin: 0.5rem 0 1rem;
-}
-.dot {
-  display: inline-block;
-  width: 10px;
-  height: 10px;
-  margin: 0 5px;
-  background-color: #ccc;
-  border-radius: 50%;
-  transition: all 0.3s ease;
-}
-.dot.active {
-  background-color: var(--verde);
-  transform: scale(1.2);
-}
-
-/* ACCIONES (blanco hacia abajo) */
-.actions {
-  background: white;
-  margin: 0;
-  padding: 1rem;
-  margin-bottom: 110px;
-  border-top-left-radius: 20px;
-  border-top-right-radius: 20px;
-  box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-.card {
-  background: white;
-  color: var(--morado);
-  border-radius: 12px;
-  padding: 1rem 1.2rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-weight: bold;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-  cursor: pointer;
-  transition: transform 0.2s ease;
-}
-.card:hover { transform: translateY(-2px); }
-.saldo-animado { transition: opacity 0.3s ease; }
-.dropdown-content {
-  margin-top: 0.5rem;
-  padding: 0.5rem 1rem;
-  background: white;
-  border-radius: 12px;
-  color: black;
-  display: none;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-}
-.movimiento { border-bottom: 1px solid #eee; padding: 10px 0; }
-.movimiento strong { color: #333; }
-.movimiento small { color: #888; }
-.monto { float:right; color:#e53935; font-weight: bold; }
-
-/* FOOTER */
-.footer {
-  position: fixed;
-  bottom: 0;
-  width: 100%;
-  background: white;
-  display: flex;
-  justify-content: space-evenly;
-  padding: 0.7rem 0;
-  box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
-}
-.footer button {
-  background: white;
-  border: 2px solid var(--verde);
-  color: var(--verde);
-  padding: 0.9rem 1.5rem;
-  border-radius: 50px;
-  font-weight: bold;
-  font-size: 1rem;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  box-shadow: 0 3px 8px rgba(0,0,0,0.15);
-  transition: transform 0.2s ease;
-  cursor: pointer;
-}
-.footer a {
-  background: var(--verde);
-  border: none;
-  color: white;
-  padding: 0.9rem 1.5rem;
-  border-radius: 50px;
-  font-weight: bold;
-  font-size: 1rem;
-  text-decoration: none;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  box-shadow: 0 3px 8px rgba(0,0,0,0.25);
-  transition: transform 0.2s ease;
-  cursor: pointer;
-}
-.footer button:hover,
-.footer a:hover { transform: scale(1.07); }
-  </style>
+  <!-- CSS -->
+  <link rel="stylesheet" href="cc/home.css">
 </head>
 <body>
-  <div class="top-section">
-    <div class="header">
-      <div class="username">
-        <a href="perfil.html" id="userLink"><i class="fas fa-user"></i> Hola, Usuario</a>
-        <span class="gratis-label">Gratis</span>
-      </div>
-      <div class="icons">
-        <i class="fas fa-headset"></i>
-        <i class="fas fa-bell"></i>
-      </div>
-    </div>
+  <div class="top-section">  
+    <div class="header">  
+      <div class="username">  
+        <a href="perfil.html" id="userLink"><i class="fas fa-user"></i> Hola, Usuario</a>  
+        <span class="gratis-label">Gratis</span>  
+      </div>  
+      <div class="icons">  
+        <i class="fas fa-headset"></i>  
+        <i class="fas fa-bell"></i>  
+      </div>  
+    </div>  
 
     <!-- GRID -->
-    <div class="grid">    
-    <div class="icon-btn">  
-      <a href="recargas" target="_blank" style="text-decoration:none;">
-  <img src="imagen/recargas.png" alt="Recargar"><br>
-  <span style="color:white;">Recargar<br>celular</span>
-</a>
-    </div>    
-    <div class="icon-btn">  
-      <img src="imagen/servicios.png" alt="Servicios">  
-      <span>Yapear<br>servicios</span>  
-    </div>    
-    <div class="icon-btn">  
-      <img src="imagen/promos.png" alt="Promos">  
-      <span>Promos</span>  
-    </div>    
-    <div class="icon-btn">  
-      <img src="imagen/aprobar.png" alt="Aprobar">  
-      <span>Aprobar<br>compras</span>  
-    </div>    
-    <div class="icon-btn">  
-      <img src="imagen/creditos.png" alt="Créditos">  
-      <span>Créditos</span>  
-    </div>    
-    <div class="icon-btn">  
-      <img src="imagen/tienda.png" alt="Tienda">  
-      <span>Tienda</span>  
-    </div>    
-    <div class="icon-btn">  
-      <img src="imagen/dolares.png" alt="Dólares">  
-      <span>Dólares</span>  
-    </div>    
-    <div class="icon-btn">  
-      <img src="imagen/remesas.png" alt="Remesas">  
-      <span>Remesas</span>  
-    </div>    
-    <div class="icon-btn">  
-      <img src="imagen/soat.png" alt="SOAT">  
-      <span>SOAT</span>  
-    </div>    
-    <div class="icon-btn">  
-      <img src="imagen/bus.png" alt="Bus">  
-      <span>Viajar en<br>bus</span>  
-    </div>    
-    <div class="icon-btn">  
-      <img src="imagen/gaming.png" alt="Gaming">  
-      <span>Gaming</span>  
-    </div>    
-    <div class="icon-btn">  
-      <img src="imagen/ver mas.png" alt="Ver todo">  
-      <span>Ver todo</span>  
-    </div>    
-  </div>
-  
+    <div class="grid">      
+      <div class="icon-btn">    
+        <a href="recargas" target="_blank" style="text-decoration:none;">  
+          <img src="imagen/recargas.png" alt="Recargar"><br>  
+          <span style="color:white;">Recargar<br>celular</span>  
+        </a>  
+      </div>      
+      <div class="icon-btn"><img src="imagen/servicios.png"><span>Yapear<br>servicios</span></div>      
+      <div class="icon-btn"><img src="imagen/promos.png"><span>Promos</span></div>      
+      <div class="icon-btn"><img src="imagen/aprobar.png"><span>Aprobar<br>compras</span></div>      
+      <div class="icon-btn"><img src="imagen/creditos.png"><span>Créditos</span></div>      
+      <div class="icon-btn"><img src="imagen/tienda.png"><span>Tienda</span></div>      
+      <div class="icon-btn"><img src="imagen/dolares.png"><span>Dólares</span></div>      
+      <div class="icon-btn"><img src="imagen/remesas.png"><span>Remesas</span></div>      
+      <div class="icon-btn"><img src="imagen/soat.png"><span>SOAT</span></div>      
+      <div class="icon-btn"><img src="imagen/bus.png"><span>Viajar en<br>bus</span></div>      
+      <div class="icon-btn"><img src="imagen/gaming.png"><span>Gaming</span></div>      
+      <div class="icon-btn"><img src="imagen/ver mas.png"><span>Ver todo</span></div>      
+    </div>  
 
     <!-- CAROUSEL -->
-    <div class="carousel">
-      <div class="slides" id="slide-container">
-        <div class="slide"><img src="imagen/1.jpg"></div>
-        <div class="slide"><img src="imagen/2.jpg"></div>
-        <div class="slide"><img src="imagen/3.jpg"></div>
-      </div>
-    </div>
-    <div class="dots">
-      <span class="dot active"></span>
-      <span class="dot"></span>
-      <span class="dot"></span>
-    </div>
-  </div>
+    <div class="carousel">  
+      <div class="slides" id="slide-container">  
+        <div class="slide"><img src="imagen/1.jpg"></div>  
+        <div class="slide"><img src="imagen/2.jpg"></div>  
+        <div class="slide"><img src="imagen/3.jpg"></div>  
+      </div>  
+    </div>  
+    <div class="dots">  
+      <span class="dot active"></span>  
+      <span class="dot"></span>  
+      <span class="dot"></span>  
+    </div>  
+  </div>  
 
   <!-- ACCIONES -->
-  <div class="actions">
-    <div class="card" onclick="mostrarSaldo()">
-      <span><i class="fas fa-eye"></i> Mostrar saldo</span>
-      <span id="saldo-valor" class="saldo-animado"></span>
-    </div>
-    <div class="card" onclick="toggleDropdown()">
-      <span><i class="fas fa-list"></i> Mostrar movimientos</span>
-      <i class="fas fa-chevron-down"></i>
-    </div>
-    <div class="dropdown-content" id="dropdown">
-      <div id="movimientos-container">
-        <div style="text-align:center; color:#888;">Cargando movimientos...</div>
-      </div>
-    </div>
-  </div>
+  <div class="actions">  
+    <div class="card" onclick="mostrarSaldo()">  
+      <span><i class="fas fa-eye"></i> Mostrar saldo</span>  
+      <span id="saldo-valor" class="saldo-animado"></span>  
+    </div>  
+    <div class="card" onclick="toggleDropdown()">  
+      <span><i class="fas fa-list"></i> Mostrar movimientos</span>  
+      <i class="fas fa-chevron-down"></i>  
+    </div>  
+    <div class="dropdown-content" id="dropdown">  
+      <div id="movimientos-container">  
+        <div style="text-align:center; color:#888;">Cargando movimientos...</div>  
+      </div>  
+    </div>  
+  </div>  
 
   <!-- FOOTER -->
-  <div class="footer">
-    <button onclick="window.location.href='QR'">
-      <i class="fas fa-qrcode"></i> ESCANEAR QR
-    </button>
-    <a href="yapear"><i class="fas fa-exchange-alt"></i> YAPEAR</a>
-  </div>
+  <div class="footer">  
+    <button onclick="window.location.href='QR'">  
+      <i class="fas fa-qrcode"></i> ESCANEAR QR  
+    </button>  
+    <a href="yapear"><i class="fas fa-exchange-alt"></i> YAPEAR</a>  
+  </div>  
 
-  <!-- FIREBASE + JS (se queda igual que ya tienes) -->
-  <script type="module">  
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";  
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";  
-    import { getFirestore, doc, getDoc, collection, query, where, orderBy, getDocs } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";  
-  
-    const firebaseConfig = {  
-      apiKey: "AIzaSyBHbUTYykUxlJWl6QF6L9YwhC5kNFKpwV0",
-    authDomain: "apps-d075e.firebaseapp.com",
-    databaseURL: "https://apps-d075e-default-rtdb.firebaseio.com",
-    projectId: "apps-d075e",
-    storageBucket: "apps-d075e.firebasestorage.app",
-    messagingSenderId: "813273124209",
-    appId: "1:813273124209:web:81030c787f0992b19e7ad0",
-    measurementId: "G-6DK205T44V"
-  };
-  
-    const app = initializeApp(firebaseConfig);  
-    const auth = getAuth(app);  
-    const db = getFirestore(app);  
-  
-    const userLink = document.getElementById("userLink");  
-    const saldoValor = document.getElementById("saldo-valor");  
-  
-    onAuthStateChanged(auth, async (user) => {  
-      if (user) {  
-        const ref = doc(db, "usuarios", user.uid);  
-        const docSnap = await getDoc(ref);  
-        if (docSnap.exists()) {  
-          const datos = docSnap.data();  
-          userLink.innerHTML = `<i class="fas fa-user"></i> Hola, ${datos.nombre}`;  
-          saldoValor.textContent = `S/ ${datos.monto}`;  
-          cargarMovimientos(user.uid);  
-        }  
-      } else {  
-        window.location.href = "/";  
-      }  
-    });  
-  
-    window.toggleDropdown = function() {  
-      const dropdown = document.getElementById("dropdown");  
-      dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";  
-    }  
-  
-    window.mostrarSaldo = function() {  
-      const saldo = document.getElementById("saldo-valor");  
-      if (saldo.style.opacity === "0") {  
-        saldo.style.opacity = "1";  
-      } else {  
-        saldo.style.opacity = "0";  
-      }  
-    }  
-  
-    async function cargarMovimientos(uid) {  
-      const movimientosRef = collection(db, "movimientos");  
-      const q = query(movimientosRef, where("uid", "==", uid), orderBy("fecha", "desc"));  
-      const snapshot = await getDocs(q);  
-      const contenedor = document.getElementById("movimientos-container");  
-      let html = "";  
-      if (snapshot.empty) {  
-        html = `<div style='text-align:center; color:#888;'>No tienes movimientos aún.</div>`;  
-      } else {  
-        snapshot.forEach(doc => {  
-          const mov = doc.data();  
-          const nombre = mov.nombreDestino || "*** *** ***";  
-          const monto = parseFloat(mov.monto).toFixed(2);  
-          let fechaTexto = 'Fecha desconocida';  
-          let horaTexto = '';  
-  
-          if (mov.fecha && typeof mov.fecha.toDate === 'function') {  
-            const fecha = mov.fecha.toDate();  
-            fechaTexto = fecha.toLocaleDateString("es-PE", { year: "numeric", month: "short", day: "numeric" });  
-            horaTexto = fecha.toLocaleTimeString("es-PE", { hour: "2-digit", minute: "2-digit" });  
-          }  
-  
-          html += `  
-            <div class="movimiento">  
-              <strong>${nombre}</strong>  
-              <span class="monto">- S/ ${monto}</span>  
-              <br><small>${fechaTexto} ${horaTexto}</small>  
-            </div>`;  
-        });  
-        html += `<div style='text-align:center; color:var(--verde); font-weight:bold; margin-top:10px;'>VER TODOS</div>`;  
-      }  
-      contenedor.innerHTML = html;  
-    }  
-  
-    let currentSlide = 0;  
-    const slideContainer = document.getElementById("slide-container");  
-    const totalSlides = slideContainer.children.length;  
-    const dots = document.querySelectorAll(".dot");  
-  
-    setInterval(() => {  
-      currentSlide = (currentSlide + 1) % totalSlides;  
-      slideContainer.style.transform = `translateX(-${currentSlide * 100}%)`;  
-      dots.forEach((dot, index) => dot.classList.toggle("active", index === currentSlide));  
-    }, 5000);  
-  </script>
+  <!-- JS -->
+  <script type="module" src="app/home.js"></script>
 </body>
-  </html>
+</html>

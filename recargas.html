@@ -5,65 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Formulario de Recarga</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background-color: #732A8C;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      color: #732A8C;
-    }
-    .container {
-      background: white;
-      padding: 25px;
-      border-radius: 15px;
-      max-width: 400px;
-      width: 90%;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-      text-align: center;
-    }
-    h2 {
-      margin-bottom: 20px;
-      color: #732A8C;
-    }
-    input, select {
-      width: 100%;
-      padding: 12px;
-      margin: 10px 0;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      font-size: 15px;
-    }
-    button {
-      width: 100%;
-      padding: 12px;
-      margin-top: 15px;
-      background: #00c6b1;
-      color: white;
-      border: none;
-      border-radius: 10px;
-      font-size: 16px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: background 0.3s ease;
-    }
-    button:hover {
-      background: #009f91;
-    }
-    .mensaje {
-      display: none;
-      margin-top: 20px;
-      font-size: 18px;
-      font-weight: bold;
-      color: #732A8C;
-      background: #f7f7f7;
-      padding: 12px;
-      border-radius: 10px;
-    }
-  </style>
+  <link rel="stylesheet" href="cc/recarga.css">
 </head>
 <body>
 
@@ -86,34 +28,6 @@
     <div class="mensaje" id="mensaje"></div>
   </div>
 
-  <script>
-    document.getElementById("btnRecargar").addEventListener("click", function () {
-      const tel = document.getElementById("telefono").value.trim();
-      const ope = document.getElementById("operador").value;
-      const mon = document.getElementById("monto").value.trim();
-      const msg = document.getElementById("mensaje");
-
-      if (!tel || !ope || !mon) {
-        alert("Por favor complete todos los campos.");
-        return;
-      }
-
-      msg.style.display = "block";
-      msg.textContent = "Procesando datos...";
-
-      setTimeout(() => {
-        msg.textContent = "Generando voucher...";
-
-        setTimeout(() => {
-          const url = "recargascomprobante.html?tel=" + encodeURIComponent(tel) +
-                      "&ope=" + encodeURIComponent(ope) +
-                      "&mon=" + encodeURIComponent(mon);
-          window.location.href = url;
-        }, 2000);
-
-      }, 2000);
-    });
-  </script>
-
+  <script src="app/recarga.js"></script>
 </body>
 </html>

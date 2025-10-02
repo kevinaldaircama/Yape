@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Guardar QR</title>
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#720e9e" />
+  <link rel="icon" type="image/png" href="imagen/app_icon_xxxhdpi.png"> 
+  <link rel="stylesheet" href="cc/guardarqr.css">
+</head>
+<body>
+  <div class="form">
+    <h2>Guardar QR localmente</h2>
+    <input type="text" id="codigoQR" placeholder="Código único (contenido del QR)" />
+    <input type="text" id="nombreQR" placeholder="Nombre visible" />
+    <input type="text" id="destinoQR" placeholder="Destino (ej: Yape)" />
+    <input type="file" id="fotoQR" accept="image/*" />
+    <button onclick="guardarQR()">Guardar QR</button>
+  </div>
+
+  <script src="app/guardarqr.js"></script>
+</body>
+</html>
