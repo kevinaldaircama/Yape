@@ -1,0 +1,148 @@
+:root{
+  --purple:#6b2370;
+  --accent:#2bd1b2;
+  --muted:#8b8b95;
+  --card-bg:#fff;
+  --ticket-width:88vw;
+  --max-width:420px;
+}
+
+body{
+  margin:0;
+  font-family:Arial, sans-serif;
+  background:var(--purple);
+  display:flex;
+  justify-content:center;
+  padding:22px 0;
+}
+
+.container{
+  width:var(--ticket-width);
+  max-width:var(--max-width);
+  position:relative;
+  color:#222;
+}
+
+.close-link{
+  position:absolute;
+  left:12px;
+  top:10px;
+  font-size:24px;
+  color:#fff;
+  text-decoration:none;
+}
+
+.logo{
+  margin-top:40px;
+  text-align:center;
+}
+
+.logo img{
+  width:120px;
+  height:auto;
+}
+
+.ticket{
+  background:var(--card-bg);
+  border-radius:8px;
+  padding:22px 18px;
+  margin-top:12px;
+  box-shadow:0 6px 14px rgba(0,0,0,0.2);
+}
+
+.ticket h1{
+  text-align:center;
+  color:var(--purple);
+  font-size:20px;
+  margin-bottom:10px;
+}
+
+.amount{
+  text-align:center;
+  margin:12px 0;
+}
+
+.amount .currency{
+  color:#d9b6e9;
+  font-size:18px;
+  margin-right:6px;
+}
+
+.amount .value{
+  font-size:52px;
+  font-weight:700;
+  color:var(--purple);
+}
+
+.service{
+  text-align:center;
+  font-weight:700;
+  color:#333;
+  font-size:18px;
+}
+
+.date{
+  text-align:center;
+  color:var(--muted);
+  font-size:13px;
+  margin-top:6px;
+}
+
+.details{
+  margin-top:14px;
+  border-top:1px solid #eee;
+}
+
+.row{
+  display:flex;
+  justify-content:space-between;
+  padding:10px 0;
+  border-bottom:1px solid #eee;
+  font-size:14px;
+}
+
+.label{
+  color:var(--muted);
+  font-weight:600;
+}
+
+.value{
+  font-weight:700;
+  color:#333;
+}
+
+.actions{
+  display:flex;
+  justify-content:center;
+  gap:18px;
+  margin-top:20px;
+}
+
+.btn{
+  text-decoration:none;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:6px;
+  font-size:13px;
+  color:#fff;
+}
+
+.btn .icon{
+  width:54px;
+  height:54px;
+  border-radius:12px;
+  display:grid;
+  place-items:center;
+  box-shadow:0 4px 10px rgba(0,0,0,0.15);
+  font-size:22px;
+}
+
+.share .icon{
+  background:#7c4eb1;
+}
+
+.yap .icon{
+  background:var(--accent);
+  color:#033;
+}

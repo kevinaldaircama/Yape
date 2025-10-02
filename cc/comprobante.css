@@ -1,0 +1,163 @@
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #650D89;
+  color: #000;
+}
+
+.container {
+  max-width: 400px;
+  margin: auto;
+  padding: 15px;
+  background-color: #650D89;
+}
+
+.logo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.cerrar {
+  width: 35px;
+  height: 35px;
+  background-color: rgba(255,255,255,0.2);
+  border-radius: 50%;
+  color: white;
+  font-size: 20px;
+  text-align: center;
+  line-height: 35px;
+  cursor: pointer;
+}
+
+.card {
+  background: white;
+  border-radius: 15px;
+  padding: 20px;
+  box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+}
+
+.card h2 {
+  color: #650D89;
+  font-size: 18px;
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.monto {
+  font-size: 30px;
+  margin: 5px 0;
+  font-weight: bold;
+}
+
+.nombre {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.datos {
+  font-size: 14px;
+  color: #666;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.datos i {
+  color: #666;
+}
+
+.separator {
+  color: #aaa;
+}
+
+.share {
+  color: #00bfa5;
+  font-size: 13px;
+  font-weight: bold;
+  cursor: pointer;
+}
+.share i {
+  margin-right: 5px;
+}
+
+.seguridad-box {
+  margin: 20px 0;
+  border-top: 1px solid #ccc;
+  border-bottom: 1px solid #ccc;
+  padding: 15px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.seguridad-header {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.icono-seguridad {
+  width: 20px;
+  height: 20px;
+}
+
+.label-seguridad {
+  font-size: 13px; 
+  color: gray; 
+  font-weight: bold;
+}
+
+.codigo {
+  display: flex;
+  gap: 8px;
+}
+
+.caja {
+  background-color: #f0f0f0;
+  width: 30px;
+  height: 30px;
+  border-radius: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  color: #000;
+}
+
+.transaccion-title {
+  font-size: 13px;
+  color: gray;
+  font-weight: bold;
+  margin-bottom: 8px;
+  margin-top: 10px;
+}
+
+.info {
+  font-size: 13px;
+  color: gray;
+  padding-top: 10px;
+}
+
+.info p {
+  margin: 5px 0;
+  display: flex;
+  justify-content: space-between;
+}
+
+.info p strong,
+.info p span {
+  font-weight: bold;
+  color: #000;
+}
+
+.footer-img {
+  width: 100%;
+  border-radius: 15px;
+  margin-top: 20px;
+}

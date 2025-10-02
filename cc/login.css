@@ -1,0 +1,136 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: linear-gradient(to bottom, #732A8C, #7a1dbf);
+  color: white;
+  text-align: center;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+/* Header */
+.header {
+  display: flex;
+  justify-content: flex-end;
+  padding: 15px;
+}
+.ayuda-btn {
+  background: rgba(255, 255, 255, 0.2);
+  padding: 8px 15px;
+  border-radius: 20px;
+  font-size: 14px;
+  cursor: pointer;
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+}
+
+/* QR */
+.qr {
+  margin: 20px auto;
+}
+.qr img {
+  width: 180px;
+  border-radius: 12px;
+}
+
+/* Panel blanco */
+.clave {
+  background: white;
+  border-radius: 30px 30px 0 0;
+  padding: 30px 20px;
+  color: #5a189a;
+  flex-shrink: 0;
+}
+.clave h2 {
+  margin-bottom: 15px;
+}
+
+/* Dots PIN */
+.dots {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 25px;
+  gap: 14px;
+}
+.dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid #5a189a;
+  background: transparent;
+}
+.dot.active {
+  background: #5a189a;
+}
+
+/* Teclado */
+.teclado {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+  max-width: 260px;
+  margin: 0 auto;
+}
+.teclado button {
+  background: #f1f1f1;
+  border: none;
+  padding: 18px;
+  font-size: 20px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.2s;
+  color: #333;
+}
+.teclado button:active {
+  background: #ddd;
+}
+.fingerprint {
+  color: #5a189a;
+  font-size: 22px;
+}
+
+/* Olvido clave */
+.extra {
+  margin-top: 20px;
+  font-size: 14px;
+  color: #00bfa6;
+  font-weight: bold;
+  text-decoration: none;
+  display: inline-block;
+}
+
+/* Modal */
+.modal {
+  position: fixed; top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.6);
+  display: none; justify-content: center; align-items: center;
+  z-index: 999;
+}
+.modal-content {
+  background: white;
+  padding: 30px;
+  border-radius: 16px;
+  text-align: center;
+  color: #6a0dad;
+  font-weight: bold;
+  font-size: 16px;
+}
+.loader {
+  border: 5px solid #eee;
+  border-top: 5px solid #6a0dad;
+  border-radius: 50%;
+  width: 45px;
+  height: 45px;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 15px;
+}
+@keyframes spin { 
+  0% { transform: rotate(0deg);} 
+  100% { transform: rotate(360deg);} 
+}
