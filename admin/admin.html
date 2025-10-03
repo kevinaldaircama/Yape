@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <title>Admin Dashboard - Usuarios / Configuración / Estadísticas</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+
+  <!-- Chart.js para las estadísticas -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+  <style>
+    /* ---------- Reset y base ---------- */
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Inter, "Segoe UI", Roboto, Arial; background:#f4f6f9;color:#2c3e50}
+    a { color: inherit; text-decoration: none; }
+
+    /* ---------- Layout ---------- */
+    .menu-btn{position:fixed;top:14px;left:14px;background:#20293a;color:#fff;border:0;padding:10px 12px;border-radius:8px;cursor:pointer;z-index:1200}
+    .sidebar{
+      width: 240px;background:#20293a;color:#fff;position:fixed;left:0;top:0;bottom:0;padding:22px 16px;
+      display:flex;flex-direction:column;gap:12px;transition:transform .28s ease,z-index .28s;
+      z-index:1100;
+    }
+    .sidebar.closed{transform:translateX(-110%);}
+    .sidebar .close-btn{position:absolute;right:12px;top:12px;background:transparent;border:none;color:#fff;font-size:18px;cursor:pointer}
+    .sidebar h2{margin:0;font-size:18px;text-align:center}
+    .nav-link{display:flex;align-items:center;padding:10px;border-radius:8px;cursor:pointer;gap:10px;color:#e6eef9}
+    .nav-link:hover{background:#2c3e50}
+    .nav-link.active{background:#0f1724;color:#fff;font-weight:600}
+
+    .container{
+      margin-left:240px;padding:26px;height:100vh;overflow:auto;transition:margin-left .28s ease;
+    }
+    .container.full{margin-left:0;}
+
+    /* ---------- Header & cards ---------- */
+    header{display:flex;justify-content:space-between;align-items:center;gap:20px;margin-bottom:18px}
+    header h1{margin:0;font-size:20px}
+    .row{display:flex;gap:18px;flex-wrap:wrap}
+    .card{background:#fff;border-radius:12px;padding:18px;box-shadow:0 6px 18px rgba(17,24,39,0.06);flex:1;min-width:260px}
+
+    /* Inputs */
+    input[type="text"], input[type="number"], input[type="email"], input[type="date"], input[type="password"], select {
+      width:100%;padding:10px;border:1px solid #e2e8f0;border-radius:8px;margin-top:8px;font-size:14px;
+    }
+    label{font-size:13px;color:#475569;margin-top:6px;display:block}
+
+    button {background:#0f62fe;color:#fff;padding:10px 12px;border-radius:8px;border:0;cursor:pointer}
+    button.secondary {background:#64748b}
+    button.danger {background:#ef4444}
+
+    /* Tabla de usuarios */
+    table{width:100%;border-collapse:collapse;margin-top:12px}
+    th, td{padding:10px;text-align:left;border-bottom:1px solid #eef2f7;font-size:14px}
+    th{background:#fafafa;color:#334155}
+    .actions button{margin-right:8px;padding:7px 9px;font-size:13px;border-radius:8px}
+
+    /* Search */
+    .search {display:flex;gap:10px;align-items:center}
+    .search input{max-width:320px}
+
+    /* Modal */
+    .modal-backdrop{position:fixed;inset:0;background:rgba(2,6,23,0.55);display:flex;align-items:center;justify-content:center;z-index:1300}
+    .modal{background:#fff;border-radius:12px;padding:18px;min-width:320px;max-width:720px;box-shadow:0 12px 40px rgba(2,6,23,0.2)}
+    .modal header{display:flex;justify-content:space-between;align-items:center}
+    .modal header h3{margin:0}
+    .modal .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:12px}
+    .modal .grid .full{grid-column:span 2}
+
+    /* Responsive */
+    @media (max-width:900px){
+      .sidebar{width:200px}
+      .container{margin-left:0;padding:16px}
+      .menu-btn{left:12px}
+      .card{min-width:unset}
+    }
+    @media (max-width:560px){
+      .modal .grid{grid-template-columns:1fr}
+      .row{flex-direction:column}
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Botón menú -->
+  <button class="menu-btn" id="menuBtn" aria-label="Abrir menú">☰</button>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <button class="close-btn" id="closeSidebar" aria-label="Cerrar sidebar">✖</button>
+    <h2>⚙️ Admin</h2>
+
+    <div class="nav-link active" data-section="usuarios" id="linkUsuarios">📋 Usuarios</div>
+    <div class="nav-link" data-section="estadisticas" id="linkEstadisticas">📊 Estadísticas</div>
+    <div class="nav-link" data-section="configuracion" id="linkConfig">⚙️ Configuración</div>
+    <div style="flex:1"></div>
+    <div class="nav-link" id="logoutBtn">🚪 Salir</div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="container" id="main">
+    <header>
+      <h1>Panel de Administración</h1>
+      <div style="display:flex;gap:12px;align-items:center">
+        <div class="search">
+          <input id="searchInput" placeholder="Buscar usuario o email..." oninput="filtrarUsuarios()" />
+        </div>
+        <div id="configQuick" style="font-size:13px;color:#475569"></div>
+      </div>
+    </header>
+
+    <!-- ====== SECCION USUARIOS ====== -->
+    <section id="section-usuarios">
+      <div class="row">
+        <!-- Form registrar -->
+        <div class="card" style="max-width:440px;">
+          <h3>Registrar usuario</h3>
+          <label>Usuario (ID único)</label>
+          <input id="regUser" type="text" placeholder="ej: juan123" />
+          <label>Correo</label>
+          <input id="regEmail" type="email" placeholder="correo@ejemplo.com" />
+          <label>Contraseña</label>
+          <input id="regPass" type="password" placeholder="Contraseña segura" />
+          <label>Días de acceso (si dejas vacío usa valor por defecto)</label>
+          <input id="regDias" type="number" placeholder="30" />
+          <div style="display:flex;gap:10px;margin-top:12px">
+            <button onclick="crearUsuario()">Crear</button>
+            <button class="secondary" onclick="limpiarRegistro()">Limpiar</button>
+          </div>
+
+          <div style="margin-top:12px;font-size:13px;color:#64748b">
+            Consejo: en producción usa <strong>Firebase Authentication</strong> para manejar contraseñas.
+          </div>
+        </div>
+
+        <!-- Tarjetas de resumen rápido -->
+        <div style="flex:1;display:flex;flex-direction:column;gap:12px">
+          <div class="card">
+            <h3>Resumen</h3>
+            <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:10px">
+              <div style="min-width:140px;background:#f8fafc;padding:12px;border-radius:8px">
+                <div style="font-size:12px;color:#64748b">Total usuarios</div>
+                <div id="statTotal" style="font-size:20px;font-weight:700">0</div>
+              </div>
+              <div style="min-width:140px;background:#f8fafc;padding:12px;border-radius:8px">
+                <div style="font-size:12px;color:#64748b">Activos</div>
+                <div id="statActivos" style="font-size:20px;font-weight:700">0</div>
+              </div>
+              <div style="min-width:140px;background:#f8fafc;padding:12px;border-radius:8px">
+                <div style="font-size:12px;color:#64748b">Vencidos</div>
+                <div id="statVencidos" style="font-size:20px;font-weight:700">0</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3>Acciones rápidas</h3>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
+              <button onclick="renovarTodos(30)">Renovar +30 días a todos</button>
+              <button class="secondary" onclick="exportarCSV()">Exportar CSV</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabla usuarios -->
+      <div class="card" style="margin-top:18px">
+        <h3>Lista de usuarios</h3>
+        <table>
+          <thead>
+            <tr><th>Usuario</th><th>Email</th><th>Expira</th><th>Días</th><th>Acciones</th></tr>
+          </thead>
+          <tbody id="tablaUsuarios"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ====== SECCION ESTADISTICAS ====== -->
+    <section id="section-estadisticas" style="display:none">
+      <div class="row">
+        <div class="card">
+          <h3>Estadísticas de usuarios</h3>
+          <canvas id="statsChart" width="400" height="220"></canvas>
+        </div>
+
+        <div class="card">
+          <h3>Detalles</h3>
+          <div id="statsDetails" style="margin-top:8px;font-size:14px;color:#334155"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====== SECCION CONFIGURACION ====== -->
+    <section id="section-configuracion" style="display:none">
+      <div class="card" style="max-width:640px">
+        <h3>Configuración</h3>
+        <label>Días por defecto al crear usuario</label>
+        <input id="confDefaultDays" type="number" placeholder="30" />
+        <label>URL de contacto (página a la que se redirige usuarios vencidos)</label>
+        <input id="confContactUrl" type="text" placeholder="https://tusitio.com/contacto" />
+        <div style="display:flex;gap:10px;margin-top:12px">
+          <button onclick="guardarConfig()">Guardar</button>
+          <button class="secondary" onclick="cargarConfig()">Cargar</button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Modal editar usuario -->
+  <div id="modalEdit" style="display:none" class="modal-backdrop" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true">
+      <header>
+        <h3>Editar usuario: <span id="editUserId"></span></h3>
+        <button onclick="cerrarModalEdit()" style="background:none;border:0;font-size:18px;cursor:pointer">✖</button>
+      </header>
+
+      <div class="grid">
+        <div>
+          <label>Email</label>
+          <input id="editEmail" type="email" />
+        </div>
+        <div>
+          <label>Contraseña</label>
+          <input id="editPass" type="password" />
+        </div>
+
+        <div class="full">
+          <label>Expiración por fecha</label>
+          <input id="editExpDate" type="date" />
+        </div>
+
+        <div class="full" style="display:flex;gap:10px;align-items:center">
+          <div style="flex:1">
+            <label>O renovar por (días)</label>
+            <input id="editExpDays" type="number" placeholder="Agregar X días desde hoy" />
+          </div>
+          <div>
+            <label>&nbsp;</label>
+            <div style="display:flex;gap:8px">
+              <button onclick="guardarEdicion()">Guardar cambios</button>
+              <button class="secondary" onclick="cerrarModalEdit()">Cancelar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCRIPTS -->
+  <script type="module">
+    // ---------- FIREBASE ----------
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import {
+      getFirestore, collection, doc, getDocs, setDoc, updateDoc, deleteDoc, getDoc
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    // ----- REEMPLAZA ESTO -----
+    const firebaseConfig = {
+      apiKey: "AIzaSyBOIyyPWVXWq0X3btLYM4PFaaadZuXW3pU",
+    authDomain: "clientes-c459e.firebaseapp.com",
+    databaseURL: "https://clientes-c459e-default-rtdb.firebaseio.com",
+    projectId: "clientes-c459e",
+    storageBucket: "clientes-c459e.firebasestorage.app",
+    messagingSenderId: "347844392001",
+    appId: "1:347844392001:web:9e0a836d313959d0e742c0",
+    measurementId: "G-2QFH1EESNC"
+  };
+    // --------------------------
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // Estado local
+    let usuariosCache = []; // array de { id, user, email, pass, expira }
+    let currentEditUserId = null;
+    let statsChart = null;
+
+    // ---------- HELPERS ----------
+    const msDia = 24*60*60*1000;
+    function formatDate(ms) {
+      if(!ms) return '-';
+      const d = new Date(Number(ms));
+      return d.toLocaleString();
+    }
+    function daysRemaining(ms) {
+      return Math.ceil((Number(ms) - Date.now()) / msDia);
+    }
+    function showSection(name){
+      document.getElementById("section-usuarios").style.display = (name==='usuarios') ? "" : "none";
+      document.getElementById("section-estadisticas").style.display = (name==='estadisticas') ? "" : "none";
+      document.getElementById("section-configuracion").style.display = (name==='configuracion') ? "" : "none";
+
+      // ajuste active link
+      document.querySelectorAll('.nav-link').forEach(el=>{
+        el.classList.toggle('active', el.dataset.section === name);
+      });
+      // cerrar sidebar en móviles para mejorar UX
+      if(window.innerWidth < 900) toggleSidebar(true);
+    }
+
+    function mostrarMensaje(m) { alert(m); } // reemplaza por toast si quieres
+
+    // ---------- CONFIG ----------
+
+    async function cargarConfig(){
+      try {
+        const ref = doc(db, "config", "settings");
+        const snap = await getDoc(ref);
+        if(snap.exists()){
+          const data = snap.data();
+          document.getElementById("confDefaultDays").value = data.defaultDays || "";
+          document.getElementById("confContactUrl").value = data.contactUrl || "";
+          document.getElementById("configQuick").innerText = `Contacto: ${data.contactUrl || 'no definido'}`;
+        } else {
+          // valores por defecto si no existe
+          document.getElementById("confDefaultDays").value = 30;
+          document.getElementById("confContactUrl").value = "";
+          document.getElementById("configQuick").innerText = `Contacto: -`;
+        }
+      } catch(err) {
+        console.error(err); mostrarMensaje("Error cargando configuración");
+      }
+    }
+
+    async function guardarConfig(){
+      try {
+        const defaultDays = parseInt(document.getElementById("confDefaultDays").value) || 30;
+        const contactUrl = document.getElementById("confContactUrl").value.trim() || "";
+        await setDoc(doc(db, "config", "settings"), { defaultDays, contactUrl });
+        mostrarMensaje("✅ Configuración guardada");
+        cargarConfig();
+      } catch(err) {
+        console.error(err); mostrarMensaje("Error guardando configuración");
+      }
+    }
+
+    // ---------- USUARIOS CRUD ----------
+
+    async function cargarUsuarios(){
+      try {
+        usuariosCache = [];
+        const snapshot = await getDocs(collection(db, "usuarios"));
+        snapshot.forEach(docu=>{
+          const d = docu.data();
+          usuariosCache.push({ id: docu.id, ...d });
+        });
+      } catch(err){
+        console.error(err); mostrarMensaje("Error al cargar usuarios");
+      }
+    }
+
+    async function listarUsuarios(filter = ""){
+      await cargarUsuarios();
+      // filtrar
+      const f = filter.trim().toLowerCase();
+      const tbody = document.getElementById("tablaUsuarios");
+      tbody.innerHTML = "";
+
+      usuariosCache.sort((a,b)=> (a.user||"").localeCompare(b.user||""));
+
+      usuariosCache.forEach(u=>{
+        if(f){
+          const hay = (u.user||"").toLowerCase().includes(f) || (u.email||"").toLowerCase().includes(f);
+          if(!hay) return;
+        }
+        const tr = document.createElement("tr");
+        const dias = daysRemaining(u.expira);
+        const diasText = dias > 0 ? `${dias} días` : "VENCIDO";
+
+        tr.innerHTML = `
+          <td style="min-width:120px">${escapeHtml(u.user || u.id)}</td>
+          <td style="min-width:180px">${escapeHtml(u.email || "")}</td>
+          <td style="min-width:180px">${formatDate(u.expira)}</td>
+          <td>${diasText}</td>
+          <td class="actions"></td>
+        `;
+
+        // acciones
+        const actionsTd = tr.querySelector('.actions');
+        const btnEdit = document.createElement("button");
+        btnEdit.textContent = "Editar";
+        btnEdit.className = "secondary";
+        btnEdit.onclick = ()=>abrirModalEdit(u);
+
+        const btn30 = document.createElement("button");
+        btn30.textContent = "+30 días";
+        btn30.className = "btn-renovar";
+        btn30.onclick = ()=>renovarUsuario(u.user || u.id, 30);
+
+        const btnEliminar = document.createElement("button");
+        btnEliminar.textContent = "Eliminar";
+        btnEliminar.className = "danger";
+        btnEliminar.onclick = ()=>eliminarUsuario(u.user || u.id);
+
+        actionsTd.appendChild(btnEdit);
+        actionsTd.appendChild(btn30);
+        actionsTd.appendChild(btnEliminar);
+
+        tbody.appendChild(tr);
+      });
+
+      // actualizar estadísticas y gráfico
+      actualizarEstadisticas();
+    }
+
+    function escapeHtml(text){
+      if(!text) return "";
+      return text.replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;");
+    }
+
+    async function crearUsuario(){
+      try {
+        // carga config para default days
+        const confSnap = await getDoc(doc(db, "config", "settings"));
+        const conf = confSnap.exists() ? confSnap.data() : { defaultDays: 30, contactUrl: "" };
+
+        const user = document.getElementById("regUser").value.trim();
+        const email = document.getElementById("regEmail").value.trim();
+        const pass = document.getElementById("regPass").value.trim();
+        const diasInput = parseInt(document.getElementById("regDias").value);
+        const dias = (!isNaN(diasInput) && diasInput>0) ? diasInput : (conf.defaultDays || 30);
+
+        if(!user || !email || !pass){
+          mostrarMensaje("Completa usuario, correo y contraseña");
+          return;
+        }
+
+        const expira = Date.now() + dias * msDia;
+        await setDoc(doc(db, "usuarios", user), {
+          user, email, pass, expira
+        });
+        mostrarMensaje("✅ Usuario creado");
+        limpiarRegistro();
+        await listarUsuarios(document.getElementById("searchInput").value);
+      } catch(err){
+        console.error(err); mostrarMensaje("Error creando usuario: " + (err.message || err));
+      }
+    }
+
+    function limpiarRegistro(){
+      document.getElementById("regUser").value = "";
+      document.getElementById("regEmail").value = "";
+      document.getElementById("regPass").value = "";
+      document.getElementById("regDias").value = "";
+    }
+
+    async function renovarUsuario(usuarioId, dias){
+      try {
+        const ref = doc(db, "usuarios", usuarioId);
+        const snap = await getDoc(ref);
+        if(!snap.exists()){ mostrarMensaje("Usuario no encontrado"); return; }
+        const nuevaExp = Date.now() + dias * msDia;
+        await updateDoc(ref, { expira: nuevaExp });
+        mostrarMensaje("✅ Renovado " + dias + " días");
+        await listarUsuarios(document.getElementById("searchInput").value);
+      } catch(err){ console.error(err); mostrarMensaje("Error renovando usuario"); }
+    }
+
+    async function eliminarUsuario(usuarioId){
+      try {
+        if(!confirm("¿Eliminar usuario "+usuarioId+"?")) return;
+        await deleteDoc(doc(db, "usuarios", usuarioId));
+        mostrarMensaje("🗑️ Usuario eliminado");
+        await listarUsuarios(document.getElementById("searchInput").value);
+      } catch(err){ console.error(err); mostrarMensaje("Error eliminando usuario"); }
+    }
+
+    // renovar todos
+    async function renovarTodos(dias){
+      if(!confirm("Aplicar +"+dias+" días a TODOS los usuarios?")) return;
+      try {
+        await cargarUsuarios();
+        const promesas = usuariosCache.map(u=>{
+          const ref = doc(db, "usuarios", u.user || u.id);
+          const nuevaExp = Date.now() + dias * msDia;
+          return updateDoc(ref, { expira: nuevaExp });
+        });
+        await Promise.all(promesas);
+        mostrarMensaje("✅ Todos renovados");
+        await listarUsuarios();
+      } catch(err){
+        console.error(err); mostrarMensaje("Error renovando todos");
+      }
+    }
+
+    // ---------- EDITAR via modal ----------
+    function abrirModalEdit(u){
+      currentEditUserId = u.user || u.id;
+      document.getElementById("editUserId").innerText = currentEditUserId;
+      document.getElementById("editEmail").value = u.email || "";
+      document.getElementById("editPass").value = ""; // si deja en blanco no cambia
+      // prefila fecha si existe
+      if(u.expira){
+        const dISO = new Date(Number(u.expira)).toISOString().slice(0,10);
+        document.getElementById("editExpDate").value = dISO;
+      } else {
+        document.getElementById("editExpDate").value = "";
+      }
+      document.getElementById("editExpDays").value = "";
+      document.getElementById("modalEdit").style.display = "flex";
+    }
+    function cerrarModalEdit(){ document.getElementById("modalEdit").style.display = "none"; currentEditUserId = null; }
+
+    async function guardarEdicion(){
+      if(!currentEditUserId) return;
+      try {
+        const email = document.getElementById("editEmail").value.trim();
+        const pass = document.getElementById("editPass").value.trim();
+        const expDate = document.getElementById("editExpDate").value;
+        const expDays = parseInt(document.getElementById("editExpDays").value);
+
+        const ref = doc(db, "usuarios", currentEditUserId);
+        const patch = {};
+        if(email) patch.email = email;
+        if(pass) patch.pass = pass;
+        if(expDate){
+          const ms = new Date(expDate + "T00:00:00").getTime();
+          if(!isNaN(ms)) patch.expira = ms;
+        } else if(!isNaN(expDays) && expDays>0){
+          patch.expira = Date.now() + expDays * msDia;
+        }
+
+        if(Object.keys(patch).length === 0){
+          mostrarMensaje("No hay cambios para guardar");
+          return;
+        }
+        await updateDoc(ref, patch);
+        mostrarMensaje("✅ Cambios guardados");
+        cerrarModalEdit();
+        await listarUsuarios(document.getElementById("searchInput").value);
+      } catch(err){
+        console.error(err); mostrarMensaje("Error guardando cambios");
+      }
+    }
+
+    // ---------- ESTADISTICAS ----------
+    function actualizarEstadisticas(){
+      const total = usuariosCache.length;
+      const activos = usuariosCache.filter(u => Number(u.expira) > Date.now()).length;
+      const vencidos = total - activos;
+
+      document.getElementById("statTotal").innerText = total;
+      document.getElementById("statActivos").innerText = activos;
+      document.getElementById("statVencidos").innerText = vencidos;
+
+      // detalles
+      const avgDays = usuariosCache.length ? Math.round(usuariosCache.reduce((acc,u)=>{
+        const d = Math.max(0, daysRemaining(u.expira));
+        return acc + d;
+      },0) / usuariosCache.length) : 0;
+
+      document.getElementById("statsDetails").innerHTML = `
+        <div>Total usuarios: <strong>${total}</strong></div>
+        <div>Activos: <strong>${activos}</strong></div>
+        <div>Vencidos: <strong>${vencidos}</strong></div>
+        <div>Días promedio restantes: <strong>${avgDays}</strong></div>
+      `;
+
+      // gráfico (pie)
+      const ctx = document.getElementById("statsChart").getContext("2d");
+      if(statsChart) statsChart.destroy();
+      statsChart = new Chart(ctx, {
+        type: 'pie',
+        data: {
+          labels: ['Activos','Vencidos'],
+          datasets: [{
+            label: 'Usuarios',
+            data: [activos, vencidos],
+            backgroundColor: ['#16a34a','#ef4444']
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: { legend: { position:'bottom' } }
+        }
+      });
+    }
+
+    // ---------- UTILIDADES ----------
+    function filtrarUsuarios(){
+      const v = document.getElementById("searchInput").value;
+      listarUsuarios(v);
+    }
+
+    // Export CSV simple
+    function exportarCSV(){
+      if(!usuariosCache.length){ mostrarMensaje("No hay usuarios para exportar"); return; }
+      const rows = [['usuario','email','expira','dias_restantes']];
+      usuariosCache.forEach(u=>{
+        rows.push([u.user || u.id, u.email || '', formatDate(u.expira), Math.max(0, daysRemaining(u.expira))]);
+      });
+      const csv = rows.map(r=>r.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
+      const blob = new Blob([csv],{type:'text/csv'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'usuarios.csv'; a.click(); URL.revokeObjectURL(url);
+    }
+
+    // ---------- SIDEBAR / NAV ----------
+    function toggleSidebar(forceClose = false){
+      const sb = document.getElementById("sidebar");
+      const main = document.getElementById("main");
+      if(forceClose) { sb.classList.add('closed'); main.classList.add('full'); return; }
+      sb.classList.toggle('closed');
+      main.classList.toggle('full');
+    }
+    document.getElementById("menuBtn").addEventListener('click', ()=>toggleSidebar());
+    document.getElementById("closeSidebar").addEventListener('click', ()=>toggleSidebar(true));
+    document.querySelectorAll('.nav-link').forEach(el=>{
+      el.addEventListener('click', ()=> {
+        const s = el.dataset.section || el.id.replace('link','').toLowerCase();
+        showSection(s);
+      });
+    });
+
+    // logout - placeholder
+    document.getElementById("logoutBtn").addEventListener('click', ()=>{
+      if(confirm("Cerrar sesión admin? (placeholder)")) { mostrarMensaje("Cerrar sesión (implementa autenticación real)"); }
+    });
+
+    // ---------- Inicialización ----------
+    // cargar configuración y usuarios al inicio
+    await cargarConfig();
+    await listarUsuarios();
+
+    // exportar funciones al window (por si quieres llamar desde consola)
+    window.listarUsuarios = listarUsuarios;
+    window.crearUsuario = crearUsuario;
+    window.renovarUsuario = renovarUsuario;
+    window.eliminarUsuario = eliminarUsuario;
+    window.abrirModalEdit = abrirModalEdit;
+    window.guardarEdicion = guardarEdicion;
+    window.cargarConfig = cargarConfig;
+    window.guardarConfig = guardarConfig;
+    window.exportarCSV = exportarCSV;
+    window.renovarTodos = renovarTodos;
+    window.toggleSidebar = toggleSidebar;
+
+  </script>
+</body>
+</html>
