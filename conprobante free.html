@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Compra exitosa - Free Fire</title>
+
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #650D89;
+      --accent: #00c8a2;
+      --card-bg: #ffffff;
+      --muted: #6b6b6b;
+    }
+
+    html, body {
+      height: 100%;
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background: var(--bg);
+      color: #222;
+    }
+
+    .wrap {
+      min-height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 32px 16px 48px;
+      box-sizing: border-box;
+    }
+
+    .check-ctn {
+      width: 84px;
+      height: 84px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 14px;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+    }
+
+    .check {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 28px;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 420px;
+      background: var(--card-bg);
+      border-radius: 12px;
+      margin-top: 18px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+    }
+
+    .card-inner {
+      padding: 28px;
+    }
+
+    .title {
+      text-align: center;
+      font-size: 28px;
+      font-weight: 700;
+      color: #5b2a67;
+      margin: 0 0 8px;
+    }
+
+    .amount {
+      text-align: center;
+      font-size: 44px;
+      font-weight: 700;
+      color: #5b2a67;
+      margin: 0;
+      display: flex;
+      align-items: baseline;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .amount .mon {
+      font-size: 22px;
+      color: #caaed3;
+    }
+
+    .date {
+      text-align: center;
+      font-size: 14px;
+      color: #616161;
+      margin-top: 6px;
+    }
+
+    .provider {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .provider img {
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .product-line {
+      text-align: center;
+      color: #6b6b6b;
+      margin-top: 8px;
+      font-size: 15px;
+    }
+
+    .divider {
+      height: 1px;
+      background: #efefef;
+      margin: 18px 0;
+    }
+
+    .info {
+      margin-top: 10px;
+      border-top: 1px solid #f3f3f3;
+      border-bottom: 1px solid #f3f3f3;
+      padding: 10px 0;
+    }
+
+    .row-group {
+      text-align: center;
+      font-size: 14px;
+      color: #333;
+      line-height: 1.5;
+    }
+
+    .row-group .label {
+      color: #9b8fa6;
+      font-weight: 600;
+      margin-right: 4px;
+    }
+
+    .instructions {
+      padding: 16px 0 6px;
+      color: #666;
+      font-size: 14px;
+      line-height: 1.4;
+    }
+
+    .terms {
+      display: block;
+      text-align: center;
+      margin-top: 10px;
+      color: var(--accent);
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .bottom {
+      margin-top: 28px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 18px;
+    }
+
+    .action-btn {
+      width: 72px;
+      height: 72px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--accent);
+      color: white;
+      font-size: 28px;
+      box-shadow: 0 8px 22px rgba(0, 0, 0, 0.18);
+      border: none;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+
+    .action-btn:hover {
+      transform: scale(1.05);
+    }
+
+    .action-txt {
+      text-align: center;
+      color: white;
+      font-weight: 700;
+      margin-top: 6px;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="check-ctn">
+      <div class="check"><i class="fa-solid fa-check"></i></div>
+    </div>
+
+    <main class="card">
+      <div class="card-inner">
+        <h1 class="title">¡Compra exitosa!</h1>
+
+        <p class="amount"><span class="mon">S/</span><span id="monto">0.00</span></p>
+        <p class="date" id="fechaHora"></p>
+
+        <div class="provider">
+          <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRz6C374FSXnQkHFcReKGZItHCUikPBQu_uB3dZnOWwYQ&s" alt="Garena logo">
+          <div class="name"><strong>GARENA</strong></div>
+        </div>
+
+        <div class="product-line" id="paquete">Diamantes</div>
+
+        <div class="divider"></div>
+
+        <!-- Datos dinámicos -->
+        <section class="info">
+          <div class="row-group">
+            <div><span class="label">User name:</span> <span id="username">---</span></div>
+            <div><span class="label">ID de jugador:</span> <span id="playerId">---</span></div>
+          </div>
+        </section>
+
+        <div class="instructions">
+          <strong>Indicaciones:</strong><br>
+          Se realizó la recarga. Si no se refleja de inmediato, vuelve a consultarla en unos minutos.
+        </div>
+
+        <a class="terms" href="#">Ver términos y condiciones</a>
+      </div>
+    </main>
+
+    <div class="bottom">
+      <button class="action-btn" id="volverInicio"><i class="fa-solid fa-gamepad"></i></button>
+      <div class="action-txt">Volver a<br>inicio</div>
+    </div>
+  </div>
+
+  <script>
+    // Mostrar fecha y hora actual
+    const fecha = new Date();
+    const opciones = {
+      day: '2-digit', month: 'short', year: 'numeric',
+      hour: '2-digit', minute: '2-digit', hour12: true
+    };
+    document.getElementById('fechaHora').textContent =
+      new Intl.DateTimeFormat('es-ES', opciones).format(fecha).replace('.', '');
+
+    // Obtener parámetros de la URL
+    const params = new URLSearchParams(window.location.search);
+    document.getElementById("username").textContent = params.get("username") || "---";
+    document.getElementById("playerId").textContent = params.get("id") || "---";
+    document.getElementById("monto").textContent = params.get("monto") || "0.00";
+    document.getElementById("paquete").textContent = params.get("paquete") || "Diamantes";
+
+    // Redirección al inicio
+    document.getElementById("volverInicio").addEventListener("click", () => {
+      window.location.href = "/"; // 🔗 Cambia el enlace
+    });
+  </script>
+</body>
+  </html>
