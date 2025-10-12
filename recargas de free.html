@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Free Fire - Recarga</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
+<style>
+:root{
+  --purple:#6a1b7a;
+  --light:#f6f2f7;
+  --card-bg:#ffffff;
+  --muted:#8b8390;
+  --accent:#00c8a2;
+  --radius:16px;
+}
+body{
+  margin:0;
+  font-family:'Poppins',sans-serif;
+  background:var(--light);
+  color:#222;
+}
+/* Header */
+.topbar{
+  background:linear-gradient(180deg,var(--purple),#7a2d8e);
+  color:white;
+  padding:12px 16px;
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+.topbar h1{
+  flex:1;
+  margin:0;
+  text-align:center;
+  font-size:18px;
+  font-weight:600;
+}
+/* Page */
+.page{
+  padding:16px;
+  max-width:700px;
+  margin:auto;
+}
+.banner{
+  background:url('imagen/IMG_20251012_163234.jpg') center/cover no-repeat;
+  height:150px;
+  border-radius:12px;
+  margin-bottom:16px;
+}
+.card{
+  background:var(--card-bg);
+  border-radius:14px;
+  padding:18px;
+  box-shadow:0 8px 30px rgba(0,0,0,0.06);
+}
+.product-title{
+  font-size:20px;
+  font-weight:700;
+}
+.from{color:var(--muted);}
+.price{font-size:28px;font-weight:700;}
+.description{color:var(--muted);}
+.options-wrap{margin-top:14px;}
+.option{
+  background:white;
+  border-radius:12px;
+  padding:12px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:10px;
+  border:1px solid #eee;
+  cursor:pointer;
+}
+.option.selected{
+  border-color:var(--accent);
+  box-shadow:0 0 8px rgba(0,200,162,0.3);
+}
+.faq-section {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 16px;
+  margin-top: 20px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.05);
+}
+
+.faq-section h3 {
+  margin-top: 0;
+  color: var(--purple);
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.faq-section ol {
+  margin: 0;
+  padding-left: 20px;
+  color: #555;
+}
+
+.faq-section li {
+  margin-bottom: 8px;
+  line-height: 1.6;
+}
+.bottom-fixed{
+  position:fixed;
+  bottom:0;
+  left:0;
+  right:0;
+  background:#fff;
+  box-shadow:0 -6px 16px rgba(0,0,0,0.1);
+  padding:12px;
+  display:flex;
+  justify-content:center;
+}
+.continue-btn{
+  background:#ccc;
+  border:none;
+  color:#666;
+  padding:14px;
+  font-weight:700;
+  border-radius:12px;
+  width:90%;
+  max-width:500px;
+}
+.continue-btn.enabled{
+  background:var(--purple);
+  color:#fff;
+  cursor:pointer;
+}
+
+/* MODAL */
+.modal{
+  display:none;
+  position:fixed;
+  top:0;left:0;right:0;bottom:0;
+  background:rgba(0,0,0,0.6);
+  justify-content:center;
+  align-items:center;
+  z-index:999;
+}
+.modal.active{display:flex;}
+.modal-content{
+  background:#fff;
+  border-radius:16px;
+  padding:20px;
+  width:90%;
+  max-width:400px;
+  box-shadow:0 10px 30px rgba(0,0,0,0.2);
+}
+.modal-content h2{
+  text-align:center;
+  margin-top:0;
+  color:#5b2a67;
+}
+.form-group{
+  margin-bottom:14px;
+}
+.form-group label{
+  font-weight:600;
+  font-size:14px;
+}
+.form-group input, .form-group select{
+  width:100%;
+  padding:10px;
+  border:1px solid #ddd;
+  border-radius:8px;
+  font-family:'Poppins';
+}
+.modal-btn{
+  background:var(--accent);
+  color:white;
+  border:none;
+  padding:12px;
+  font-weight:700;
+  border-radius:8px;
+  width:100%;
+  cursor:pointer;
+}
+.close-btn{
+  text-align:center;
+  margin-top:10px;
+  color:#777;
+  cursor:pointer;
+  font-size:14px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="topbar">
+  <button class="btn" onclick="history.back()"><i class="fa-solid fa-arrow-left" style="color:white;"></i></button>
+  <h1>Gaming</h1>
+</div>
+
+<div class="page">
+  <div class="banner"></div>
+  <div class="card">
+    <div class="product-title">Free Fire Garena - ID</div>
+    <div class="from">Vendido por GARENA</div>
+    <p class="price">Desde S/ 3.50</p>
+    <p class="description">Recarga directa de Free Fire, solo válido para Perú. Sumérgete en la acción de Free Fire, el battle royale que desafía a millones de jugadores en todo el mundo.</p>
+  </div>
+
+  <div class="options-wrap">
+  <h3>Elegir opciones:</h3>
+  <div class="option" data-package="100 Diamantes + 10% Bonus" data-price="3.50">💎 100 + 10% Bonus <b>S/ 3.50</b></div>
+  <div class="option" data-package="310 Diamantes + 10% Bonus" data-price="9.90">💎 310 + 10% Bonus <b>S/ 9.90</b></div>
+  <div class="option" data-package="520 Diamantes + 10% Bonus" data-price="16.50">💎 520 + 10% Bonus <b>S/ 16.50</b></div>
+  <div class="option" data-package="1060 Diamantes + 10% Bonus" data-price="32.90">💎 1060 + 10% Bonus <b>S/ 32.90</b></div>
+  <div class="option" data-package="2180 Diamantes + 10% Bonus" data-price="64.90">💎 2180 + 10% Bonus <b>S/ 64.90</b></div>
+</div>
+
+<!-- 🆕 NUEVA SECCIÓN -->
+<div class="faq-section">
+  <h3>¿Cómo canjear tu código?</h3>
+  <ol>
+    <li>Selecciona el monto que deseas recargar.</li>
+    <li>Ingresa tu <strong>ID de jugador</strong> correctamente.</li>
+<li></li>
+  </ol>
+</div>
+<div class="bottom-fixed">
+  <button id="continueBtn" class="continue-btn" disabled>Continuar</button>
+</div>
+
+<!-- MODAL -->
+<div id="modal" class="modal">
+  <div class="modal-content">
+    <h2>Completa tus datos</h2>
+    <div class="form-group">
+      <label>ID del jugador</label>
+      <input type="text" id="playerId" placeholder="Ej. 9645932788">
+    </div>
+    <div class="form-group">
+      <label>Nombre de usuario</label>
+      <input type="text" id="userName" placeholder="Ej. TEAM©MESSI">
+    </div>
+    <div class="form-group">
+      <label>Monto (S/)</label>
+      <input type="text" id="amount" readonly>
+    </div>
+    <div class="form-group">
+      <label>Paquete</label>
+      <input type="text" id="package" readonly>
+    </div>
+    <button id="payBtn" class="modal-btn">Pagar</button>
+    <div class="close-btn" id="closeModal">Cancelar</div>
+  </div>
+</div>
+
+<script>
+const options = document.querySelectorAll('.option');
+const continueBtn = document.getElementById('continueBtn');
+let selectedPackage = null;
+let selectedPrice = null;
+
+// seleccionar opción
+options.forEach(opt=>{
+  opt.addEventListener('click',()=>{
+    options.forEach(o=>o.classList.remove('selected'));
+    opt.classList.add('selected');
+    selectedPackage = opt.dataset.package;
+    selectedPrice = opt.dataset.price;
+    continueBtn.classList.add('enabled');
+    continueBtn.disabled = false;
+  });
+});
+
+// abrir modal
+const modal = document.getElementById('modal');
+continueBtn.addEventListener('click',()=>{
+  if(!selectedPackage) return;
+  modal.classList.add('active');
+  document.getElementById('amount').value = selectedPrice;
+  document.getElementById('package').value = selectedPackage;
+});
+
+// cerrar modal
+document.getElementById('closeModal').addEventListener('click',()=>{
+  modal.classList.remove('active');
+});
+
+// pagar y redirigir
+document.getElementById('payBtn').addEventListener('click',()=>{
+  const id = document.getElementById('playerId').value.trim();
+  const user = document.getElementById('userName').value.trim();
+  if(!id || !user){
+    alert('Por favor completa todos los campos.');
+    return;
+  }
+
+  // Guardar datos en URL (para autocompletar)
+  const url = `conprobante free.html?username=${encodeURIComponent(user)}&id=${encodeURIComponent(id)}&monto=${selectedPrice}&paquete=${encodeURIComponent(selectedPackage)}`;
+  window.location.href = url;
+});
+</script>
+</body>
+</html>
