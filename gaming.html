@@ -1,0 +1,391 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Yape Gaming - Mockup</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
+<style>
+  :root{
+    --purple:#6a1b7a;
+    --purple-contrast:#7a2d8e;
+    --bg:#f6f2f7;
+    --card:#ffffff;
+    --accent:#00c8a2;
+    --muted:#7a6a7a;
+    --radius:14px;
+  }
+
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0;font-family:'Poppins',system-ui,-apple-system,Segoe UI,Roboto,Arial;background:var(--bg);-webkit-font-smoothing:antialiased;}
+
+  /* Top bar */
+  .topbar{
+    background: linear-gradient(180deg,var(--purple),var(--purple-contrast));
+    color:white;
+    padding:12px 14px;
+    display:flex;
+    align-items:center;
+    gap:12px;
+  }
+  .back-btn{
+    width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.06);border:none;color:white;font-size:18px;
+  }
+  .title{flex:1;text-align:left;font-weight:600;font-size:18px;margin-left:6px;}
+  .top-right{width:36px;height:36px;visibility:hidden}
+
+  .page{padding:16px;padding-bottom:110px;max-width:980px;margin:0 auto;}
+  .section-title{display:flex;justify-content:space-between;align-items:center;margin:6px 0 10px 0;}
+  .section-title h2{margin:0;color:#3f1e3f;font-size:18px;font-weight:700;}
+  .section-title a{color:var(--accent);font-weight:600;text-decoration:none;font-size:14px;}
+
+  /* Hero */
+  .hero{
+    background: linear-gradient(90deg,#2d0f3a 0%, #3a1950 100%);
+    height:140px;
+    border-radius:14px;
+    overflow:hidden;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:white;
+    box-shadow:0 8px 22px rgba(0,0,0,0.12);
+    margin-bottom:18px;
+    position:relative;
+  }
+  .hero img{ width:100%; height:100%; object-fit:cover; display:block; border-radius:14px; filter:brightness(0.85); }
+  .hero .overlay{
+    position:absolute;left:18px;top:18px;right:18px;bottom:18px;display:flex;flex-direction:column;justify-content:flex-end;}
+  .hero h3{margin:0;font-size:20px;font-weight:800;letter-spacing:1px;}
+  .hero p{margin:6px 0 0;font-size:13px;color:#cbeee2;font-weight:600;}
+
+  /* Gift icons */
+  .icons-row{
+    display:flex;
+    gap:12px;
+    overflow-x:auto;
+    padding-bottom:6px;
+    margin-bottom:18px;
+  }
+  .icon-card{
+    min-width:68px; height:68px; background:var(--card); border-radius:12px; 
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:0 6px 18px rgba(0,0,0,0.05);
+    flex:0 0 auto;
+    transition:transform .2s ease;
+  }
+  .icon-card:hover{transform:scale(1.05);}
+  .icon-card img{width:62px;height:62px;border-radius:10px;object-fit:cover;}
+
+  /* Cards horizontal scroller */
+  .cards-row{display:flex;gap:14px;overflow-x:auto;padding-bottom:8px;}
+  .card-item{
+    min-width:220px;background:var(--card);border-radius:12px;
+    overflow:hidden;flex:0 0 auto;box-shadow:0 8px 20px rgba(0,0,0,0.06);
+    text-align:center;transition:transform .2s ease;
+  }
+  .card-item:hover{transform:scale(1.05);}
+  .card-item img{width:100%;height:120px;object-fit:cover;}
+  .card-item p{margin:6px 0;font-size:13px;}
+  .card-item strong{color:#3b006a;}
+
+  /* Gift cards */
+  .gift-section {padding: 20px;background-color: #f9f6fb;}
+  .gift-header {display: flex;justify-content: space-between;align-items: center;margin-bottom: 10px;}
+  .gift-header h2 {color: #3b006a;font-size: 18px;font-weight: bold;}
+  .ver-mas {color: #00bfa6;text-decoration: none;font-weight: bold;font-size: 14px;}
+  .gift-grid {display: flex;gap: 10px;overflow-x: auto;scroll-snap-type: x mandatory;padding-bottom: 10px;}
+  .gift-card {flex: 0 0 160px;background: #fff;border-radius: 10px;padding: 10px;text-align: center;box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);scroll-snap-align: start;}
+  .gift-card img {width: 100%;border-radius: 10px;margin-bottom: 10px;}
+  .gift-title {font-weight: bold;color: #3b006a;font-size: 14px;margin-bottom: 4px;}
+  .gift-desc {color: #666;font-size: 12px;margin-bottom: 6px;}
+  .gift-price {color: #222;font-size: 13px;}
+
+  /* Bottom nav */
+  .bottom-nav{
+    position:fixed;left:0;right:0;bottom:0;background:white;border-top-left-radius:16px;border-top-right-radius:16px;
+    box-shadow:0 -6px 20px rgba(0,0,0,0.08);display:flex;justify-content:space-around;padding:10px 6px;align-items:center;z-index:1000;
+  }
+  .nav-item{display:flex;flex-direction:column;align-items:center;gap:6px;color:#7b6a7b;font-size:12px;text-decoration:none;}
+  .nav-item.active{color:var(--purple);}
+  .nav-item .bubble{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;background:rgba(106,27,122,0.08);color:var(--purple);font-size:18px}
+  .nav-item .label{font-weight:600}
+  /* 🔧 Eliminar color azul en enlaces de imágenes o títulos */
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+a:focus,
+a:active,
+a:visited {
+  color: inherit;
+  text-decoration: none;
+  outline: none;
+}
+
+a img {
+  border: none;
+}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <button class="back-btn" onclick="history.back()"><i class="fa-solid fa-arrow-left"></i></button>
+  <div class="title">Yape Gaming</div>
+  <div class="top-right"></div>
+</header>
+
+<main class="page">
+
+  <!-- Banner -->
+  <a href="#" class="hero" target="_blank">
+    <img src="imagen/inicio.jpg" alt="Banner">
+    <div class="overlay">
+      <h3>Juega y gana</h3>
+      <p>¡Cumple retos y gana al toque!</p>
+    </div>
+  </a>
+
+  <!-- Gift cards -->
+  <section>
+    <div class="section-title">
+      <h2>Tus Gift Cards de Siempre</h2>
+      <a href="#">Ver más</a>
+    </div>
+    <div class="icons-row">
+      <a href="#" target="_blank" class="icon-card"><img alt="Free Fire" src="imagen/free.jpg"></a>
+      <a href="#" target="_blank" class="icon-card"><img alt="Roblox" src="imagen/Roblox.jpg"></a>
+      <a href="#" target="_blank" class="icon-card"><img alt="Mobile Legends" src="imagen/mobile.jpg"></a>
+      <a href="#" target="_blank" class="icon-card"><img alt="Valorant" src="imagen/valoran.jpg"></a>
+      <a href="#" target="_blank" class="icon-card"><img alt="Valorant" src="imagen/IMG_20251012_210938.jpg"></a>
+      <a href="#" target="_blank" class="icon-card"><img alt="Valorant" src="imagen/IMG_20251012_211030.jpg"></a>
+      <a href="#" target="_blank" class="icon-card"><img alt="Valorant" src="imagen/IMG_20251012_211041.jpg"></a>
+      <a href="#" target="_blank" class="icon-card"><img alt="Valorant" src="imagen/IMG_20251012_210958.jpg"></a>
+      
+    </div>
+  </section>
+
+  <!-- Recarga Directa con título, descripción y precio -->
+  <section>
+    <div class="section-title">
+      <h2>Recarga Directa</h2>
+      <a href="#">Ver más</a>
+    </div>
+
+    <div class="cards-row">
+      <a href="recargas de free" target="_blank" class="card-item">
+        <img src="imagen/frire.jpg" alt="Free Fire">
+        
+        <p>Recarga directa de Free Fire.</p>
+        <p>Desde <strong>S/ 3.50</strong></p>
+      </a>
+
+      <a href="#" target="_blank" class="card-item">
+        <img src="imagen/Legends.jpg" alt="Mobile Legends">
+        
+        <p>Válido para cuentas peruanas.</p>
+        <p>Desde <strong>S/ 5.00</strong></p>
+      </a>
+
+      <a href="#" target="_blank" class="card-item">
+        <img src="imagen/PUBG.jpg" alt="PUBG">
+        <p>Recarga UC al instante.</p>
+        <p>Desde <strong>S/ 4.80</strong></p>
+      </a>
+      <a href="#" target="_blank" class="card-item">
+        <img src="imagen/honkai.jpg" alt="PUBG">
+        <p>válidos solamente para peru.</p>
+        <p>Desde <strong>S/ 3.95</strong></p>
+      </a>
+      <a href="#" target="_blank" class="card-item">
+        <img src="imagen/STRIKE.jpg" alt="PUBG">
+        <p>solamente para peru.</p>
+        <p>Desde <strong>S/ 3.50</strong></p>
+      </a>
+    </div>
+  </section>
+
+  <!-- Resto de secciones -->
+  <section class="gift-section">
+    <div class="gift-header">
+      <h2>Gift Cards para Consolas</h2>
+      <a href="#" class="ver-mas">Ver más</a>
+    </div>
+
+    <div class="gift-grid">
+      <a href="#" target="_blank" class="gift-card">
+        <img src="imagen/peru.jpg" alt="PlayStation Perú">
+        <p class="gift-title">PLAYSTATION - PERÚ</p>
+        <p class="gift-desc">Válido solamente para Perú</p>
+        <p class="gift-price">Desde <strong>S/ 38.50</strong></p>
+      </a>
+
+      <a href="#" target="_blank" class="gift-card">
+        <img src="imagen/usa.jpg" alt="PlayStation USA">
+        <p class="gift-title">PLAYSTATION - USA</p>
+        <p class="gift-desc">Cuentas EE.UU.</p>
+        <p class="gift-price">Desde <strong>S/ 39.89</strong></p>
+      </a>
+
+      <a href="#" target="_blank" class="gift-card">
+        <img src="imagen/xboxon.jpg" alt="Xbox">
+        <p class="gift-title">XBOX</p>
+        <p class="gift-desc">Cuentas Xbox</p>
+        <p class="gift-price">Desde <strong>S/ 4.49</strong></p>        
+      </a>
+      
+      <a href="#" target="_blank" class="gift-card">
+        <img src="imagen/nintendo.jpg" alt="Xbox">
+        <p class="gift-title">Nintendo</p>
+        <p class="gift-desc">válido para cuentas de..</p>
+        <p class="gift-price">Desde <strong>S/ 32.99</strong></p>        
+      </a>
+    </div>
+  </section>
+  
+  <!-- secciones -->
+  <section class="gift-section">
+    <div class="gift-header">
+      <h2>Gift Cards de Nintendo Switch</h2>
+      <a href="#" class="ver-mas">Ver más</a>
+    </div>
+
+    <div class="gift-grid">
+      <a href="#" target="_blank" class="gift-card">
+        <img src="imagen/IMG_20251012_202213.jpg" alt="PlayStation Perú">
+         <p class="gift-title">ANIMAL CROSSING</p>
+      <p class="gift-desc">Animal Crossing</p>
+      <p class="gift-price">Desde <strong>S/ 225.00</strong></p>
+      </a>
+
+      <a href="#" target="_blank" class="gift-card">
+        <img src="imagen/IMG_20251012_202127.jpg" alt="PlayStation USA">
+        <p class="gift-title">MARIO KART 8</p>
+      <p class="gift-desc">Mario Kart 8 Deluxe</p>
+    <p class="gift-price">Desde <strong>S/ 225.00</strong></p>
+      </a>
+
+      <a href="#" target="_blank" class="gift-card">
+        <img src="imagen/detective.jpg" alt="Xbox">
+        <p class="gift-title">DETECTIVE PIKACHU</p>
+      <p class="gift-desc">Detective Pikachu Returns</p>
+      <p class="gift-price">Desde <strong>S/ 195.00</strong></p>
+      </a>
+      <a href="#" target="_blank" class="gift-card">
+        <img src="imagen/mario.jpg" alt="Xbox">
+        <p class="gift-title">Mario kart 8</p>
+      <p class="gift-desc">deluxe booster Returns</p>
+      <p class="gift-price">Desde <strong>S/ 100.00</strong></p>
+      </a>
+      <a href="#" target="_blank" class="gift-card">
+        <img src="imagen/detective.jpg" alt="Xbox">
+        <p class="gift-title">DETECTIVE PIKACHU</p>
+      <p class="gift-desc">Detective Pikachu Returns</p>
+      <p class="gift-price">Desde <strong>S/ 195.00</strong></p>
+      </a>
+       <a href="#" target="_blank" class="gift-card">
+        <img src="imagen/Pokémon.jpg" alt="Xbox">
+        <p class="gift-title">Pokémon</p>
+      <p class="gift-desc">Pokémon Returns</p>
+      <p class="gift-price">Desde <strong>S/ 225.00</strong></p>
+      </a>
+    </div>
+  </section>
+  <!-- secciones -->
+  <section class="gift-section">
+    <div class="gift-header">
+      <h2> más Gift Cards de gaming</h2>
+      <a href="#" class="ver-mas">Ver más</a>
+    </div>
+
+    <div class="gift-grid">
+      <a href="#" target="_blank" class="gift-card">
+        <img src="imagen/IMG_20251012_202951.jpg" alt="PlayStation Perú">
+         <p class="gift-title">Roblox</p>
+      <p class="gift-desc">canjea tus códigos en...</p>
+      <p class="gift-price">Desde <strong>S/ 225.00</strong></p>
+      </a>
+
+      <a href="#" target="_blank" class="gift-card">
+        <img src="imagen/IMG_20251012_203006.jpg" alt="PlayStation USA">
+        <p class="gift-title">EA SPORTS FC...</p>
+      <p class="gift-desc">canjea tus códigos en...</p>
+    <p class="gift-price">Desde <strong>S/ 1.99</strong></p>
+      </a>
+
+      <a href="#" target="_blank" class="gift-card">
+        <img src="imagen/mob.jpg" alt="Xbox">
+        <p class="gift-title">pob Mobile</p>
+      <p class="gift-desc">canjea tus códigos en..</p>
+      <p class="gift-price">Desde <strong>S/ 3.75</strong></p>
+      </a>
+      
+      <a href="#" target="_blank" class="gift-card">
+        <img src="imagen/honor.jpg" alt="Xbox">
+        <p class="gift-title">honor of Kings </p>
+      <p class="gift-desc">canjea tus códigos en..</p>
+      <p class="gift-price">Desde <strong>S/ 0.78</strong></p>
+      </a>
+    </div>
+  </section>
+  <!-- secciones -->
+  <section class="gift-section">
+    <div class="gift-header">
+      <h2>Gift Cards de stream</h2>
+      <a href="#" class="ver-mas">Ver más</a>
+    </div>
+
+    <div class="gift-grid">
+      <a href="#" target="_blank" class="gift-card">
+        <img src="imagen/IMG_20251012_203127.jpg" alt="PlayStation Perú">
+         <p class="gift-title">DOTA 2</p>
+      <p class="gift-desc">canjea tus códigos en..</p>
+      <p class="gift-price">Desde <strong>S/ 225.00</strong></p>
+      </a>
+
+      <a href="#" target="_blank" class="gift-card">
+        <img src="imagen/IMG_20251012_203138.jpg" alt="PlayStation USA">
+        <p class="gift-title">CAUNTER STRIKE 2</p>
+      <p class="gift-desc">válidos solamente para...</p>
+    <p class="gift-price">Desde <strong>S/ 5.30</strong></p>
+      </a>
+
+      <a href="#" target="_blank" class="gift-card">
+        <img src="imagen/Violet.jpg" alt="Xbox">
+        <p class="gift-title">PokémonViolet</p>
+      <p class="gift-desc">Pokémon violeta Returns</p>
+      <p class="gift-price">Desde <strong>S/ 295.00</strong></p>
+      </a>
+       <a href="#" target="_blank" class="gift-card">
+        <img src="imagen/splatom.jpg" alt="Xbox">
+        <p class="gift-title">splatom snamer
+      <p class="gift-desc">Detective snamer Returns</p>
+      <p class="gift-price">Desde <strong>S/ 795.00</strong></p>
+      </a>
+    </div>
+  </section>
+</main>
+
+<!-- Navegación inferior -->
+<nav class="bottom-nav">
+  <a class="nav-item active" href="#">
+    <div class="bubble"><i class="fa-solid fa-gamepad"></i></div>
+    <div class="label">Gaming</div>
+  </a>
+  <a class="nav-item" href="#">
+    <div class="bubble" style="background:transparent;color:#7b6a7b"><i class="fa-solid fa-bag-shopping"></i></div>
+    <div class="label">Mis compras</div>
+  </a>
+  <a class="nav-item" href="#">
+    <div class="bubble" style="background:transparent;color:#7b6a7b"><i class="fa-solid fa-headset"></i></div>
+    <div class="label">Ayuda</div>
+  </a>
+</nav>
+
+</body>
+</html>
