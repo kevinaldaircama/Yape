@@ -1,30 +1,425 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Generar Token Admin</title>
-  <link rel="stylesheet" href="cc/toke admin.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Panel Admin — Dashboard</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+  :root {
+    --primary: #4e9af1;
+    --primary-dark: #357ae8;
+    --background: #f8f9fa;
+    --text: #333;
+    --card: #fff;
+  }
+
+  body.dark {
+    --background: #1e1e2f;
+    --text: #f5f5f5;
+    --card: #2a2a3d;
+  }
+
+  body {
+    font-family: 'Poppins', sans-serif;
+    background: var(--background);
+    color: var(--text);
+    margin: 0;
+    height: 100vh;
+    display: flex;
+  }
+
+  .sidebar {
+    width: 250px;
+    background: var(--card);
+    box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+    padding-top: 20px;
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    transition: left 0.3s ease;
+    z-index: 1000;
+  }
+
+  .sidebar h2 {
+    text-align: center;
+    color: var(--primary);
+    margin-bottom: 30px;
+  }
+
+  .sidebar a {
+    display: block;
+    padding: 15px 25px;
+    color: var(--text);
+    text-decoration: none;
+    font-weight: 500;
+  }
+
+  .sidebar a:hover, .sidebar a.active {
+    background: var(--primary);
+    color: #fff;
+    border-radius: 8px;
+  }
+
+  .menu-toggle {
+    display: none;
+    position: fixed;
+    top: 15px;
+    left: 20px;
+    font-size: 26px;
+    cursor: pointer;
+    color: var(--primary);
+    z-index: 1100;
+  }
+
+  .content {
+    flex-grow: 1;
+    margin-left: 250px;
+    padding: 20px;
+    width: 100%;
+    transition: margin-left 0.3s ease;
+  }
+
+  .card {
+    background: var(--card);
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+  }
+
+  input, button {
+    width: 100%;
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    font-size: 1em;
+    margin-top: 8px;
+  }
+
+  button {
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    cursor: pointer;
+  }
+
+  button:hover { background: var(--primary-dark); }
+
+  ul { list-style: none; padding: 0; }
+  li { margin: 6px 0; padding: 8px; background: var(--background); border-radius: 8px; }
+
+  .token-message { background: #e6f7ff; padding: 10px; border-radius: 10px; margin-top: 10px; }
+
+  @media (max-width: 768px) {
+    .sidebar { left: -260px; }
+    .sidebar.active { left: 0; }
+    .content { margin-left: 0; }
+    .menu-toggle { display: block; }
+  }
+</style>
 </head>
 <body>
-  <div class="container">
-    <h2><i class="fa-solid fa-user-shield"></i> Admin Generar Token</h2>
-    
-    <input type="email" id="adminEmail" placeholder="Tu correo de Admin"><br>
-    <input type="email" id="userEmail" placeholder="Correo del usuario"><br>
-    <input type="password" id="userPassword" placeholder="Contraseña del usuario"><br>
-    <input type="text" id="userName" placeholder="Nombre del usuario"><br>
+    <div id="adminLogin" style="
+  position: fixed;
+  top:0; left:0; right:0; bottom:0;
+  background: rgba(0,0,0,0.6);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  z-index:2000;
+">
+  <div style="
+    background: var(--card);
+    padding: 30px;
+    border-radius: 15px;
+    text-align:center;
+    width: 320px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+  ">
+    <h2>🔒 Acceso Admin</h2>
+    <input type="email" id="adminLoginEmail" placeholder="Correo admin" style="width:100%;padding:10px;margin:15px 0;border-radius:8px;border:1px solid #ccc;">
+    <button id="adminLoginBtn">Ingresar</button>
+    <p id="loginError" style="color:red; margin-top:10px; display:none;">Correo no autorizado</p>
+  </div>
+</div>
+<i class="fa-solid fa-bars menu-toggle"></i>
 
-    <button id="generateBtn"><i class="fa-solid fa-key"></i> Generar Token</button>
-    
-    <div id="tokenOutput" class="token-message"></div>
-    
-    <button id="copyBtn" class="copy-btn">
-      <i class="fa-solid fa-copy"></i> Copiar mensaje
-    </button>
+<!-- Sidebar -->
+<div class="sidebar" id="sidebar">
+  <h2><i class="fa-solid fa-shield-halved"></i> Admin</h2>
+  <a href="#" class="active" data-section="dashboard"><i class="fa-solid fa-chart-line"></i> Estadísticas</a>
+  <a href="#" data-section="tokens"><i class="fa-solid fa-key"></i> Generar Token</a>
+  <a href="#" data-section="accounts"><i class="fa-solid fa-users"></i> Cuentas creadas</a>
+  <a href="#" data-section="search"><i class="fa-solid fa-magnifying-glass"></i> Buscar</a>
+  <a href="#" data-section="export"><i class="fa-solid fa-file-export"></i> Exportar CSV</a>
+  <a href="#" data-section="settings"><i class="fa-solid fa-gear"></i> Configuración</a>
+</div>
+
+<!-- Contenido -->
+<div class="content" id="content">
+  <!-- Estadísticas -->
+  <div id="dashboard" class="card">
+    <h2>📊 Estadísticas</h2>
+    <canvas id="statsChart" style="max-height:300px;"></canvas>
+    <div id="statsInfo"></div>
   </div>
 
-  <!-- Firebase SDK -->
-  <script type="module" src="app/toke admin.js"></script>
+  <!-- Generar Token -->
+  <div id="tokens" class="card" style="display:none;">
+    <h2><i class="fa-solid fa-key"></i> Generar Token</h2>
+    <input type="email" id="adminEmail" placeholder="Correo del Admin">
+    <input type="email" id="userEmail" placeholder="Correo del usuario">
+    <input type="password" id="userPassword" placeholder="Contraseña del usuario">
+    <input type="text" id="userName" placeholder="Nombre del usuario">
+    <button id="generateBtn">Generar Token</button>
+    <div id="tokenOutput" class="token-message"></div>
+    <button id="copyBtn"><i class="fa-solid fa-copy"></i> Copiar mensaje</button>
+  </div>
+
+  <!-- Cuentas -->
+  <div id="accounts" class="card" style="display:none;">
+    <h2><i class="fa-solid fa-users"></i> Cuentas creadas</h2>
+    <ul id="accountsList"></ul>
+  </div>
+
+  <!-- Buscar -->
+  <div id="search" class="card" style="display:none;">
+    <h2><i class="fa-solid fa-search"></i> Buscar tokens</h2>
+    <input type="text" id="searchBox" placeholder="Buscar por nombre, correo o token">
+    <ul id="searchResults"></ul>
+  </div>
+
+  <!-- Exportar -->
+  <div id="export" class="card" style="display:none;">
+    <h2><i class="fa-solid fa-file-csv"></i> Exportar tokens</h2>
+    <button id="exportCSV"><i class="fa-solid fa-download"></i> Exportar CSV</button>
+  </div>
+
+  <!-- Configuración -->
+  <div id="settings" class="card" style="display:none;">
+    <h2><i class="fa-solid fa-gear"></i> Configuración</h2>
+    <button id="toggleDark"><i class="fa-solid fa-moon"></i> Modo oscuro</button>
+    <button id="deleteAll" style="background:#e74c3c;"><i class="fa-solid fa-trash"></i> Eliminar todo</button>
+  </div>
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+  import { getDatabase, ref, set, get, child, remove } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBHbUTYykUxlJWl6QF6L9YwhC5kNFKpwV0",
+    authDomain: "apps-d075e.firebaseapp.com",
+    databaseURL: "https://apps-d075e-default-rtdb.firebaseio.com",
+    projectId: "apps-d075e",
+    storageBucket: "apps-d075e.firebasestorage.app",
+    messagingSenderId: "813273124209",
+    appId: "1:813273124209:web:81030c787f0992b19e7ad0"
+  };
+const adminLoginModal = document.getElementById("adminLogin");
+const adminLoginBtn = document.getElementById("adminLoginBtn");
+const loginError = document.getElementById("loginError");
+
+// Lista de correos admin permitidos (puedes usar Firebase más tarde si quieres)
+const allowedAdmins = ["kevinaldaircamachoserna07@gmail.com", "kevin@tudominio.com"];
+
+adminLoginBtn.addEventListener("click", () => {
+  const email = document.getElementById("adminLoginEmail").value.trim().toLowerCase();
+  if (allowedAdmins.includes(email)) {
+    adminLoginModal.style.display = "none"; // cerrar modal
+    localStorage.setItem("adminEmail", email); // opcional, para mantener sesión local
+    alert(`Bienvenido ${email}`);
+  } else {
+    loginError.style.display = "block";
+  }
+});
+
+// Bloquear todo el contenido si no hay admin logueado
+document.addEventListener("DOMContentLoaded", () => {
+  const emailStored = localStorage.getItem("adminEmail");
+  if (!emailStored) {
+    adminLoginModal.style.display = "flex";
+  } else {
+    adminLoginModal.style.display = "none";
+  }
+});
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+
+  let chart;
+
+  // === Generar token ===
+  document.getElementById("generateBtn").addEventListener("click", async () => {
+    const admin = adminEmail.value.trim();
+    const email = userEmail.value.trim();
+    const pass = userPassword.value.trim();
+    const name = userName.value.trim();
+    if (!admin || !email || !pass || !name) return alert("Completa todos los campos");
+
+    const token = Math.random().toString(36).substring(2, 10);
+    await set(ref(db, "tokens/" + token), {
+      userEmail: email,
+      userPassword: pass,
+      userName: name,
+      createdBy: admin,
+      used: false,
+      createdAt: Date.now()
+    });
+    const msg = `✅ Token generado:\nUsuario: ${name}\nCorreo: ${email}\nContraseña: ${pass}\nToken: ${token}`;
+    tokenOutput.textContent = msg;
+    navigator.clipboard.writeText(msg);
+  });
+
+  // === Cargar estadísticas con gráfico ===
+  async function loadStats() {
+    const snap = await get(child(ref(db), "tokens"));
+    const statsDiv = document.getElementById("statsInfo");
+    if (!snap.exists()) {
+      statsDiv.textContent = "No hay datos.";
+      return;
+    }
+    const data = Object.values(snap.val());
+    const total = data.length;
+    const usados = data.filter(t => t.used).length;
+    const activos = total - usados;
+
+    statsDiv.innerHTML = `<p><b>Total:</b> ${total}</p><p><b>Usados:</b> ${usados}</p><p><b>Activos:</b> ${activos}</p>`;
+
+    const ctx = document.getElementById("statsChart").getContext("2d");
+    if (chart) chart.destroy();
+    chart = new Chart(ctx, {
+      type: "bar",
+      data: {
+        labels: ["Total", "Usados", "Activos"],
+        datasets: [{ label: "Tokens", data: [total, usados, activos], backgroundColor: ["#4e9af1", "#e67e22", "#2ecc71"] }]
+      },
+      options: { responsive: true, plugins: { legend: { display: false } } }
+    });
+  }
+
+// === Buscar tokens ===
+document.getElementById("searchBox").addEventListener("input", async (e) => {
+  const q = e.target.value.toLowerCase();
+  const snap = await get(child(ref(db), "tokens"));
+  const list = document.getElementById("searchResults");
+  list.innerHTML = "";
+  if (!snap.exists()) return;
+
+  const data = Object.entries(snap.val())
+    .filter(([k, v]) => Object.values(v).some(val => String(val).toLowerCase().includes(q)))
+    // Evita errores si userName no existe
+    .sort((a, b) => (a[1].userName || "").localeCompare(b[1].userName || ""));
+
+  data.forEach(([token, info]) => {
+    const li = document.createElement("li");
+    const name = info.userName || "Sin nombre";
+    const email = info.userEmail || "Sin correo";
+    li.innerHTML = `
+      <b>${name}</b> — ${email}<br>
+      <small>Token: ${token}</small><br>
+      <button onclick="navigator.clipboard.writeText('${token}')">Copiar token</button>
+      <button onclick="reutilizarToken('${token}')">Reutilizar</button>
+    `;
+    list.appendChild(li);
+  });
+});
+// === Reutilizar token ===
+window.reutilizarToken = async (token) => {
+  const tokenRef = child(ref(db), "tokens/" + token);
+  const snap = await get(tokenRef);
+  if (!snap.exists()) return alert("Token no encontrado");
+
+  const data = snap.val();
+  await set(tokenRef, {
+    ...data,
+    used: false,
+    reutilizadoEn: Date.now()
+  });
+  alert("✅ Token reutilizado con éxito");
+  loadStats();
+};
+  // === Eliminar todo ===
+  document.getElementById("deleteAll").addEventListener("click", async () => {
+    if (confirm("⚠️ ¿Seguro que deseas eliminar TODAS las cuentas y tokens?")) {
+      await remove(ref(db, "tokens"));
+      alert("✅ Todos los datos han sido eliminados");
+      loadStats();
+    }
+  });
+
+  // === Exportar CSV ===
+  document.getElementById("exportCSV").addEventListener("click", async () => {
+    const snap = await get(child(ref(db), "tokens"));
+    if (!snap.exists()) return alert("No hay tokens");
+    const data = snap.val();
+    let csv = "Token,Usuario,Correo,Contraseña,Creado por,Fecha\n";
+    Object.entries(data).forEach(([t, i]) => {
+      csv += `${t},${i.userName},${i.userEmail},${i.userPassword},${i.createdBy},${new Date(i.createdAt).toLocaleString()}\n`;
+    });
+    const blob = new Blob([csv], { type: "text/csv" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "tokens.csv";
+    a.click();
+  });
+
+  // === Cargar cuentas ===
+  async function loadAccounts() {
+    const snap = await get(child(ref(db), "tokens"));
+    const list = document.getElementById("accountsList");
+    list.innerHTML = "";
+    if (!snap.exists()) return list.innerHTML = "<li>No hay cuentas</li>";
+    Object.entries(snap.val()).forEach(([t, i]) => {
+      const li = document.createElement("li");
+      li.textContent = `${i.userName} (${i.userEmail})`;
+      list.appendChild(li);
+    });
+  }
+
+  // === Actualización constante ===
+  setInterval(() => {
+    loadStats();
+    loadAccounts();
+  }, 5000);
+
+  // === Navegación ===
+  const menuToggle = document.querySelector(".menu-toggle");
+  const sidebar = document.getElementById("sidebar");
+  const links = document.querySelectorAll(".sidebar a");
+
+  links.forEach(link => {
+    link.addEventListener("click", () => {
+      links.forEach(l => l.classList.remove("active"));
+      link.classList.add("active");
+      const section = link.dataset.section;
+      document.querySelectorAll(".card").forEach(c => c.style.display = "none");
+      document.getElementById(section).style.display = "block";
+      sidebar.classList.remove("active");
+      menuToggle.classList.replace("fa-xmark", "fa-bars");
+      if (section === "dashboard") loadStats();
+      if (section === "accounts") loadAccounts();
+    });
+  });
+
+  menuToggle.addEventListener("click", () => {
+    sidebar.classList.toggle("active");
+    menuToggle.classList.toggle("fa-xmark");
+  });
+
+  document.getElementById("toggleDark").addEventListener("click", () => {
+    document.body.classList.toggle("dark");
+    localStorage.setItem("darkMode", document.body.classList.contains("dark"));
+  });
+
+  if (localStorage.getItem("darkMode") === "true") document.body.classList.add("dark");
+
+  // Carga inicial
+  loadStats();
+  loadAccounts();
+  
+</script>
 </body>
 </html>
