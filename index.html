@@ -15,7 +15,14 @@
 
   <!-- CSS externo -->
   <link rel="stylesheet" href="cc/index.css">
+
+  <!-- ✅ SDK de OneSignal (debe ir antes de tu script principal) -->
+  <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+
+  <!-- ✅ Tu script principal -->
+  <script type="module" src="app/index.js"></script>
 </head>
+
 <body>
   <div class="container">  
     <h2><i class="fa-solid fa-shield-alt"></i> Acceso Seguro</h2>  
@@ -33,8 +40,5 @@
       <i class="fa-solid fa-user-plus"></i> Solicitar Cuenta  
     </button>  
   </div>  
-
-  <!-- JS externo -->
-  <script type="module" src="app/index.js"></script>
 </body>
 </html>
