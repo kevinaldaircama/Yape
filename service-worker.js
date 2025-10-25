@@ -1,5 +1,5 @@
 // 🆕 Cambia la versión cada vez que actualices tu PWA
-const CACHE_NAME = 'yape_v2';
+const CACHE_NAME = 'yape_v3';
 
 // 🗂️ Archivos a guardar en caché
 const urlsToCache = [
@@ -10,6 +10,7 @@ const urlsToCache = [
   '/login.html',
   '/imagen/app_icon_xxxhdpi.png',
   '/imagen/splash_icon_xxxhdpi.png'
+  '/recargas.html'
 ];
 
 // 📦 Instalar y guardar archivos en caché
