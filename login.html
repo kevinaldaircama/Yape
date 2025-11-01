@@ -16,22 +16,19 @@
   <link rel="icon" type="image/png" href="imagen/app_icon_xxxhdpi.png">  
 
   <!-- Estilos -->
-  <link rel="stylesheet" href="cc/login.css">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <!-- Header -->
   <div class="header">
     <a href="ayuda.html" class="ayuda-btn">
       <i class="fas fa-headset"></i> Ayuda
     </a>
   </div>
 
-  <!-- QR -->
   <div class="qr">
     <img src="imagen/qr.jpg" alt="QR Yape">
   </div>
 
-  <!-- Panel blanco -->
   <div class="clave">
     <h2>Ingresa tu clave</h2>
     <input type="password" id="clave" maxlength="6" style="display:none;" />
@@ -47,18 +44,18 @@
 
     <div class="teclado" id="keypad"></div>
 
-    <a href="saludos" class="extra">¿Olvidaste tu clave?</a>
+    <a href="inicio" class="extra">¿Olvidaste tu clave?</a>
   </div>
 
-  <!-- Modal -->
   <div class="modal" id="modal">
-    <div class="modal-content" id="modal-content">
+    <div class="modal-box">
       <div class="loader"></div>
-      Verificando...
+      <div id="modal-text">Verificando...</div>
+      <button id="btnAceptar" style="display:none;">Aceptar</button>
     </div>
   </div>
 
   <!-- Lógica -->
-  <script type="module" src="app/login.js"></script>
+  <script type="module" src="login.js"></script>
 </body>
 </html>
