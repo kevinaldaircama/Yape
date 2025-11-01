@@ -40,7 +40,7 @@ window.checkToken = function() {
           update(tokenRef, { used: true }).then(() => {
             localStorage.setItem("tokenUsed", token);
             alert(`¡Bienvenido ${data.userName}! Redirigiendo...`);
-            window.location.href = "login";
+            window.location.href = "inicio";
           });
         }
       } else {
