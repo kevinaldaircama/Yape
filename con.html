@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Resumen de compra</title>
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json" />  
+  <meta name="theme-color" content="#720e9e" />  
+  <link rel="icon" type="image/png" href="imagen/app_icon_xxxhdpi.png">  
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background-color: #f6f4fa;
+      margin: 0;
+    }
+
+    header {
+      background-color: #7b2cbf;
+      color: white;
+      text-align: center;
+      padding: 15px 0;
+      font-weight: 600;
+      font-size: 18px;
+      position: relative;
+    }
+
+    header a {
+      position: absolute;
+      left: 15px;
+      top: 15px;
+      color: white;
+      text-decoration: none;
+      font-size: 20px;
+    }
+
+    .resumen-container {
+      background-color: white;
+      margin: 20px;
+      border-radius: 10px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      padding: 20px;
+    }
+
+    .section-title {
+      color: #7b2cbf;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    .pedido {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      background-color: #fafafa;
+      padding: 10px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+    }
+
+    .pedido img {
+      width: 60px;
+      height: 60px;
+      border-radius: 10px;
+    }
+
+    .pedido div h3 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 600;
+      color: #333;
+    }
+
+    .pedido div p {
+      margin: 5px 0 0;
+      font-size: 14px;
+      color: #777;
+    }
+
+    /* Bloque del cupón */
+    .cupon {
+      background-color: #fafafa;
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 20px;
+    }
+
+    .cupon input {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 14px;
+      margin-top: 8px;
+    }
+
+    .cupon button {
+      width: 100%;
+      background-color: #ddd;
+      color: #777;
+      border: none;
+      border-radius: 8px;
+      padding: 12px;
+      font-size: 15px;
+      margin-top: 10px;
+      cursor: not-allowed;
+    }
+
+    .detalle {
+      background-color: #fafafa;
+      border-radius: 10px;
+      padding: 15px;
+      margin-top: 20px;
+    }
+
+    .detalle p {
+      display: flex;
+      justify-content: space-between;
+      margin: 8px 0;
+      font-size: 15px;
+    }
+
+    .detalle p.total {
+      font-weight: 600;
+      font-size: 16px;
+    }
+
+    .terminos {
+      text-align: center;
+      font-size: 12px;
+      color: #555;
+      margin-top: 15px;
+    }
+
+    .terminos a {
+      color: #00bfa5;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    /* Botón Yapear */
+    .boton {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background-color: #00bfa5;
+      border: none;
+      color: white;
+      font-size: 18px;
+      font-weight: 600;
+      padding: 16px;
+      cursor: pointer;
+      border-top-left-radius: 15px;
+      border-top-right-radius: 15px;
+      box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
+    }
+  </style>
+</head>
+<body>
+
+  <header><a href="pantalla1.html">←</a>Resumen de compra</header>
+
+  <div class="resumen-container">
+    <div class="section-title">Pedido</div>
+    <div class="pedido">
+      <img src="imagen/free.jpg" alt="Free Fire Garena">
+      <div>
+        <h3>Free Fire Garena</h3>
+        <p id="detalleCompra"></p>
+      </div>
+    </div>
+
+    <div class="section-title">¿Tienes un cupón de descuento?</div>
+    <div class="cupon">
+      <input type="text" placeholder="Ingresa el código*">
+      <button disabled>Aplicar</button>
+    </div>
+
+    <div class="section-title">Detalle de pago</div>
+    <div class="detalle">
+      <p><span>Precio con dcto.</span> <span id="precio"></span></p>
+      <p class="total"><span>Total a pagar</span> <span id="total"></span></p>
+    </div>
+
+    <div class="terminos">
+      Al yapear estarás aceptando los <a href="#">Términos y condiciones</a>.
+    </div>
+  </div>
+
+  <button class="boton" id="btnYapear">Yapear</button>
+
+  <script>
+    const seleccion = localStorage.getItem('seleccionCompra');
+    const detalleCompra = document.getElementById('detalleCompra');
+    const precio = document.getElementById('precio');
+    const total = document.getElementById('total');
+
+    if (seleccion) {
+      const partes = seleccion.split('S/');
+      detalleCompra.textContent = 'Free Fire - ' + partes[0].trim();
+      const precioSel = 'S/ ' + partes[1].trim();
+      precio.textContent = precioSel;
+      total.textContent = precioSel;
+    } else {
+      detalleCompra.textContent = 'Free Fire - 100 Diamantes + 10% de Bonus';
+      precio.textContent = 'S/ 3.50';
+      total.textContent = 'S/ 3.50';
+    }
+
+    document.getElementById('btnYapear').addEventListener('click', () => {
+      window.location.href = "exitosa";
+    });
+  </script>
+</body>
+                                                                            </html>
