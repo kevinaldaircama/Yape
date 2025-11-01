@@ -14,19 +14,25 @@ body {
 .header {
   display: flex;
   justify-content: flex-end;
-  padding: 15px;
+  padding: 20px;
 }
 .ayuda-btn {
-  background: rgba(255, 255, 255, 0.2);
-  padding: 8px 15px;
-  border-radius: 20px;
-  font-size: 14px;
+  background: rgba(255, 255, 255, 0.25);
+  padding: 10px 20px;
+  border-radius: 25px;
+  font-size: 16px;
+  font-weight: bold;
   cursor: pointer;
   color: white;
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   text-decoration: none;
+  transition: transform 0.2s ease, background 0.3s ease;
+}
+.ayuda-btn:hover {
+  background: rgba(255, 255, 255, 0.4);
+  transform: scale(1.05);
 }
 
 /* QR */
@@ -48,24 +54,32 @@ body {
 }
 .clave h2 {
   margin-bottom: 15px;
+  font-size: 22px;
 }
 
 /* Dots PIN */
 .dots {
-  display: flex;
+  display: none;
   justify-content: center;
   margin-bottom: 25px;
   gap: 14px;
 }
 .dot {
-  width: 14px;
-  height: 14px;
+  width: 16px;
+  height: 16px;
   border-radius: 50%;
-  border: 2px solid #5a189a;
+  border: 2px solid #bbb;
   background: transparent;
+  transition: background 0.3s ease, transform 0.2s ease;
 }
 .dot.active {
-  background: #5a189a;
+  background: #7a1dbf;
+  transform: scale(1.3);
+  animation: fillDot 0.25s ease;
+}
+@keyframes fillDot {
+  0% { transform: scale(0.5); opacity: 0; }
+  100% { transform: scale(1.3); opacity: 1; }
 }
 
 /* Teclado */
@@ -90,40 +104,50 @@ body {
   background: #ddd;
 }
 .fingerprint {
-  color: #5a189a;
+  color: #7a1dbf;
   font-size: 22px;
 }
 
 /* Olvido clave */
 .extra {
   margin-top: 20px;
-  font-size: 14px;
+  font-size: 17px;
   color: #00bfa6;
   font-weight: bold;
   text-decoration: none;
   display: inline-block;
+  transition: color 0.3s ease;
+}
+.extra:hover {
+  color: #009d8c;
 }
 
 /* Modal */
 .modal {
   position: fixed; top: 0; left: 0;
   width: 100%; height: 100%;
-  background: rgba(0,0,0,0.6);
+  background: rgba(0, 0, 0, 0.4);
   display: none; justify-content: center; align-items: center;
   z-index: 999;
+  flex-direction: column;
+  backdrop-filter: blur(4px);
 }
-.modal-content {
-  background: white;
-  padding: 30px;
+
+.modal-box {
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.25);
   border-radius: 16px;
+  padding: 30px 40px;
   text-align: center;
-  color: #6a0dad;
-  font-weight: bold;
-  font-size: 16px;
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+  color: #fff;
+  max-width: 280px;
+  backdrop-filter: blur(8px);
 }
+
 .loader {
-  border: 5px solid #eee;
-  border-top: 5px solid #6a0dad;
+  border: 5px solid rgba(255,255,255,0.2);
+  border-top: 5px solid #ffffff;
   border-radius: 50%;
   width: 45px;
   height: 45px;
@@ -133,4 +157,20 @@ body {
 @keyframes spin { 
   0% { transform: rotate(0deg);} 
   100% { transform: rotate(360deg);} 
+}
+
+.modal button {
+  margin-top: 15px;
+  background: #ffffff;
+  color: #6a0dad;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 25px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.modal button:hover {
+  background: #e4d1ff;
+  transform: scale(1.05);
 }
