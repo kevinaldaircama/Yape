@@ -18,12 +18,15 @@ const db = getFirestore(app);
 const auth = getAuth(app);
 
 const input = document.getElementById("clave");
+const dotsContainer = document.getElementById("dots-container");
 const modal = document.getElementById("modal");
-const modalContent = document.getElementById("modal-content");
+const modalText = document.getElementById("modal-text");
+const btnAceptar = document.getElementById("btnAceptar");
 const keypad = document.getElementById("keypad");
 
 function updateDots() {
   const length = input.value.length;
+  dotsContainer.style.display = length > 0 ? "flex" : "none";
   for (let i = 1; i <= 6; i++) {
     const dot = document.getElementById("dot" + i);
     dot.classList.remove("active");
@@ -35,9 +38,7 @@ function addNumber(num) {
   if (input.value.length < 6) {
     input.value += num;
     updateDots();
-    if (input.value.length === 6) {
-      autenticarPIN(input.value);
-    }
+    if (input.value.length === 6) autenticarPIN(input.value);
   }
 }
 
@@ -48,12 +49,13 @@ function deleteNumber() {
 
 async function autenticarPIN(pinIngresado) {
   modal.style.display = "flex";
-  modalContent.innerHTML = `<div class="loader"></div>Verificando...`;
+  modalText.textContent = "Verificando...";
+  btnAceptar.style.display = "none";
 
   onAuthStateChanged(auth, async (user) => {
     if (!user) {
-      modalContent.innerHTML = "⚠️ No has iniciado sesión";
-      setTimeout(() => window.location.href = "/", 2000);
+      modalText.textContent = "⚠️ No has iniciado sesión";
+      btnAceptar.style.display = "block";
       return;
     }
 
@@ -62,8 +64,8 @@ async function autenticarPIN(pinIngresado) {
       const docSnap = await getDoc(usuarioRef);
 
       if (!docSnap.exists()) {
-        modalContent.innerHTML = "❌ Usuario no encontrado";
-        setTimeout(() => modal.style.display = "none", 1500);
+        modalText.textContent = "❌ Usuario no encontrado";
+        btnAceptar.style.display = "block";
         return;
       }
 
@@ -74,16 +76,12 @@ async function autenticarPIN(pinIngresado) {
         localStorage.setItem("saldoUsuario", datos.monto);
         window.location.href = "home";
       } else {
-        modalContent.innerHTML = "❌ Clave incorrecta. Después de 3 intentos se bloqueará el acceso.";
-        setTimeout(() => {
-          modal.style.display = "none";
-          input.value = "";
-          updateDots();
-        }, 1500);
+        modalText.textContent = "❌ Clave incorrecta";
+        btnAceptar.style.display = "block";
       }
     } catch (e) {
-      modalContent.innerHTML = "⚠️ Error de conexión";
-      setTimeout(() => modal.style.display = "none", 1500);
+      modalText.textContent = "⚠️ Error de conexión";
+      btnAceptar.style.display = "block";
     }
   });
 }
@@ -91,7 +89,6 @@ async function autenticarPIN(pinIngresado) {
 function generateKeypad() {
   keypad.innerHTML = "";
   const layout = [1,2,3,4,5,6,7,8,9,"huella",0,"del"];
-
   layout.forEach(item => {
     const btn = document.createElement("button");
     if (typeof item === "number") {
@@ -99,13 +96,7 @@ function generateKeypad() {
       btn.onclick = () => addNumber(item);
     } else if (item === "huella") {
       btn.innerHTML = '<i class="fas fa-fingerprint fingerprint"></i>';
-      btn.onclick = () => {
-        if (window.PublicKeyCredential) {
-          alert("Autenticación biométrica disponible");
-        } else {
-          alert("Tu dispositivo no soporta biometría");
-        }
-      };
+      btn.onclick = () => alert("Autenticación biométrica (demo)");
     } else if (item === "del") {
       btn.innerHTML = '<i class="fas fa-delete-left"></i>';
       btn.onclick = deleteNumber;
@@ -113,4 +104,11 @@ function generateKeypad() {
     keypad.appendChild(btn);
   });
 }
+
 generateKeypad();
+
+btnAceptar.addEventListener("click", () => {
+  modal.style.display = "none";
+  input.value = "";
+  updateDots();
+});
