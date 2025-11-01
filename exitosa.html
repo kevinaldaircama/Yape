@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Compra exitosa</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
+<!-- PWA -->
+  <link rel="manifest" href="manifest.json" />  
+  <meta name="theme-color" content="#720e9e" />  
+  <link rel="icon" type="image/png" href="imagen/app_icon_xxxhdpi.png">  
+  <style>
+    :root {
+      --bg: #7e2594;
+      --accent: #4fd3b2;
+      --muted: #8b8b8b;
+      --pink: #f7e7f7;
+      --pink-text: #6b2b6f;
+      --white: #ffffff;
+      --teal: #16bfa0;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      font-family: "Poppins", sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      color: #333;
+      padding: 40px 20px;
+    }
+
+    .wrapper { width: 100%; max-width: 400px; text-align: center; }
+
+    .logo-top {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 0 auto 20px auto;
+      background: transparent;
+    }
+
+    .logo-top img { width: 100%; height: 100%; object-fit: contain; }
+
+    .card {
+      background: var(--white);
+      border-radius: 12px;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+      padding: 24px 18px 28px;
+    }
+
+    .success-title {
+      color: #5b2160;
+      font-weight: 700;
+      font-size: 22px;
+      margin-bottom: 8px;
+    }
+
+    .price {
+      font-size: 42px;
+      font-weight: 800;
+      color: #5b2160;
+      line-height: 1.2;
+    }
+
+    .price small {
+      font-size: 20px;
+      vertical-align: top;
+      font-weight: 600;
+      margin-right: 2px;
+      color: #5b2160;
+    }
+
+    .date {
+      font-size: 13px;
+      color: var(--muted);
+      margin-top: 6px;
+      margin-bottom: 18px;
+    }
+
+    .brand-name {
+      font-weight: 700;
+      color: #333;
+      font-size: 18px;
+      margin-bottom: 5px;
+    }
+
+    .desc {
+      color: #555;
+      font-size: 14px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .info-box {
+      background: #fff;
+      border-radius: 12px;
+      padding: 18px;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+      text-align: left;
+    }
+
+    .info-title {
+      text-align: center;
+      color: var(--pink-text);
+      font-weight: 700;
+      font-size: 15px;
+      margin-bottom: 10px;
+    }
+
+    .steps {
+      color: #555;
+      font-size: 14px;
+      line-height: 1.5;
+      margin-left: 18px;
+      margin-bottom: 16px;
+    }
+
+    .code-section { text-align: center; margin-top: 10px; }
+
+    .code-pill {
+      display: inline-block;
+      background: var(--pink);
+      color: var(--pink-text);
+      font-weight: 700;
+      font-size: 15px;
+      border-radius: 10px;
+      padding: 12px 18px;
+      margin-bottom: 10px;
+      word-break: break-word;
+    }
+
+    .copy-btn {
+      background: transparent;
+      border: none;
+      color: var(--teal);
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 14px;
+    }
+
+    .btn-primary {
+      width: 100%;
+      margin-top: 20px;
+      background: var(--accent);
+      color: white;
+      padding: 14px;
+      border: none;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .terms {
+      display: block;
+      margin-top: 10px;
+      text-align: center;
+      color: var(--teal);
+      font-size: 14px;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .terms:hover { text-decoration: underline; }
+  </style>
+</head>
+
+<body>
+  <div class="wrapper">
+    <div class="logo-top">
+      <img src="imagen/yapelog.png" alt="Yape logo">
+    </div>
+
+    <div class="card">
+      <h2 class="success-title">¡Compra exitosa!</h2>
+      <div class="price"><small>S/</small><span id="monto">0.00</span></div>
+      <div class="date" id="fecha"></div>
+
+      <div class="brand-name" id="marca">GARENA</div>
+      <div class="desc" id="detalle"></div>
+
+      <div class="info-box">
+        <div class="info-title">¿Cómo canjear tu código?</div>
+        <ol class="steps">
+          <li>Ingresa al link de canje de Pago Store (<b>pagostore.garena.com</b>).</li>
+          <li>Escoge tu método de login e inicia sesión con tu ID de jugador.</li>
+          <li>Selecciona Yape y pega el código que te fue entregado.</li>
+          <li>Listo, se acreditarán los diamantes en tu cuenta.</li>
+        </ol>
+
+        <div class="code-section">
+          <div class="code-pill" id="code"></div>
+          <br>
+          <button class="copy-btn" id="copyBtn">📋 Copiar código</button>
+        </div>
+
+        <button class="btn-primary" onclick="window.location.href='https://pagostore.garena.com'">
+          Ir a canjear →
+        </button>
+        <a href="#" class="terms">Ver términos y condiciones</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // 🕓 Fecha actual
+    const fechaEl = document.getElementById('fecha');
+    const ahora = new Date();
+    const opciones = { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' };
+    fechaEl.textContent = ahora.toLocaleString('es-PE', opciones).replace('.', '');
+
+    // 🔢 Código aleatorio de 16 dígitos
+    const codeEl = document.getElementById('code');
+    const codigo = Array.from({ length: 16 }, () => Math.floor(Math.random() * 10)).join('');
+    codeEl.textContent = codigo;
+
+    // 📋 Copiar código
+    document.getElementById('copyBtn').addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(codeEl.textContent.trim());
+        copyBtn.textContent = "✅ Copiado";
+        setTimeout(() => copyBtn.textContent = "📋 Copiar código", 2000);
+      } catch {
+        alert("No se pudo copiar automáticamente.");
+      }
+    });
+
+    // 🧾 Autocompletar datos desde localStorage
+    const seleccion = localStorage.getItem('seleccionCompra');
+    if (seleccion) {
+      const partes = seleccion.split('S/');
+      const descripcion = partes[0].trim();
+      const precio = partes[1].trim();
+
+      document.getElementById('detalle').textContent = 'Free Fire - ' + descripcion;
+      document.getElementById('monto').textContent = precio;
+    } else {
+      document.getElementById('detalle').textContent = 'Free Fire - Paquete de diamantes';
+      document.getElementById('monto').textContent = '0.00';
+    }
+  </script>
+</body>
+</html>
