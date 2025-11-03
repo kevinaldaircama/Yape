@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Seleccionar Destino</title>
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#720e9e" />
+  <link rel="icon" type="image/png" href="imagen/app_icon_xxxhdpi.png">
+
+  <style>
+    * { box-sizing: border-box; font-family: 'Arial', sans-serif; }
+    body { margin: 0; background: #fff; }
+
+    .title-bar {
+      background-color: #fff;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 20px;
+      font-size: 18px;
+      font-weight: 500;
+      color: #333;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+    }
+
+    .close-btn {
+      background: none;
+      border: none;
+      font-size: 26px;
+      line-height: 1;
+      cursor: pointer;
+      color: #555;
+    }
+
+    .options {
+      display: flex;
+      flex-direction: column;
+      padding: 15px;
+      gap: 15px;
+    }
+
+    .option-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background-color: #fff;
+      border-radius: 10px;
+      padding: 15px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      cursor: pointer;
+      transition: transform 0.1s ease;
+      text-align: center;
+    }
+
+    .option-card:hover {
+      transform: scale(1.02);
+      background-color: #f8f8f8;
+    }
+
+    .option-card span {
+      font-size: 17px;
+      font-weight: 500;
+      color: #333;
+    }
+
+    .option-card small {
+      font-size: 14px;
+      color: #666;
+    }
+
+    /* Modal de confirmación */
+    .modal-confirm {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.4);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .modal-content {
+      background-color: #fff;
+      padding: 25px 30px;
+      border-radius: 15px;
+      width: 90%;
+      max-width: 400px;
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+      text-align: center;
+      animation: pop 0.2s ease;
+    }
+
+    @keyframes pop {
+      0% { transform: scale(0.8); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .modal-content h2 {
+      color: #333;
+      margin-bottom: 10px;
+    }
+
+    .modal-content p {
+      font-size: 16px;
+      color: #555;
+      margin-bottom: 20px;
+    }
+
+    .modal-btns {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background 0.3s ease;
+    }
+
+    .btn-cancelar {
+      background: #ccc;
+      color: #333;
+    }
+
+    .btn-cancelar:hover {
+      background: #b3b3b3;
+    }
+
+    .btn-yapear {
+      background: #720e9e;
+      color: #fff;
+    }
+
+    .btn-yapear:hover {
+      background: #5b0b7e;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="title-bar">
+    <span>Seleccionar Destino</span>
+    <button class="close-btn" onclick="window.history.back()">×</button>
+  </div>
+
+  <div class="options" id="lista-destinos">
+    <!-- Se cargarán las opciones desde Firebase -->
+  </div>
+
+  <!-- Modal de confirmación -->
+  <div class="modal-confirm" id="modal-confirm">
+    <div class="modal-content">
+      <h2 id="modal-titulo">Confirmar destino</h2>
+      <p id="modal-mensaje">¿Deseas yapear a este destino?</p>
+      <div class="modal-btns">
+        <button class="btn btn-cancelar" onclick="cerrarModal()">Cancelar</button>
+        <button class="btn btn-yapear" id="btn-yapear">Yapear</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+
+  <script>
+    // Configuración Firebase
+    const firebaseConfig = {
+      apiKey: "AIzaSyBHbUTYykUxlJWl6QF6L9YwhC5kNFKpwV0",
+      authDomain: "apps-d075e.firebaseapp.com",
+      databaseURL: "https://apps-d075e-default-rtdb.firebaseio.com",
+      projectId: "apps-d075e",
+      storageBucket: "apps-d075e.firebasestorage.app",
+      messagingSenderId: "813273124209",
+      appId: "1:813273124209:web:81030c787f0992b19e7ad0",
+      measurementId: "G-6DK205T44V"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    const lista = document.getElementById('lista-destinos');
+    const modalConfirm = document.getElementById('modal-confirm');
+    const modalTitulo = document.getElementById('modal-titulo');
+    const modalMensaje = document.getElementById('modal-mensaje');
+    const btnYapear = document.getElementById('btn-yapear');
+
+    let destinoSeleccionado = "";
+    let idSeleccionado = "";
+
+    // Cargar los contactos y mostrar sus destinos
+    db.ref('contactos').once('value').then(snapshot => {
+      lista.innerHTML = '';
+      const destinosUnicos = new Set();
+
+      snapshot.forEach(child => {
+        const data = child.val();
+        const contactId = child.key;
+        const destino = data.destino || "Sin destino";
+
+        if (!destinosUnicos.has(destino)) {
+          destinosUnicos.add(destino);
+
+          const card = document.createElement('div');
+          card.className = 'option-card';
+          card.innerHTML = `
+            <span>${destino}</span>
+            <small>(${data.nombre || "Sin nombre"})</small>
+          `;
+
+          card.addEventListener('click', () => {
+            destinoSeleccionado = destino;
+            idSeleccionado = contactId;
+            mostrarModalConfirmacion(destino);
+          });
+
+          lista.appendChild(card);
+        }
+      });
+
+      if (destinosUnicos.size === 0) {
+        lista.innerHTML = `<p style="text-align:center; color:#777;">No hay destinos registrados.</p>`;
+      }
+    });
+
+    // Modal de confirmación
+    function mostrarModalConfirmacion(destino) {
+      modalTitulo.innerText = "Confirmar destino";
+      modalMensaje.innerText = `¿Deseas yapear al destino "${destino}"?`;
+      modalConfirm.style.display = "flex";
+
+      // Botón Yapear
+      btnYapear.onclick = () => {
+        const params = new URLSearchParams();
+        params.set('destino', destinoSeleccionado);
+        params.set('id', idSeleccionado);
+        window.location.href = `comprobante1.html?${params.toString()}`;
+      };
+    }
+
+    function cerrarModal() {
+      modalConfirm.style.display = "none";
+    }
+  </script>
+
+</body>
+</html>
