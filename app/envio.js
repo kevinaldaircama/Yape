@@ -62,7 +62,7 @@ montoInput.addEventListener('input', () => {
 
 // Acción "Otros Bancos"
 btnBancos.addEventListener('click', () => {
-  window.location.href = "https://www.google.com"; // 👈 cambia por tu link
+  window.location.href = "envío"; // 👈 cambia por tu link
 });
 
 // Acción Yapear
