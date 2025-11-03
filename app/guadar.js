@@ -27,6 +27,7 @@ function guardarContacto() {
   const apodo = document.getElementById("apodo").value.trim() || 'sin_apodo_' + Date.now();
   const nombre = document.getElementById("nombre").value.trim();
   const numero = document.getElementById("numero").value.trim();
+  const destino = document.getElementById("destino").value.trim() || "Sin destino";
 
   if (!nombre || !numero) {
     mostrarModal("Campos obligatorios", "Por favor, llena el nombre y número telefónico.");
@@ -35,7 +36,8 @@ function guardarContacto() {
 
   db.ref("contactos/" + apodo).set({
     nombre: nombre,
-    numero: numero
+    numero: numero,
+    destino: destino
   })
   .then(() => {
     mostrarModal("Contacto guardado", "Contacto guardado con éxito. 😎");
