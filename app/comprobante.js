@@ -1,7 +1,7 @@
 const params = new URLSearchParams(window.location.search);
 const nombre = decodeURIComponent(params.get("nombre") || "Sin nombre");
 const telefono = decodeURIComponent(params.get("telefono") || "000000000");
-const monto = decodeURIComponent(params.get("monto") || "0.00");
+const monto = decodeURIComponent(params.get("monto") || "0");
 
 document.getElementById("nombre").textContent = nombre;
 document.getElementById("monto").textContent = `S/ ${parseFloat(monto).toFixed(2)}`;
