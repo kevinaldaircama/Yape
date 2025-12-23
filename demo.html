@@ -1,0 +1,36 @@
+<div style="font-family: Arial, sans-serif; text-align: center; max-width: 420px; margin: auto;">
+  
+  <h2>🚀 Accede a nuestra app</h2>
+  <p>Si ya tienes la app instalada, ábrela directamente desde aquí:</p>
+
+  <a href="ac24://app3712598-igxyjh/" id="abrirApp"
+     style="display:inline-block; padding:12px 20px; background:#4CAF50; color:#fff; text-decoration:none; border-radius:6px; font-weight:bold;">
+     👉 Abrir la app
+  </a>
+
+  <hr style="margin:30px 0;">
+
+  <p>¿Aún no la tienes instalada?</p>
+
+  <a href="https://www.appcreator24.com/app3712598-igxyjh" target="_blank"
+     style="display:inline-block; padding:12px 20px; background:#2196F3; color:#fff; text-decoration:none; border-radius:6px; font-weight:bold;">
+     📥 Descargar la app
+  </a>
+
+</div>
+
+<script>
+  // Intentar abrir la app y redirigir a la descarga si no está instalada
+  document.getElementById("abrirApp").addEventListener("click", function (e) {
+    e.preventDefault();
+
+    const appUrl = "ac24://app3712598-igxyjh/";
+    const fallbackUrl = "https://www.appcreator24.com/app3712598-igxyjh";
+
+    window.location.href = appUrl;
+
+    setTimeout(function () {
+      window.location.href = fallbackUrl;
+    }, 1500);
+  });
+</script>
