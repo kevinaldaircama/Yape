@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <!-- PWA -->
   <link rel="manifest" href="manifest.json" />  
-  <meta name="theme-color" content="#720e9e" />  
+  <meta name="theme-color" content="#7B2C83" />  
   <link rel="icon" type="image/png" href="imagen/app_icon_xxxhdpi.png">     
 <!-- FONT AWESOME -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -19,12 +19,13 @@
 }
 
 *{
+  margin:0;
+  padding:0;
   box-sizing:border-box;
   font-family: system-ui, -apple-system, BlinkMacSystemFont;
 }
 
 body{
-  margin:0;
   background:#fff;
 }
 
@@ -57,6 +58,7 @@ body{
 
 .option{
   font-size:13px;
+  cursor:pointer;
 }
 
 .option i{
@@ -133,15 +135,15 @@ h3{
 
 .modal-box{
   background:#fff;
-  padding:20px;
+  padding:22px;
   border-radius:14px;
   text-align:center;
   width:80%;
 }
 
 .modal-box button{
-  margin-top:12px;
-  padding:8px 16px;
+  margin-top:14px;
+  padding:8px 18px;
   border:none;
   border-radius:8px;
   background:var(--purple);
@@ -152,13 +154,15 @@ h3{
 
 <body>
 
+<!-- TOP -->
 <div class="top">
+
   <div class="qr">
-    <img src="https://roddox.es/imagen/qr.jpg">
+    <img src="imagen/qr.jpg">
   </div>
 
   <div class="options">
-    <div class="option">
+    <div class="option" onclick="window.location.href='inicio'">
       <i class="fa-solid fa-lock"></i>
       Olvido de clave
     </div>
@@ -171,9 +175,12 @@ h3{
       Ayuda
     </div>
   </div>
+
 </div>
 
+<!-- BOTTOM -->
 <div class="bottom">
+
   <h3>Ingresa tu clave</h3>
 
   <!-- INPUT OCULTO -->
@@ -191,6 +198,7 @@ h3{
 
   <!-- KEYPAD -->
   <div id="keypad"></div>
+
 </div>
 
 <!-- MODAL -->
@@ -207,16 +215,18 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebas
 import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
 
+/* FIREBASE */
 const firebaseConfig = {
   apiKey: "AIzaSyBHbUTYykUxlJWl6QF6L9YwhC5kNFKpwV0",
   authDomain: "apps-d075e.firebaseapp.com",
-  projectId: "apps-d075e",
+  projectId: "apps-d075e"
 };
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
+/* ELEMENTS */
 const input = document.getElementById("clave");
 const dotsContainer = document.getElementById("dots-container");
 const modal = document.getElementById("modal");
@@ -224,6 +234,7 @@ const modalText = document.getElementById("modal-text");
 const btnAceptar = document.getElementById("btnAceptar");
 const keypad = document.getElementById("keypad");
 
+/* DOTS */
 function updateDots(){
   const len = input.value.length;
   dotsContainer.style.display = len ? "flex" : "none";
@@ -233,75 +244,109 @@ function updateDots(){
   }
 }
 
+/* KEYPAD LOGIC */
 function addNumber(n){
-  if(input.value.length<6){
-    input.value+=n;
+  if(input.value.length < 6){
+    input.value += n;
     updateDots();
-    if(input.value.length===6) autenticarPIN(input.value);
+    if(input.value.length === 6){
+      autenticarPIN(input.value);
+    }
   }
 }
 
 function deleteNumber(){
-  input.value=input.value.slice(0,-1);
+  input.value = input.value.slice(0,-1);
   updateDots();
 }
 
+/* RANDOM KEYPAD */
+function shuffle(arr){
+  for(let i = arr.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function generateKeypad(){
+  keypad.innerHTML = "";
+
+  let numbers = shuffle([0,1,2,3,4,5,6,7,8,9]);
+
+  let layout = [
+    numbers[0], numbers[1], numbers[2],
+    numbers[3], numbers[4], numbers[5],
+    numbers[6], numbers[7], numbers[8],
+    "huella", numbers[9], "del"
+  ];
+
+  layout.forEach(item => {
+    const btn = document.createElement("button");
+
+    if(typeof item === "number"){
+      btn.textContent = item;
+      btn.onclick = () => addNumber(item);
+    }
+    else if(item === "huella"){
+      btn.innerHTML = '<i class="fa-solid fa-fingerprint"></i>';
+      btn.onclick = () => alert("Biometría (demo)");
+    }
+    else{
+      btn.innerHTML = '<i class="fa-solid fa-delete-left"></i>';
+      btn.onclick = deleteNumber;
+    }
+
+    keypad.appendChild(btn);
+  });
+}
+
+/* AUTH PIN */
 async function autenticarPIN(pin){
-  modal.style.display="flex";
-  modalText.textContent="Verificando...";
-  btnAceptar.style.display="none";
+  modal.style.display = "flex";
+  modalText.textContent = "Verificando...";
+  btnAceptar.style.display = "none";
 
   onAuthStateChanged(auth, async(user)=>{
     if(!user){
-      modalText.textContent="⚠️ No has iniciado sesión";
-      btnAceptar.style.display="block";
+      modalText.textContent = "⚠️ No has iniciado sesión";
+      btnAceptar.style.display = "block";
       return;
     }
 
     try{
-      const ref=doc(db,"usuarios",user.uid);
-      const snap=await getDoc(ref);
+      const ref = doc(db,"usuarios",user.uid);
+      const snap = await getDoc(ref);
 
       if(!snap.exists()){
-        modalText.textContent="❌ Usuario no encontrado";
-      }else if(pin===snap.data().pin){
-        window.location.href="home";
+        modalText.textContent = "❌ Usuario no encontrado";
+      }
+      else if(pin === snap.data().pin){
+        window.location.href = "home";
         return;
-      }else{
-        modalText.textContent="❌ Clave incorrecta";
+      }
+      else{
+        modalText.textContent = "❌ Clave incorrecta";
+        input.value = "";
+        updateDots();
+        generateKeypad(); // vuelve a mezclar
       }
     }catch{
-      modalText.textContent="⚠️ Error de conexión";
+      modalText.textContent = "⚠️ Error de conexión";
     }
-    btnAceptar.style.display="block";
+
+    btnAceptar.style.display = "block";
   });
 }
 
-function generateKeypad(){
-  const layout=[1,2,3,4,5,6,7,8,9,"huella",0,"del"];
-  layout.forEach(i=>{
-    const b=document.createElement("button");
-    if(typeof i==="number"){
-      b.textContent=i;
-      b.onclick=()=>addNumber(i);
-    }else if(i==="huella"){
-      b.innerHTML='<i class="fa-solid fa-fingerprint"></i>';
-    }else{
-      b.innerHTML='<i class="fa-solid fa-delete-left"></i>';
-      b.onclick=deleteNumber;
-    }
-    keypad.appendChild(b);
-  });
-}
-
-btnAceptar.onclick=()=>{
-  modal.style.display="none";
-  input.value="";
-  updateDots();
+/* MODAL BTN */
+btnAceptar.onclick = () => {
+  modal.style.display = "none";
 };
 
+/* INIT */
 generateKeypad();
 </script>
 
 </body>
-</html>
+  </html>
