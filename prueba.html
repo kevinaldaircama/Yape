@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Ingreso</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- FONT AWESOME -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<style>
+:root{
+  --purple:#7B2C83;
+  --purple-dark:#5F1F65;
+  --gray:#ECECEC;
+}
+
+*{
+  box-sizing:border-box;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont;
+}
+
+body{
+  margin:0;
+  background:#fff;
+}
+
+/* TOP */
+.top{
+  background:linear-gradient(180deg,var(--purple),var(--purple-dark));
+  padding:32px 16px 22px;
+  text-align:center;
+  color:#fff;
+}
+
+.qr{
+  width:210px;
+  height:210px;
+  background:#fff;
+  border-radius:16px;
+  margin:15px auto 22px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.qr img{width:170px}
+
+/* OPTIONS */
+.options{
+  display:flex;
+  justify-content:space-around;
+}
+
+.option{
+  font-size:13px;
+}
+
+.option i{
+  font-size:22px;
+  background:rgba(255,255,255,.25);
+  width:50px;
+  height:50px;
+  border-radius:16px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  margin:0 auto 6px;
+}
+
+/* BOTTOM */
+.bottom{
+  padding:24px 18px;
+}
+
+h3{
+  text-align:center;
+  color:var(--purple);
+  margin-bottom:14px;
+}
+
+/* DOTS */
+.dots{
+  display:none;
+  justify-content:center;
+  gap:10px;
+  margin-bottom:18px;
+}
+
+.dot{
+  width:12px;
+  height:12px;
+  border-radius:50%;
+  background:#ddd;
+}
+
+.dot.active{
+  background:var(--purple);
+}
+
+/* KEYPAD */
+#keypad{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:16px;
+}
+
+#keypad button{
+  height:62px;
+  border-radius:14px;
+  border:none;
+  background:var(--gray);
+  font-size:24px;
+}
+
+#keypad i{
+  color:var(--purple);
+  font-size:22px;
+}
+
+/* MODAL */
+#modal{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.4);
+  justify-content:center;
+  align-items:center;
+}
+
+.modal-box{
+  background:#fff;
+  padding:20px;
+  border-radius:14px;
+  text-align:center;
+  width:80%;
+}
+
+.modal-box button{
+  margin-top:12px;
+  padding:8px 16px;
+  border:none;
+  border-radius:8px;
+  background:var(--purple);
+  color:#fff;
+}
+</style>
+</head>
+
+<body>
+
+<div class="top">
+  <div class="qr">
+    <img src="https://roddox.es/imagen/qr.jpg">
+  </div>
+
+  <div class="options">
+    <div class="option">
+      <i class="fa-solid fa-lock"></i>
+      Olvido de clave
+    </div>
+    <div class="option">
+      <i class="fa-solid fa-mobile-screen"></i>
+      Cambio de número
+    </div>
+    <div class="option">
+      <i class="fa-solid fa-headset"></i>
+      Ayuda
+    </div>
+  </div>
+</div>
+
+<div class="bottom">
+  <h3>Ingresa tu clave</h3>
+
+  <!-- INPUT OCULTO -->
+  <input type="password" id="clave" hidden maxlength="6">
+
+  <!-- DOTS -->
+  <div class="dots" id="dots-container">
+    <div class="dot" id="dot1"></div>
+    <div class="dot" id="dot2"></div>
+    <div class="dot" id="dot3"></div>
+    <div class="dot" id="dot4"></div>
+    <div class="dot" id="dot5"></div>
+    <div class="dot" id="dot6"></div>
+  </div>
+
+  <!-- KEYPAD -->
+  <div id="keypad"></div>
+</div>
+
+<!-- MODAL -->
+<div id="modal">
+  <div class="modal-box">
+    <p id="modal-text"></p>
+    <button id="btnAceptar">Aceptar</button>
+  </div>
+</div>
+
+<!-- SCRIPT -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBHbUTYykUxlJWl6QF6L9YwhC5kNFKpwV0",
+  authDomain: "apps-d075e.firebaseapp.com",
+  projectId: "apps-d075e",
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
+
+const input = document.getElementById("clave");
+const dotsContainer = document.getElementById("dots-container");
+const modal = document.getElementById("modal");
+const modalText = document.getElementById("modal-text");
+const btnAceptar = document.getElementById("btnAceptar");
+const keypad = document.getElementById("keypad");
+
+function updateDots(){
+  const len = input.value.length;
+  dotsContainer.style.display = len ? "flex" : "none";
+  for(let i=1;i<=6;i++){
+    document.getElementById("dot"+i)
+      .classList.toggle("active", i<=len);
+  }
+}
+
+function addNumber(n){
+  if(input.value.length<6){
+    input.value+=n;
+    updateDots();
+    if(input.value.length===6) autenticarPIN(input.value);
+  }
+}
+
+function deleteNumber(){
+  input.value=input.value.slice(0,-1);
+  updateDots();
+}
+
+async function autenticarPIN(pin){
+  modal.style.display="flex";
+  modalText.textContent="Verificando...";
+  btnAceptar.style.display="none";
+
+  onAuthStateChanged(auth, async(user)=>{
+    if(!user){
+      modalText.textContent="⚠️ No has iniciado sesión";
+      btnAceptar.style.display="block";
+      return;
+    }
+
+    try{
+      const ref=doc(db,"usuarios",user.uid);
+      const snap=await getDoc(ref);
+
+      if(!snap.exists()){
+        modalText.textContent="❌ Usuario no encontrado";
+      }else if(pin===snap.data().pin){
+        window.location.href="home";
+        return;
+      }else{
+        modalText.textContent="❌ Clave incorrecta";
+      }
+    }catch{
+      modalText.textContent="⚠️ Error de conexión";
+    }
+    btnAceptar.style.display="block";
+  });
+}
+
+function generateKeypad(){
+  const layout=[1,2,3,4,5,6,7,8,9,"huella",0,"del"];
+  layout.forEach(i=>{
+    const b=document.createElement("button");
+    if(typeof i==="number"){
+      b.textContent=i;
+      b.onclick=()=>addNumber(i);
+    }else if(i==="huella"){
+      b.innerHTML='<i class="fa-solid fa-fingerprint"></i>';
+    }else{
+      b.innerHTML='<i class="fa-solid fa-delete-left"></i>';
+      b.onclick=deleteNumber;
+    }
+    keypad.appendChild(b);
+  });
+}
+
+btnAceptar.onclick=()=>{
+  modal.style.display="none";
+  input.value="";
+  updateDots();
+};
+
+generateKeypad();
+</script>
+
+</body>
+</html>
