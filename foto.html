@@ -1,53 +1,247 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Recibo - Yape</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <link rel="stylesheet" href="cc/foto.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Yape - Comprobante</title>
+
+<!-- FONT AWESOME -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+
+<style>
+*{
+  box-sizing:border-box;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial;
+}
+
+body{
+  margin:0;
+  background:#5B1C7D;
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+}
+
+.container{
+  width:100%;
+  max-width:420px;
+  padding:20px 16px 30px;
+  color:#fff;
+}
+
+.header-icons{
+  display:flex;
+  justify-content:space-between;
+  margin-bottom:20px;
+}
+
+.icon{
+  width:46px;
+  height:46px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:20px;
+}
+
+.check{
+  background:#21D0B2;
+}
+
+.close{
+  background:rgba(255,255,255,.25);
+}
+
+.card{
+  background:#fff;
+  border-radius:20px;
+  padding:20px;
+  color:#222;
+}
+
+.title-row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:8px;
+}
+
+.title{
+  color:#7A2FA4;
+  font-weight:700;
+  font-size:18px;
+}
+
+.share{
+  color:#00C7A5;
+  font-size:14px;
+  font-weight:600;
+}
+
+.amount{
+  font-size:44px;
+  font-weight:800;
+  margin:12px 0 6px;
+}
+
+.subtitle{
+  font-size:17px;
+  font-weight:600;
+  margin-bottom:6px;
+}
+
+.datetime{
+  font-size:14px;
+  color:#666;
+  margin-bottom:14px;
+}
+
+.divider{
+  height:1px;
+  background:#E6E6E6;
+  margin:16px 0;
+}
+
+.section-title{
+  font-size:12px;
+  color:#8A8A8A;
+  font-weight:700;
+  margin-bottom:10px;
+}
+
+.data-row{
+  display:flex;
+  justify-content:space-between;
+  font-size:14px;
+  margin-bottom:8px;
+}
+
+.data-row strong{
+  font-weight:600;
+}
+
+.btn{
+  margin-top:20px;
+  width:100%;
+  background:#00C7A5;
+  border:none;
+  color:#fff;
+  font-size:16px;
+  font-weight:700;
+  padding:14px;
+  border-radius:14px;
+}
+
+.services{
+  background:#fff;
+  margin-top:16px;
+  border-radius:20px;
+  padding:16px;
+  text-align:center;
+  font-size:14px;
+  color:#7A2FA4;
+  font-weight:600;
+}
+
+.services span{
+  display:block;
+  margin-top:10px;
+  font-weight:700;
+}
+</style>
 </head>
+
 <body>
-  <div class="container">
-    <a class="close-link" href="/">
-      <i class="fas fa-times"></i>
-    </a>
 
-    <div class="logo">
-      <img src="imagen/yapelog.png" alt="Logo Yape">
-    </div>
+<div class="container">
 
-    <section class="ticket">
-      <h1>¡Yapeaste el servicio!</h1>
-
-      <div class="amount">
-        <span class="currency">S/</span>
-        <span class="value" id="monto"></span>
-      </div>
-
-      <div class="service" id="empresa"></div>
-      <div class="date" id="fechaHora"></div>
-
-      <div class="details">
-        <div class="row"><div class="label">Servicio:</div><div class="value" id="servicio"></div></div>
-        <div class="row"><div class="label">Código de cliente:</div><div class="value" id="codigo"></div></div>
-        <div class="row"><div class="label">Titular:</div><div class="value" id="titular"></div></div>
-        <div class="row"><div class="label">N° de operación:</div><div class="value" id="operacion"></div></div>
-      </div>
-    </section>
-
-    <div class="actions">
-      <a class="btn share" href="https://tu-pagina-compartir.com" target="_blank">
-        <div class="icon"><i class="fas fa-share-alt"></i></div>
-        Compartir
-      </a>
-      <a class="btn yap" href="pago.html">
-        <div class="icon"><i class="fas fa-paper-plane"></i></div>
-        Volver a Yapear
-      </a>
-    </div>
+  <div class="header-icons">
+    <div class="icon check"><i class="fa-solid fa-check"></i></div>
+    <div class="icon close"><i class="fa-solid fa-xmark"></i></div>
   </div>
 
-  <script src="app/foto.js"></script>
+  <div class="card">
+
+    <div class="title-row">
+      <div class="title">¡Yapeaste el servicio!</div>
+      <div class="share"><i class="fa-solid fa-share-nodes"></i> Compartir</div>
+    </div>
+
+    <div class="amount">S/ <span id="monto">0.00</span></div>
+
+    <div class="subtitle" id="empresa">Empresa</div>
+
+    <div class="datetime" id="fechaHora"></div>
+
+    <div class="divider"></div>
+
+    <div class="section-title">DATOS DE LA TRANSACCIÓN</div>
+
+    <div class="data-row">
+      <span>Servicio:</span>
+      <strong id="servicio"></strong>
+    </div>
+
+    <div class="data-row">
+      <span>Código de cliente:</span>
+      <strong id="codigo"></strong>
+    </div>
+
+    <div class="data-row">
+      <span>Titular:</span>
+      <strong id="titular"></strong>
+    </div>
+
+    <div class="data-row">
+      <span>N° de operación:</span>
+      <strong id="operacion"></strong>
+    </div>
+
+  </div>
+
+  <button class="btn">Yapear otro servicio</button>
+
+  <div class="services">
+    ✨ ¡También puedes yapear otros servicios!
+    <span>MÁS SERVICIOS A TU ALCANCE →</span>
+  </div>
+
+</div>
+
+<!-- SCRIPT FUNCIONAL -->
+<script>
+// Tomar parámetros de la URL
+const params = new URLSearchParams(window.location.search);
+document.getElementById("empresa").textContent = params.get("empresa") || "—";
+document.getElementById("servicio").textContent = params.get("servicio") || "—";
+document.getElementById("codigo").textContent = params.get("codigo") || "—";
+document.getElementById("titular").textContent = params.get("titular") || "—";
+document.getElementById("monto").textContent = params.get("monto") || "0.00";
+
+// Fecha y hora
+function actualizarFechaHora(){
+  const ahora = new Date();
+  const opciones = { day:"2-digit", month:"short", year:"numeric" };
+  const fecha = ahora.toLocaleDateString("es-PE", opciones).replace(".", "");
+  let horas = ahora.getHours();
+  let minutos = ahora.getMinutes().toString().padStart(2,"0");
+  let sufijo = horas >= 12 ? "p. m." : "a. m.";
+  if(horas > 12) horas -= 12;
+  if(horas === 0) horas = 12;
+  document.getElementById("fechaHora").textContent =
+    `${fecha} | ${horas}:${minutos} ${sufijo}`;
+}
+
+// Número aleatorio de operación
+function generarOperacion(){
+  const numero = Math.floor(10000000 + Math.random() * 90000000);
+  document.getElementById("operacion").textContent = numero;
+}
+
+actualizarFechaHora();
+generarOperacion();
+</script>
+
 </body>
 </html>
