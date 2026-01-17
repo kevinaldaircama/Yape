@@ -45,13 +45,8 @@ body{
   font-size:20px;
 }
 
-.check{
-  background:#21D0B2;
-}
-
-.close{
-  background:rgba(255,255,255,.25);
-}
+.check{ background:#21D0B2; }
+.close{ background:rgba(255,255,255,.25); }
 
 .card{
   background:#fff;
@@ -117,10 +112,9 @@ body{
   margin-bottom:8px;
 }
 
-.data-row strong{
-  font-weight:600;
-}
+.data-row strong{ font-weight:600; }
 
+/* 🔘 BOTÓN */
 .btn{
   margin-top:20px;
   width:100%;
@@ -131,23 +125,89 @@ body{
   font-weight:700;
   padding:14px;
   border-radius:14px;
+  cursor:pointer;
+  transition:.25s;
+}
+.btn:hover{ transform:scale(1.02); }
+
+/* 🎯 BANNER DE SERVICIOS */
+.services{
+  margin-top:18px;
+  padding:18px;
+  border-radius:20px;
+  background:linear-gradient(135deg,#7A2FA4,#C77DFF);
+  text-align:center;
+  color:#fff;
+  font-size:14px;
+  font-weight:600;
+  cursor:pointer;
+  box-shadow:0 10px 25px rgba(0,0,0,.25);
+  transition:.3s;
 }
 
-.services{
-  background:#fff;
-  margin-top:16px;
-  border-radius:20px;
-  padding:16px;
-  text-align:center;
-  font-size:14px;
-  color:#7A2FA4;
-  font-weight:600;
+.services:hover{
+  transform:translateY(-2px) scale(1.02);
 }
 
 .services span{
   display:block;
   margin-top:10px;
-  font-weight:700;
+  font-weight:800;
+  letter-spacing:.5px;
+}
+
+.services i{
+  font-size:22px;
+  margin-bottom:8px;
+  display:block;
+}
+/* 🖼️ BANNER CON IMAGEN */
+.services-banner{
+  margin-top:18px;
+  height:120px;
+  border-radius:20px;
+  background-image:url("Screenshot_20251228-140925~2.jpg");
+  background-size:cover;
+  background-position:center;
+  position:relative;
+  cursor:pointer;
+  overflow:hidden;
+  box-shadow:0 12px 30px rgba(0,0,0,.3);
+  transition:.3s;
+}
+
+.services-banner:hover{
+  transform:scale(1.02);
+}
+
+/* OSCURECER FOTO PARA LEER TEXTO */
+.banner-overlay{
+  position:absolute;
+  inset:0;
+  background:linear-gradient(
+    135deg,
+    rgba(122,47,164,.85),
+    rgba(0,199,165,.75)
+  );
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding:16px;
+}
+
+/* TEXTO */
+.banner-text{
+  color:#fff;
+  font-size:14px;
+  font-weight:600;
+}
+
+.banner-text span{
+  display:block;
+  margin-top:8px;
+  font-weight:800;
+  letter-spacing:.5px;
 }
 </style>
 </head>
@@ -171,47 +231,32 @@ body{
     <div class="amount">S/ <span id="monto">0.00</span></div>
 
     <div class="subtitle" id="empresa">Empresa</div>
-
     <div class="datetime" id="fechaHora"></div>
 
     <div class="divider"></div>
 
     <div class="section-title">DATOS DE LA TRANSACCIÓN</div>
 
-    <div class="data-row">
-      <span>Servicio:</span>
-      <strong id="servicio"></strong>
-    </div>
-
-    <div class="data-row">
-      <span>Código de cliente:</span>
-      <strong id="codigo"></strong>
-    </div>
-
-    <div class="data-row">
-      <span>Titular:</span>
-      <strong id="titular"></strong>
-    </div>
-
-    <div class="data-row">
-      <span>N° de operación:</span>
-      <strong id="operacion"></strong>
-    </div>
+    <div class="data-row"><span>Servicio:</span><strong id="servicio"></strong></div>
+    <div class="data-row"><span>Código de cliente:</span><strong id="codigo"></strong></div>
+    <div class="data-row"><span>Titular:</span><strong id="titular"></strong></div>
+    <div class="data-row"><span>N° de operación:</span><strong id="operacion"></strong></div>
 
   </div>
 
-  <button class="btn">Yapear otro servicio</button>
+  <!-- 🔗 BOTÓN CON REDIRECCIÓN -->
+  <button class="btn" onclick="window.location.href='home'">
+    Yapear otro servicio
+  </button>
 
-  <div class="services">
-    ✨ ¡También puedes yapear otros servicios!
-    <span>MÁS SERVICIOS A TU ALCANCE →</span>
+  <div class="services-banner" onclick="window.location.href='home'">
+    </div>
   </div>
+</div>
 
 </div>
 
-<!-- SCRIPT FUNCIONAL -->
 <script>
-// Tomar parámetros de la URL
 const params = new URLSearchParams(window.location.search);
 document.getElementById("empresa").textContent = params.get("empresa") || "—";
 document.getElementById("servicio").textContent = params.get("servicio") || "—";
@@ -219,7 +264,6 @@ document.getElementById("codigo").textContent = params.get("codigo") || "—";
 document.getElementById("titular").textContent = params.get("titular") || "—";
 document.getElementById("monto").textContent = params.get("monto") || "0.00";
 
-// Fecha y hora
 function actualizarFechaHora(){
   const ahora = new Date();
   const opciones = { day:"2-digit", month:"short", year:"numeric" };
@@ -233,10 +277,9 @@ function actualizarFechaHora(){
     `${fecha} | ${horas}:${minutos} ${sufijo}`;
 }
 
-// Número aleatorio de operación
 function generarOperacion(){
-  const numero = Math.floor(10000000 + Math.random() * 90000000);
-  document.getElementById("operacion").textContent = numero;
+  document.getElementById("operacion").textContent =
+    Math.floor(10000000 + Math.random() * 90000000);
 }
 
 actualizarFechaHora();
@@ -244,4 +287,4 @@ generarOperacion();
 </script>
 
 </body>
-</html>
+        </html>
