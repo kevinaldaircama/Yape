@@ -27,7 +27,7 @@ document.getElementById("operacion").textContent = Math.floor(10000000 + Math.ra
 
 // Promoción aleatoria
 const promociones = [
-  "imagen/1.jpg","imagen/2.jpg","imagen/3.jpg","imagen/4.jpg","imagen/5.jpg"
+  "imagen/1.jpg","imagen/2.jpg","imagen/3.jpg","imagen/4.jpg","imagen/5.jpg","imagen/IMG-20260118-WA0031.jpg"
 ];
 document.getElementById("promo-img").src = promociones[Math.floor(Math.random() * promociones.length)];
 
