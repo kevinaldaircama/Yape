@@ -1,36 +1,237 @@
-<!DOCTYPE html>  
-<html lang="es">  
-<head>  
-  <meta charset="UTF-8">  
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">  
-  <title>Registro</title>  
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>  
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>  
-  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>  
-  <link rel="stylesheet" href="cc/registrovip.css">  
-  <link rel="manifest" href="manifest.json" />  
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Crear cuenta</title>
+<link rel="manifest" href="manifest.json" />  
   <meta name="theme-color" content="#720e9e" />  
   <link rel="icon" type="image/png" href="imagen/app_icon_xxxhdpi.png">  
-</head>  
-<body>  
-  <div class="container">  
-    <h2>Registro de Usuario</h2>  
-    <p>Completa los campos para registrarte:</p>  
-    <input type="text" id="usuario" placeholder="Nombre de usuario" required>  
-    <input type="email" id="correo" placeholder="Correo electrónico" required>  
-    <input type="password" id="clave" placeholder="Contraseña (mínimo 6 caracteres)" minlength="6" required>  
-    <input type="number" id="monto" placeholder="Monto inicial" min="0" required>  
-    <input type="password" id="pin" placeholder="PIN de 6 dígitos" maxlength="6" required>  
-    <button onclick="registrarUsuario()">Registrarse</button>  
-  </div>  
+<!-- FIREBASE v8 -->
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 
-  <!-- Modal -->  
-  <div class="modal" id="modal">  
-    <div class="modal-content" id="modal-content">  
-      ⏳ Registrando, espere un momento...  
-    </div>  
-  </div>  
+<style>
+:root{
+  --c1:#22d3ee;
+  --c2:#6366f1;
+  --c3:#ec4899;
+}
 
-  <script src="app/registrovip.js"></script>  
-</body>  
-</html>
+*{ box-sizing:border-box; font-family:system-ui }
+
+body{
+  margin:0;
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:linear-gradient(120deg,var(--c1),var(--c2),var(--c3));
+  background-size:300% 300%;
+  animation:bg 16s infinite;
+}
+
+@keyframes bg{
+  0%{background-position:0% 50%}
+  50%{background-position:100% 50%}
+  100%{background-position:0% 50%}
+}
+
+.card{
+  width:100%;
+  max-width:380px;
+  background:#fff;
+  padding:30px;
+  border-radius:20px;
+  box-shadow:0 40px 80px rgba(0,0,0,.3);
+}
+
+.step{ display:none; }
+.step.active{ display:block; }
+
+h1{ margin:0 0 6px; font-size:22px; font-weight:800; }
+.sub{ font-size:13px; color:#475569; margin-bottom:20px; }
+
+input{
+  width:100%;
+  padding:14px;
+  margin-bottom:14px;
+  border-radius:12px;
+  border:1px solid #cbd5f5;
+  background:#f8fafc;
+}
+
+input.error{ border:2px solid #ef4444; }
+
+button{
+  width:100%;
+  padding:14px;
+  border:none;
+  border-radius:12px;
+  background:linear-gradient(135deg,var(--c2),var(--c3));
+  color:#fff;
+  font-weight:800;
+  cursor:pointer;
+}
+
+.msg{ font-size:13px; color:#dc2626; margin-top:8px; }
+
+.watermark{
+  margin-top:14px;
+  text-align:center;
+  font-size:11px;
+  color:#64748b;
+}
+
+/* MODAL */
+#modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.6);
+  display:none;
+  align-items:center;
+  justify-content:center;
+}
+
+#modal-content{
+  background:#fff;
+  padding:22px;
+  border-radius:16px;
+  text-align:center;
+  font-weight:700;
+}
+</style>
+</head>
+
+<body>
+
+<div class="card">
+
+  <!-- PASO 1 -->
+  <div class="step active" id="step1">
+    <h1>Crear cuenta</h1>
+    <div class="sub">Correo y contraseña</div>
+
+    <input id="correo" type="email" placeholder="Correo electrónico">
+    <input id="clave" type="password" placeholder="Contraseña">
+
+    <button onclick="nextStep(1)">Continuar</button>
+    <div class="msg" id="msg1"></div>
+  </div>
+
+  <!-- PASO 2 -->
+  <div class="step" id="step2">
+    <h1>Usuario</h1>
+    <div class="sub">Configura tu cuenta</div>
+
+    <input id="usuario" placeholder="Nombre de usuario">
+    <input id="clave2" type="password" placeholder="Confirmar contraseña">
+
+    <button onclick="nextStep(2)">Continuar</button>
+    <div class="msg" id="msg2"></div>
+  </div>
+
+  <!-- PASO 3 -->
+  <div class="step" id="step3">
+    <h1>Seguridad</h1>
+    <div class="sub">Monto inicial y PIN</div>
+
+    <input id="monto" type="number" placeholder="Monto inicial (S/)">
+    <input id="pin" type="password" maxlength="6" placeholder="PIN de 6 dígitos">
+
+    <button onclick="registrarUsuario()">Crear cuenta</button>
+    <div class="msg" id="msg3"></div>
+  </div>
+
+  <div class="watermark">
+    Desarrollador: <strong>KTT</strong>
+  </div>
+
+</div>
+
+<!-- MODAL -->
+<div id="modal">
+  <div id="modal-content"></div>
+</div>
+
+<script>
+// =====================================================
+// 🔥 CONFIGURACIÓN FIREBASE
+// =====================================================
+const firebaseConfig = {
+  apiKey: "AIzaSyBHbUTYykUxlJWl6QF6L9YwhC5kNFKpwV0",
+  authDomain: "apps-d075e.firebaseapp.com",
+  databaseURL: "https://apps-d075e-default-rtdb.firebaseio.com",
+  projectId: "apps-d075e",
+  storageBucket: "apps-d075e.appspot.com",
+  messagingSenderId: "813273124209",
+  appId: "1:813273124209:web:81030c787f0992b19e7ad0",
+  measurementId: "G-6DK205T44V"
+};
+
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+// =====================================================
+// 🔁 PASOS
+// =====================================================
+function nextStep(step){
+  if(step === 1){
+    if(!correo.value || !clave.value){
+      msg1.textContent = "Completa todos los campos";
+      return;
+    }
+  }
+
+  if(step === 2){
+    if(!usuario.value || clave.value !== clave2.value){
+      msg2.textContent = "Las contraseñas no coinciden";
+      return;
+    }
+  }
+
+  document.getElementById("step"+step).classList.remove("active");
+  document.getElementById("step"+(step+1)).classList.add("active");
+}
+
+// =====================================================
+// 🧾 REGISTRAR USUARIO
+// =====================================================
+function registrarUsuario(){
+  [usuario, correo, clave, monto, pin].forEach(el => el.classList.remove("error"));
+
+  if(!usuario.value || !correo.value || !clave.value || !monto.value || pin.value.length !== 6){
+    [usuario, correo, clave, monto, pin].forEach(el=>{
+      if(!el.value || (el.id==="pin" && el.value.length!==6))
+        el.classList.add("error");
+    });
+    return;
+  }
+
+  modal.style.display="flex";
+  modalContent.innerHTML="⏳ Registrando, espere un momento...";
+
+  auth.createUserWithEmailAndPassword(correo.value, clave.value)
+    .then(cred=>{
+      return db.collection("usuarios").doc(cred.user.uid).set({
+        nombre: usuario.value,
+        correo: correo.value,
+        monto: parseFloat(monto.value).toFixed(2),
+        pin: pin.value,
+        fechaRegistro: new Date().toISOString()
+      });
+    })
+    .then(()=>{
+      modalContent.innerHTML="🎉 <b>Cuenta creada con éxito</b>";
+      setTimeout(()=>location.href="index.html",2500);
+    })
+    .catch(err=>{
+      modalContent.innerHTML="<span style='color:red'>⚠️ "+err.message+"</span>";
+    });
+}
+</script>
+
+</body>
+  </html>
