@@ -28,7 +28,7 @@ onAuthStateChanged(auth, async (user) => {
     const docSnap = await getDoc(ref);    
     if (docSnap.exists()) {    
       const datos = docSnap.data();    
-      userLink.innerHTML = `<i class="fas fa-user"></i> Hola, ${datos.nombre}`;    
+      userLink.innerHTML = `<i class="fas fa-user"></i> Hola, ${datos.usuario}`;    
       saldoValor.textContent = `S/ ${datos.monto}`;    
       cargarMovimientos(user.uid);    
     }    
