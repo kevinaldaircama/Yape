@@ -164,7 +164,7 @@ function registrarUsuario(){
   auth.createUserWithEmailAndPassword(correo.value, clave.value)
     .then(res=>{
       return db.collection("usuarios").doc(res.user.uid).set({
-        usuario: usuario.value,
+        nombre: usuario.value,
         correo: correo.value,
         monto: monto.value,
         pin: pin.value
