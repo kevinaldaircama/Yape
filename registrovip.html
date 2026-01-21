@@ -3,86 +3,67 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Crear cuenta</title>
-<link rel="manifest" href="manifest.json" />  
-  <meta name="theme-color" content="#720e9e" />  
-  <link rel="icon" type="image/png" href="imagen/app_icon_xxxhdpi.png">  
+
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#720e9e">
+<link rel="icon" type="image/png" href="imagen/app_icon_xxxhdpi.png">
+
 <!-- FIREBASE v8 -->
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 
 <style>
-:root{
-  --c1:#22d3ee;
-  --c2:#6366f1;
-  --c3:#ec4899;
-}
-
-*{ box-sizing:border-box; font-family:system-ui }
-
+*{box-sizing:border-box;font-family:system-ui}
 body{
   margin:0;
   min-height:100vh;
   display:flex;
-  align-items:center;
   justify-content:center;
-  background:linear-gradient(120deg,var(--c1),var(--c2),var(--c3));
+  align-items:center;
+  background:linear-gradient(120deg,#22d3ee,#6366f1,#ec4899);
   background-size:300% 300%;
   animation:bg 16s infinite;
 }
-
 @keyframes bg{
   0%{background-position:0% 50%}
   50%{background-position:100% 50%}
   100%{background-position:0% 50%}
 }
-
 .card{
   width:100%;
   max-width:380px;
   background:#fff;
-  padding:30px;
+  padding:28px;
   border-radius:20px;
   box-shadow:0 40px 80px rgba(0,0,0,.3);
 }
-
-.step{ display:none; }
-.step.active{ display:block; }
-
-h1{ margin:0 0 6px; font-size:22px; font-weight:800; }
-.sub{ font-size:13px; color:#475569; margin-bottom:20px; }
-
+.step{display:none}
+.step.active{display:block}
+h1{margin:0 0 6px;font-size:22px;font-weight:800}
+.sub{font-size:13px;color:#475569;margin-bottom:18px}
 input{
   width:100%;
   padding:14px;
   margin-bottom:14px;
   border-radius:12px;
   border:1px solid #cbd5f5;
-  background:#f8fafc;
 }
-
-input.error{ border:2px solid #ef4444; }
-
+input.error{border:2px solid #ef4444}
 button{
   width:100%;
   padding:14px;
   border:none;
   border-radius:12px;
-  background:linear-gradient(135deg,var(--c2),var(--c3));
+  background:linear-gradient(135deg,#6366f1,#ec4899);
   color:#fff;
   font-weight:800;
   cursor:pointer;
 }
-
-.msg{ font-size:13px; color:#dc2626; margin-top:8px; }
-
-.watermark{
-  margin-top:14px;
-  text-align:center;
-  font-size:11px;
-  color:#64748b;
-}
+.msg{font-size:13px;color:#dc2626}
+.watermark{text-align:center;font-size:11px;color:#64748b;margin-top:12px}
 
 /* MODAL */
 #modal{
@@ -93,12 +74,10 @@ button{
   align-items:center;
   justify-content:center;
 }
-
 #modal-content{
   background:#fff;
   padding:22px;
   border-radius:16px;
-  text-align:center;
   font-weight:700;
 }
 </style>
@@ -108,130 +87,97 @@ button{
 
 <div class="card">
 
-  <!-- PASO 1 -->
   <div class="step active" id="step1">
     <h1>Crear cuenta</h1>
     <div class="sub">Correo y contraseña</div>
-
-    <input id="correo" type="email" placeholder="Correo electrónico">
+    <input id="correo" type="email" placeholder="Correo">
     <input id="clave" type="password" placeholder="Contraseña">
-
     <button onclick="nextStep(1)">Continuar</button>
     <div class="msg" id="msg1"></div>
   </div>
 
-  <!-- PASO 2 -->
   <div class="step" id="step2">
     <h1>Usuario</h1>
     <div class="sub">Configura tu cuenta</div>
-
-    <input id="usuario" placeholder="Nombre de usuario">
+    <input id="usuario" placeholder="Usuario">
     <input id="clave2" type="password" placeholder="Confirmar contraseña">
-
     <button onclick="nextStep(2)">Continuar</button>
     <div class="msg" id="msg2"></div>
   </div>
 
-  <!-- PASO 3 -->
   <div class="step" id="step3">
     <h1>Seguridad</h1>
-    <div class="sub">Monto inicial y PIN</div>
-
-    <input id="monto" type="number" placeholder="Monto inicial (S/)">
-    <input id="pin" type="password" maxlength="6" placeholder="PIN de 6 dígitos">
-
+    <div class="sub">Monto y PIN</div>
+    <input id="monto" type="number" placeholder="Monto">
+    <input id="pin" maxlength="6" placeholder="PIN 6 dígitos">
     <button onclick="registrarUsuario()">Crear cuenta</button>
     <div class="msg" id="msg3"></div>
   </div>
 
-  <div class="watermark">
-    Desarrollador: <strong>KTT</strong>
-  </div>
-
+  <div class="watermark">Desarrollador: <b>KTT</b></div>
 </div>
 
-<!-- MODAL -->
 <div id="modal">
   <div id="modal-content"></div>
 </div>
 
 <script>
-// =====================================================
-// 🔥 CONFIGURACIÓN FIREBASE
-// =====================================================
-const firebaseConfig = {
+// 🔥 FIREBASE
+firebase.initializeApp({
   apiKey: "AIzaSyBHbUTYykUxlJWl6QF6L9YwhC5kNFKpwV0",
   authDomain: "apps-d075e.firebaseapp.com",
-  databaseURL: "https://apps-d075e-default-rtdb.firebaseio.com",
-  projectId: "apps-d075e",
-  storageBucket: "apps-d075e.appspot.com",
-  messagingSenderId: "813273124209",
-  appId: "1:813273124209:web:81030c787f0992b19e7ad0",
-  measurementId: "G-6DK205T44V"
-};
-
-firebase.initializeApp(firebaseConfig);
+  projectId: "apps-d075e"
+});
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-// =====================================================
+// ✅ VARIABLES (ESTO ARREGLA EL ERROR)
+const modal = document.getElementById("modal");
+const modalContent = document.getElementById("modal-content");
+
+const correo = document.getElementById("correo");
+const clave = document.getElementById("clave");
+const clave2 = document.getElementById("clave2");
+const usuario = document.getElementById("usuario");
+const monto = document.getElementById("monto");
+const pin = document.getElementById("pin");
+
 // 🔁 PASOS
-// =====================================================
 function nextStep(step){
-  if(step === 1){
-    if(!correo.value || !clave.value){
-      msg1.textContent = "Completa todos los campos";
-      return;
-    }
+  if(step===1 && (!correo.value || !clave.value)){
+    msg1.textContent="Completa los campos";
+    return;
   }
-
-  if(step === 2){
-    if(!usuario.value || clave.value !== clave2.value){
-      msg2.textContent = "Las contraseñas no coinciden";
-      return;
-    }
+  if(step===2 && (clave.value !== clave2.value || !usuario.value)){
+    msg2.textContent="Error en usuario o contraseña";
+    return;
   }
-
   document.getElementById("step"+step).classList.remove("active");
   document.getElementById("step"+(step+1)).classList.add("active");
 }
 
-// =====================================================
-// 🧾 REGISTRAR USUARIO
-// =====================================================
+// 🧾 REGISTRO
 function registrarUsuario(){
-  [usuario, correo, clave, monto, pin].forEach(el => el.classList.remove("error"));
-
-  if(!usuario.value || !correo.value || !clave.value || !monto.value || pin.value.length !== 6){
-    [usuario, correo, clave, monto, pin].forEach(el=>{
-      if(!el.value || (el.id==="pin" && el.value.length!==6))
-        el.classList.add("error");
-    });
-    return;
-  }
-
   modal.style.display="flex";
-  modalContent.innerHTML="⏳ Registrando, espere un momento...";
+  modalContent.innerHTML="⏳ Registrando...";
 
   auth.createUserWithEmailAndPassword(correo.value, clave.value)
-    .then(cred=>{
-      return db.collection("usuarios").doc(cred.user.uid).set({
-        nombre: usuario.value,
+    .then(res=>{
+      return db.collection("usuarios").doc(res.user.uid).set({
+        usuario: usuario.value,
         correo: correo.value,
-        monto: parseFloat(monto.value).toFixed(2),
-        pin: pin.value,
-        fechaRegistro: new Date().toISOString()
+        monto: monto.value,
+        pin: pin.value
       });
     })
     .then(()=>{
-      modalContent.innerHTML="🎉 <b>Cuenta creada con éxito</b>";
-      setTimeout(()=>location.href="index.html",2500);
+      modalContent.innerHTML="🎉 Cuenta creada con éxito";
     })
-    .catch(err=>{
-      modalContent.innerHTML="<span style='color:red'>⚠️ "+err.message+"</span>";
+    .catch(e=>{
+      modalContent.innerHTML="❌ "+e.message;
     });
 }
 </script>
 
 </body>
-  </html>
+</html>
