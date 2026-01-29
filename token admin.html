@@ -2,213 +2,342 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Panel Admin — Dashboard</title>
+<title>Admin Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <style>
-  :root {
-    --primary: #4e9af1;
-    --primary-dark: #357ae8;
-    --background: #f8f9fa;
-    --text: #333;
-    --card: #fff;
-  }
+:root{
+  --bg:#f4f6fb;
+  --card:#ffffff;
+  --text:#1f2937;
+  --primary:#4e9af1;
+}
+body.dark{
+  --bg:#0f172a;
+  --card:#111827;
+  --text:#e5e7eb;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Segoe UI,Arial;
+  background:var(--bg);
+  color:var(--text);
+}
 
-  body.dark {
-    --background: #1e1e2f;
-    --text: #f5f5f5;
-    --card: #2a2a3d;
-  }
-
-  body {
-    font-family: 'Poppins', sans-serif;
-    background: var(--background);
-    color: var(--text);
-    margin: 0;
-    height: 100vh;
-    display: flex;
-  }
-
-  .sidebar {
-    width: 250px;
-    background: var(--card);
-    box-shadow: 2px 0 10px rgba(0,0,0,0.1);
-    padding-top: 20px;
-    position: fixed;
-    left: 0;
-    top: 0;
-    bottom: 0;
-    transition: left 0.3s ease;
-    z-index: 1000;
-  }
-
-  .sidebar h2 {
-    text-align: center;
-    color: var(--primary);
-    margin-bottom: 30px;
-  }
-
-  .sidebar a {
-    display: block;
-    padding: 15px 25px;
-    color: var(--text);
-    text-decoration: none;
-    font-weight: 500;
-  }
-
-  .sidebar a:hover, .sidebar a.active {
-    background: var(--primary);
-    color: #fff;
-    border-radius: 8px;
-  }
-
-  .menu-toggle {
-    display: none;
-    position: fixed;
-    top: 15px;
-    left: 20px;
-    font-size: 26px;
-    cursor: pointer;
-    color: var(--primary);
-    z-index: 1100;
-  }
-
-  .content {
-    flex-grow: 1;
-    margin-left: 250px;
-    padding: 20px;
-    width: 100%;
-    transition: margin-left 0.3s ease;
-  }
-
-  .card {
-    background: var(--card);
-    padding: 20px;
-    border-radius: 15px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-    margin-bottom: 20px;
-  }
-
-  input, button {
-    width: 100%;
-    padding: 12px;
-    border-radius: 10px;
-    border: 1px solid #ccc;
-    font-size: 1em;
-    margin-top: 8px;
-  }
-
-  button {
-    background: var(--primary);
-    color: #fff;
-    border: none;
-    cursor: pointer;
-  }
-
-  button:hover { background: var(--primary-dark); }
-
-  ul { list-style: none; padding: 0; }
-  li { margin: 6px 0; padding: 8px; background: var(--background); border-radius: 8px; }
-
-  .token-message { background: #e6f7ff; padding: 10px; border-radius: 10px; margin-top: 10px; }
-
-  @media (max-width: 768px) {
-    .sidebar { left: -260px; }
-    .sidebar.active { left: 0; }
-    .content { margin-left: 0; }
-    .menu-toggle { display: block; }
-  }
-</style>
-</head>
-<body>
-    <div id="adminLogin" style="
-  position: fixed;
-  top:0; left:0; right:0; bottom:0;
-  background: rgba(0,0,0,0.6);
+/* ===== LOGIN ===== */
+#adminLogin{
+  position:fixed;
+  inset:0;
+  background:#000000cc;
   display:flex;
   justify-content:center;
   align-items:center;
   z-index:2000;
-">
-  <div style="
-    background: var(--card);
-    padding: 30px;
-    border-radius: 15px;
-    text-align:center;
-    width: 320px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-  ">
-    <h2>🔒 Acceso Admin</h2>
-    <input type="email" id="adminLoginEmail" placeholder="Correo admin" style="width:100%;padding:10px;margin:15px 0;border-radius:8px;border:1px solid #ccc;">
+}
+.modal{
+  background:#fff;
+  padding:25px;
+  border-radius:14px;
+  width:300px;
+}
+#loginError{color:red;display:none}
+
+/* ===== SIDEBAR ===== */
+.sidebar{
+  width:260px;
+  height:100vh;
+  background:#020617;
+  position:fixed;
+  top:0;
+  left:-260px;
+  padding:20px;
+  transition:.3s;
+  z-index:1000;
+}
+.sidebar.active{left:0}
+.sidebar h2{
+  color:#fff;
+  text-align:center;
+}
+.sidebar a{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:12px;
+  margin:6px 0;
+  color:#cbd5f5;
+  text-decoration:none;
+  border-radius:10px;
+}
+.sidebar a.active,
+.sidebar a:hover{
+  background:var(--primary);
+  color:#fff;
+}
+
+/* ===== OVERLAY ===== */
+.overlay{
+  position:fixed;
+  inset:0;
+  background:#00000088;
+  display:none;
+  z-index:900;
+}
+.overlay.show{display:block}
+
+/* ===== CONTENT ===== */
+.content{padding:20px}
+.card{
+  background:var(--card);
+  padding:20px;
+  border-radius:16px;
+  margin-bottom:20px;
+}
+
+/* ===== HAMBURGER ===== */
+.hamburger{
+  width:32px;
+  cursor:pointer;
+  margin-bottom:20px;
+}
+.hamburger span{
+  display:block;
+  height:3px;
+  background:var(--text);
+  margin:6px 0;
+  transition:.3s;
+}
+.hamburger.active span:nth-child(1){
+  transform:rotate(45deg) translate(6px,6px);
+}
+.hamburger.active span:nth-child(2){
+  opacity:0;
+}
+.hamburger.active span:nth-child(3){
+  transform:rotate(-45deg) translate(7px,-7px);
+}
+
+/* ===== INPUTS ===== */
+input,button{
+  width:100%;
+  padding:10px;
+  margin:6px 0;
+  border-radius:8px;
+  border:1px solid #ccc;
+}
+button{
+  background:var(--primary);
+  color:#fff;
+  border:none;
+  cursor:pointer;
+}
+ul{list-style:none;padding:0}
+li{
+  background:#00000010;
+  padding:10px;
+  border-radius:10px;
+  margin-bottom:8px;
+}
+
+/* ===== SWITCH ===== */
+.switch{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+.switch input{display:none}
+.slider{
+  width:52px;
+  height:26px;
+  background:#ccc;
+  border-radius:20px;
+  position:relative;
+  cursor:pointer;
+}
+.slider::before{
+  content:"";
+  width:22px;
+  height:22px;
+  background:#fff;
+  border-radius:50%;
+  position:absolute;
+  top:2px;
+  left:2px;
+  transition:.3s;
+}
+input:checked + .slider{
+  background:var(--primary);
+}
+input:checked + .slider::before{
+  transform:translateX(26px);
+}
+</style>
+</head>
+
+<body>
+
+<!-- LOGIN -->
+<div id="adminLogin">
+  <div class="modal">
+    <h3>Login Admin</h3>
+    <input id="adminLoginEmail" placeholder="Correo admin">
     <button id="adminLoginBtn">Ingresar</button>
-    <p id="loginError" style="color:red; margin-top:10px; display:none;">Correo no autorizado</p>
+    <p id="loginError">Correo no autorizado</p>
   </div>
 </div>
-<i class="fa-solid fa-bars menu-toggle"></i>
 
-<!-- Sidebar -->
+<div class="overlay" id="overlay"></div>
+
 <div class="sidebar" id="sidebar">
-  <h2><i class="fa-solid fa-shield-halved"></i> Admin</h2>
-  <a href="#" class="active" data-section="dashboard"><i class="fa-solid fa-chart-line"></i> Estadísticas</a>
-  <a href="#" data-section="tokens"><i class="fa-solid fa-key"></i> Generar Token</a>
-  <a href="#" data-section="accounts"><i class="fa-solid fa-users"></i> Cuentas creadas</a>
-  <a href="#" data-section="search"><i class="fa-solid fa-magnifying-glass"></i> Buscar</a>
-  <a href="#" data-section="export"><i class="fa-solid fa-file-export"></i> Exportar CSV</a>
-  <a href="#" data-section="settings"><i class="fa-solid fa-gear"></i> Configuración</a>
+  <h2>ADMIN</h2>
+  
+  <a class="active" data-section="dashboard"><i class="fa fa-chart-bar"></i> Dashboard</a>
+  <a data-section="generator"><i class="fa fa-key"></i> Tokens</a>
+  <a data-section="search"><i class="fa fa-search"></i> Buscar</a>
+  <a data-section="accounts"><i class="fa fa-users"></i> Cuentas</a>
+  <a data-section="settings"><i class="fa fa-gear"></i> Configuración</a>
 </div>
 
-<!-- Contenido -->
-<div class="content" id="content">
-  <!-- Estadísticas -->
+<div class="content">
+  <div class="hamburger" id="menuBtn">
+    <span></span><span></span><span></span>
+  </div>
+
   <div id="dashboard" class="card">
-    <h2>📊 Estadísticas</h2>
-    <canvas id="statsChart" style="max-height:300px;"></canvas>
+    <h3>Dashboard</h3>
+    <div id="sessionInfo"></div>
+<div id="advancedStats"></div>
     <div id="statsInfo"></div>
+    <canvas id="statsChart"></canvas>
   </div>
 
-  <!-- Generar Token -->
-  <div id="tokens" class="card" style="display:none;">
-    <h2><i class="fa-solid fa-key"></i> Generar Token</h2>
-    <input type="email" id="adminEmail" placeholder="Correo del Admin">
-    <input type="email" id="userEmail" placeholder="Correo del usuario">
-    <input type="password" id="userPassword" placeholder="Contraseña del usuario">
-    <input type="text" id="userName" placeholder="Nombre del usuario">
-    <button id="generateBtn">Generar Token</button>
-    <div id="tokenOutput" class="token-message"></div>
-    <button id="copyBtn"><i class="fa-solid fa-copy"></i> Copiar mensaje</button>
+  <div id="generator" class="card" style="display:none">
+    <h3>Generar Token</h3>
+    <input id="userName" placeholder="Nombre usuario">
+    <input id="userEmail" placeholder="Correo usuario">
+    <input id="userPassword" placeholder="Contraseña">
+    <button id="generateBtn">Generar</button>
+    <pre id="tokenOutput"></pre>
   </div>
 
-  <!-- Cuentas -->
-  <div id="accounts" class="card" style="display:none;">
-    <h2><i class="fa-solid fa-users"></i> Cuentas creadas</h2>
+  <div id="search" class="card" style="display:none">
+    <h3>Buscar</h3>
+    <input id="searchBox" placeholder="Buscar...">
+    <ul id="searchResults"></ul>
+    <button id="exportCSV">Exportar CSV</button>
+    <button id="deleteAll">Eliminar todo</button>
+  </div>
+
+  <div id="accounts" class="card" style="display:none">
+    <h3>Cuentas</h3>
     <ul id="accountsList"></ul>
   </div>
 
-  <!-- Buscar -->
-  <div id="search" class="card" style="display:none;">
-    <h2><i class="fa-solid fa-search"></i> Buscar tokens</h2>
-    <input type="text" id="searchBox" placeholder="Buscar por nombre, correo o token">
-    <ul id="searchResults"></ul>
+  <div id="settings" class="card" style="display:none">
+  <h3>Configuración</h3>
+
+  <!-- MODO OSCURO -->
+  <div class="switch">
+    <span>🌙 Modo oscuro</span>
+    <label>
+      <input type="checkbox" id="darkSwitch">
+      <div class="slider"></div>
+    </label>
   </div>
 
-  <!-- Exportar -->
-  <div id="export" class="card" style="display:none;">
-    <h2><i class="fa-solid fa-file-csv"></i> Exportar tokens</h2>
-    <button id="exportCSV"><i class="fa-solid fa-download"></i> Exportar CSV</button>
+  <!-- TEMA AUTOMÁTICO -->
+  <div class="switch" style="margin-top:15px">
+    <span>🌓 Tema automático</span>
+    <label>
+      <input type="checkbox" id="autoTheme">
+      <div class="slider"></div>
+    </label>
   </div>
 
-  <!-- Configuración -->
-  <div id="settings" class="card" style="display:none;">
-    <h2><i class="fa-solid fa-gear"></i> Configuración</h2>
-    <button id="toggleDark"><i class="fa-solid fa-moon"></i> Modo oscuro</button>
-    <button id="deleteAll" style="background:#e74c3c;"><i class="fa-solid fa-trash"></i> Eliminar todo</button>
+  <!-- MOSTRAR GRÁFICOS -->
+  <div class="switch" style="margin-top:15px">
+    <span>📊 Mostrar gráficos</span>
+    <label>
+      <input type="checkbox" id="toggleCharts" checked>
+      <div class="slider"></div>
+    </label>
   </div>
+
+  <hr>
+
+  <!-- EXPORT / IMPORT -->
+  <button id="exportJSON">📦 Exportar respaldo (JSON)</button>
+  <input type="file" id="importJSON" accept=".json">
+
+  <hr>
+<hr>
+
+<div class="switch">
+  <span>🚧 Modo mantenimiento</span>
+  <label>
+    <input type="checkbox" id="maintenanceSwitch">
+    <div class="slider"></div>
+  </label>
 </div>
 
+<p style="margin-top:10px">
+  <b>Versión:</b> <span id="appVersion"></span><br>
+  <b>Build:</b> 28/01/2026
+</p>
+  <!-- CERRAR SESIÓN -->
+  <button id="logoutBtn" style="background:#ef4444">🚪 Cerrar sesión</button>
+</div>
+
+<!-- ===== MENU + DARK MODE ===== -->
+<script>
+const sidebar=document.getElementById("sidebar");
+const overlay=document.getElementById("overlay");
+const menuBtn=document.getElementById("menuBtn");
+
+menuBtn.onclick=()=>{
+  sidebar.classList.toggle("active");
+  overlay.classList.toggle("show");
+  menuBtn.classList.toggle("active");
+};
+overlay.onclick=menuBtn.onclick;
+
+document.querySelectorAll(".sidebar a").forEach(link=>{
+  link.onclick=()=>{
+    document.querySelectorAll(".sidebar a").forEach(a=>a.classList.remove("active"));
+    link.classList.add("active");
+    document.querySelectorAll(".card").forEach(c=>c.style.display="none");
+    document.getElementById(link.dataset.section).style.display="block";
+    menuBtn.onclick();
+  };
+});
+
+const darkSwitch=document.getElementById("darkSwitch");
+if(localStorage.getItem("darkMode")==="true"){
+  document.body.classList.add("dark");
+  darkSwitch.checked=true;
+}
+darkSwitch.onchange=()=>{
+  document.body.classList.toggle("dark");
+  localStorage.setItem("darkMode",darkSwitch.checked);
+};
+</script>
+
+<!-- ================== TU SCRIPT FIREBASE COMPLETO ================== -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-  import { getDatabase, ref, set, get, child, remove } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+  import {
+  getDatabase,
+  ref,
+  set,
+  get,
+  child,
+  remove,
+  onValue
+} from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyBHbUTYykUxlJWl6QF6L9YwhC5kNFKpwV0",
@@ -219,10 +348,62 @@
     messagingSenderId: "813273124209",
     appId: "1:813273124209:web:81030c787f0992b19e7ad0"
   };
+  
+  const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+  const maintenanceSwitch = document.getElementById("maintenanceSwitch");
+const maintenanceRef = ref(db, "config/maintenance/enabled");
+
+// Estado inicial seguro
+onValue(maintenanceRef, (snap) => {
+  if (snap.exists()) {
+    maintenanceSwitch.checked = snap.val() === true;
+  } else {
+    maintenanceSwitch.checked = false; // si no existe, NO mantenimiento
+  }
+});
+
+// Guardar cambio
+maintenanceSwitch.addEventListener("change", async () => {
+  await set(maintenanceRef, maintenanceSwitch.checked);
+});
 const adminLoginModal = document.getElementById("adminLogin");
 const adminLoginBtn = document.getElementById("adminLoginBtn");
 const loginError = document.getElementById("loginError");
+// ===== EXPORTAR JSON =====
+document.getElementById("exportJSON").addEventListener("click", async ()=>{
+  const snap = await get(child(ref(db), "tokens"));
+  if(!snap.exists()) return alert("No hay datos");
 
+
+  const blob = new Blob([JSON.stringify(snap.val(), null, 2)], {type:"application/json"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "backup_tokens.json";
+  a.click();
+});
+
+const APP_VERSION = "v1.3.0";
+document.getElementById("appVersion").textContent = APP_VERSION;
+// ===== IMPORTAR JSON =====
+document.getElementById("importJSON").addEventListener("change", e=>{
+  const file = e.target.files[0];
+  if(!file) return;
+
+  const reader = new FileReader();
+  reader.onload = async ()=>{
+    try{
+      const data = JSON.parse(reader.result);
+      await set(ref(db,"tokens"), data);
+      alert("✅ Datos importados correctamente");
+      loadStats();
+      loadAccounts();
+    }catch{
+      alert("❌ Archivo inválido");
+    }
+  };
+  reader.readAsText(file);
+});
 // Lista de correos admin permitidos (puedes usar Firebase más tarde si quieres)
 const allowedAdmins = ["kevinaldaircamachoserna51@gmail.com", "tineorodrigo63@gmail.com"];
 
@@ -246,32 +427,56 @@ document.addEventListener("DOMContentLoaded", () => {
     adminLoginModal.style.display = "none";
   }
 });
-  const app = initializeApp(firebaseConfig);
-  const db = getDatabase(app);
+  
 
   let chart;
+// === LIMPIAR TOKENS ACTIVOS DESPUÉS DE 7 DÍAS ===
+async function limpiarTokensExpirados() {
+  const snap = await get(child(ref(db), "tokens"));
+  if (!snap.exists()) return;
 
-  // === Generar token ===
-  document.getElementById("generateBtn").addEventListener("click", async () => {
-    const admin = adminEmail.value.trim();
-    const email = userEmail.value.trim();
-    const pass = userPassword.value.trim();
-    const name = userName.value.trim();
-    if (!admin || !email || !pass || !name) return alert("Completa todos los campos");
+  const ahora = Date.now();
+  const sieteDias = 7 * 24 * 60 * 60 * 1000;
 
-    const token = Math.random().toString(36).substring(2, 10);
-    await set(ref(db, "tokens/" + token), {
-      userEmail: email,
-      userPassword: pass,
-      userName: name,
-      createdBy: admin,
-      used: false,
-      createdAt: Date.now()
-    });
-    const msg = `✅ Token generado:\nUsuario: ${name}\nCorreo: ${email}\nContraseña: ${pass}\nToken: ${token}`;
-    tokenOutput.textContent = msg;
-    navigator.clipboard.writeText(msg);
+  Object.entries(snap.val()).forEach(async ([token, info]) => {
+    if (!info.used && info.createdAt && (ahora - info.createdAt >= sieteDias)) {
+      await remove(ref(db, "tokens/" + token));
+      console.log("🗑️ Token expirado eliminado:", token);
+    }
   });
+}
+  // === Generar token ===
+document.getElementById("generateBtn").addEventListener("click", async () => {
+  const admin = localStorage.getItem("adminEmail"); // admin logueado
+  const email = userEmail.value.trim();
+  const pass = userPassword.value.trim();
+  const name = userName.value.trim();
+
+  if (!admin || !email || !pass || !name) {
+    return alert("Completa todos los campos");
+  }
+
+  const token = Math.random().toString(36).substring(2, 10);
+
+  await set(ref(db, "tokens/" + token), {
+    userEmail: email,
+    userPassword: pass,
+    userName: name,
+    createdBy: admin,
+    used: false,
+    createdAt: Date.now()
+  });
+
+  const msg = `✅ Token generado
+Usuario: ${name}
+Correo: ${email}
+Contraseña: ${pass}
+Token: ${token}
+Creado por: ${admin}`;
+
+  tokenOutput.textContent = msg;
+  navigator.clipboard.writeText(msg);
+});
 
   // === Cargar estadísticas con gráfico ===
   async function loadStats() {
@@ -379,47 +584,110 @@ window.reutilizarToken = async (token) => {
     });
   }
 
-  // === Actualización constante ===
   setInterval(() => {
-    loadStats();
-    loadAccounts();
-  }, 5000);
-
-  // === Navegación ===
-  const menuToggle = document.querySelector(".menu-toggle");
-  const sidebar = document.getElementById("sidebar");
-  const links = document.querySelectorAll(".sidebar a");
-
-  links.forEach(link => {
-    link.addEventListener("click", () => {
-      links.forEach(l => l.classList.remove("active"));
-      link.classList.add("active");
-      const section = link.dataset.section;
-      document.querySelectorAll(".card").forEach(c => c.style.display = "none");
-      document.getElementById(section).style.display = "block";
-      sidebar.classList.remove("active");
-      menuToggle.classList.replace("fa-xmark", "fa-bars");
-      if (section === "dashboard") loadStats();
-      if (section === "accounts") loadAccounts();
-    });
-  });
-
-  menuToggle.addEventListener("click", () => {
-    sidebar.classList.toggle("active");
-    menuToggle.classList.toggle("fa-xmark");
-  });
-
-  document.getElementById("toggleDark").addEventListener("click", () => {
-    document.body.classList.toggle("dark");
-    localStorage.setItem("darkMode", document.body.classList.contains("dark"));
-  });
-
-  if (localStorage.getItem("darkMode") === "true") document.body.classList.add("dark");
-
-  // Carga inicial
+  limpiarTokensExpirados();
   loadStats();
   loadAccounts();
+  loadAdvancedStats();
+}, 5000);
+
+
+  limpiarTokensExpirados();
+loadStats();
+loadAccounts();
   
+/* ===== CERRAR SESIÓN ===== */
+document.getElementById("logoutBtn").onclick = () => {
+  if(confirm("¿Cerrar sesión?")){
+    localStorage.removeItem("adminEmail");
+    location.reload();
+  }
+};
+
+/* ===== INACTIVIDAD 30 MIN ===== */
+let inactivityTimer;
+const MAX_INACTIVE = 30 * 60 * 1000;
+
+function resetInactivity(){
+  clearTimeout(inactivityTimer);
+  inactivityTimer = setTimeout(()=>{
+    alert("Sesión cerrada por inactividad");
+    localStorage.removeItem("adminEmail");
+    location.reload();
+  }, MAX_INACTIVE);
+}
+["click","mousemove","keydown","touchstart"].forEach(e=>{
+  document.addEventListener(e, resetInactivity);
+});
+resetInactivity();
+
+/* ===== TEMA AUTOMÁTICO ===== */
+const autoTheme = document.getElementById("autoTheme");
+if(localStorage.getItem("autoTheme")==="true"){
+  autoTheme.checked = true;
+  applyAutoTheme();
+}
+
+autoTheme.onchange = ()=>{
+  localStorage.setItem("autoTheme", autoTheme.checked);
+  if(autoTheme.checked) applyAutoTheme();
+};
+
+function applyAutoTheme(){
+  const hour = new Date().getHours();
+  const dark = hour >= 18 || hour <= 6;
+  document.body.classList.toggle("dark", dark);
+  darkSwitch.checked = dark;
+}
+
+/* ===== MOSTRAR / OCULTAR GRÁFICOS ===== */
+const toggleCharts = document.getElementById("toggleCharts");
+const chartCanvas = document.getElementById("statsChart");
+
+toggleCharts.onchange = ()=>{
+  chartCanvas.style.display = toggleCharts.checked ? "block" : "none";
+  localStorage.setItem("showCharts", toggleCharts.checked);
+};
+
+if(localStorage.getItem("showCharts")==="false"){
+  toggleCharts.checked = false;
+  chartCanvas.style.display = "none";
+}
+
+let sessionStart = Date.now();
+
+function updateSessionInfo(){
+  const admin = localStorage.getItem("adminEmail");
+  if(!admin) return;
+
+  const mins = Math.floor((Date.now() - sessionStart)/60000);
+  document.getElementById("sessionInfo").innerHTML = `
+    <p>👤 <b>Admin:</b> ${admin}</p>
+    <p>⏱️ <b>Tiempo activo:</b> ${mins} min</p>
+  `;
+}
+setInterval(updateSessionInfo, 60000);
+updateSessionInfo();
+
+async function loadAdvancedStats(){
+  const snap = await get(child(ref(db), "tokens"));
+  if(!snap.exists()) return;
+
+  const tokens = Object.values(snap.val());
+  const now = Date.now();
+
+  const hoy = tokens.filter(t => now - t.createdAt < 86400000).length;
+  const semana = tokens.filter(t => now - t.createdAt < 604800000).length;
+  const mes = tokens.filter(t => now - t.createdAt < 2592000000).length;
+
+  document.getElementById("advancedStats").innerHTML = `
+    <p>📅 Tokens hoy: <b>${hoy}</b></p>
+    <p>🗓️ Últimos 7 días: <b>${semana}</b></p>
+    <p>📆 Últimos 30 días: <b>${mes}</b></p>
+  `;
+}
+
 </script>
+
 </body>
 </html>
