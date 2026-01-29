@@ -239,23 +239,31 @@ h3{
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
 import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
+
 import { getDatabase, ref, onValue } 
 from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
-  
-/* FIREBASE */
+
+/* FIREBASE CONFIG */
 const firebaseConfig = {
   apiKey: "AIzaSyBHbUTYykUxlJWl6QF6L9YwhC5kNFKpwV0",
   authDomain: "apps-d075e.firebaseapp.com",
   projectId: "apps-d075e"
 };
 
+/* INIT */
 const app = initializeApp(firebaseConfig);
+
+/* FIRESTORE */
 const db = getFirestore(app);
+
+/* AUTH */
 const auth = getAuth(app);
-const db = getDatabase();
+
+/* REALTIME DATABASE (MANTENIMIENTO) */
+const rtdb = getDatabase(app);
 const maintenanceScreen = document.getElementById("maintenanceScreen");
 
-const maintenanceRef = ref(db, "config/maintenance/enabled");
+const maintenanceRef = ref(rtdb, "config/maintenance/enabled");
 
 onValue(maintenanceRef, (snapshot) => {
   if (snapshot.val() === true) {
