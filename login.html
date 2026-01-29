@@ -149,11 +149,36 @@ h3{
   background:var(--purple);
   color:#fff;
 }
+  #maintenanceScreen{
+  position:fixed;
+  inset:0;
+  background:#020617;
+  color:#fff;
+  z-index:9999;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  text-align:center;
+  padding:20px;
+
+  opacity:0;
+  visibility:hidden;
+  transition:opacity .3s ease;
+}
+
+#maintenanceScreen.active{
+  opacity:1;
+  visibility:visible;
+  }
 </style>
 </head>
 
 <body>
-
+<div id="maintenanceScreen">
+  <h1>🚧 Sistema en mantenimiento</h1>
+  <p>Estamos realizando mejoras.<br>Inténtalo más tarde.</p>
+</div>
 <!-- TOP -->
 <div class="top">
 
@@ -214,7 +239,9 @@ h3{
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
 import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
-
+import { getDatabase, ref, onValue } 
+from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+  
 /* FIREBASE */
 const firebaseConfig = {
   apiKey: "AIzaSyBHbUTYykUxlJWl6QF6L9YwhC5kNFKpwV0",
@@ -225,7 +252,20 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
+const db = getDatabase();
+const maintenanceScreen = document.getElementById("maintenanceScreen");
 
+const maintenanceRef = ref(db, "config/maintenance/enabled");
+
+onValue(maintenanceRef, (snapshot) => {
+  if (snapshot.val() === true) {
+    maintenanceScreen.classList.add("active");
+    document.body.style.overflow = "hidden";
+  } else {
+    maintenanceScreen.classList.remove("active");
+    document.body.style.overflow = "";
+  }
+});
 /* ELEMENTS */
 const input = document.getElementById("clave");
 const dotsContainer = document.getElementById("dots-container");
