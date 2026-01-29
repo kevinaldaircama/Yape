@@ -99,15 +99,13 @@ button {
 </head>
 
 <body>
-<!-- ===== PANTALLA DE MANTENIMIENTO ===== -->
-<div id="maintenanceScreen" style="
+<<div id="maintenanceScreen" style="
   display:none;
   position:fixed;
   inset:0;
   background:#020617;
   color:#fff;
   z-index:9999;
-  display:flex;
   flex-direction:column;
   justify-content:center;
   align-items:center;
@@ -117,7 +115,6 @@ button {
   <h1>🚧 Sistema en mantenimiento</h1>
   <p>Estamos realizando mejoras.<br>Inténtalo más tarde.</p>
 </div>
-  
 <div class="card">
     <h1>yape fake</h1>
     <div class="subtitle">acceso seguro</div>
@@ -135,32 +132,30 @@ button {
     </div>
 </div>
 
-<!-- ===================================================== -->
-<!-- 🔥 FIREBASE + LOGICA DE TOKEN -->
-<!-- ===================================================== -->
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-import { getDatabase, ref, get, update } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+  <script type="module">
+  import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+  import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyBHbUTYykUxlJWl6QF6L9YwhC5kNFKpwV0",
-  authDomain: "apps-d075e.firebaseapp.com",
-  databaseURL: "https://apps-d075e-default-rtdb.firebaseio.com",
-  projectId: "apps-d075e",
-  storageBucket: "apps-d075e.firebasestorage.app",
-  messagingSenderId: "813273124209",
-  appId: "1:813273124209:web:81030c787f0992b19e7ad0",
-  measurementId: "G-6DK205T44V"
-};
+  const firebaseConfig = {
+    apiKey: "AIzaSyBHbUTYykUxlJWl6QF6L9YwhC5kNFKpwV0",
+    authDomain: "apps-d075e.firebaseapp.com",
+    databaseURL: "https://apps-d075e-default-rtdb.firebaseio.com",
+    projectId: "apps-d075e",
+    storageBucket: "apps-d075e.firebasestorage.app",
+    messagingSenderId: "813273124209",
+    appId: "1:813273124209:web:81030c787f0992b19e7ad0"
+  };
 
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
-const maintenanceRef = ref(db, "config/maintenance/enabled");
+  const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+
   const screen = document.getElementById("maintenanceScreen");
+  const maintenanceRef = ref(db, "config/maintenance/enabled");
 
-  // Escucha en tiempo real
   onValue(maintenanceRef, (snap) => {
-    if (snap.exists() && snap.val() === true) {
+    const enabled = snap.val() === true;
+
+    if (enabled) {
       screen.style.display = "flex";
       document.body.style.overflow = "hidden";
     } else {
@@ -168,6 +163,7 @@ const maintenanceRef = ref(db, "config/maintenance/enabled");
       document.body.style.overflow = "";
     }
   });
+</script>
 // 🔑 Verificar token
 window.checkToken = function () {
     const token = document.getElementById("token").value.trim();
