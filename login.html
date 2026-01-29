@@ -4,10 +4,12 @@
 <meta charset="UTF-8">
 <title>Ingreso</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <!-- PWA -->
-  <link rel="manifest" href="manifest.json" />  
-  <meta name="theme-color" content="#7B2C83" />  
-  <link rel="icon" type="image/png" href="imagen/app_icon_xxxhdpi.png">     
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#7B2C83">
+<link rel="icon" type="image/png" href="imagen/app_icon_xxxhdpi.png">
+
 <!-- FONT AWESOME -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
@@ -25,11 +27,32 @@
   font-family: system-ui, -apple-system, BlinkMacSystemFont;
 }
 
-body{
-  background:#fff;
+body{ background:#fff; }
+
+/* ===== MANTENIMIENTO ===== */
+#maintenanceScreen{
+  position:fixed;
+  inset:0;
+  background:#020617;
+  color:#fff;
+  z-index:9999;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  text-align:center;
+  padding:20px;
+  opacity:0;
+  visibility:hidden;
+  transition:opacity .3s ease;
 }
 
-/* TOP */
+#maintenanceScreen.active{
+  opacity:1;
+  visibility:visible;
+}
+
+/* ===== UI ===== */
 .top{
   background:linear-gradient(180deg,var(--purple),var(--purple-dark));
   padding:32px 16px 22px;
@@ -48,9 +71,8 @@ body{
   justify-content:center;
 }
 
-.qr img{width:170px}
+.qr img{ width:170px }
 
-/* OPTIONS */
 .options{
   display:flex;
   justify-content:space-around;
@@ -73,7 +95,6 @@ body{
   margin:0 auto 6px;
 }
 
-/* BOTTOM */
 .bottom{
   padding:24px 18px;
 }
@@ -84,7 +105,6 @@ h3{
   margin-bottom:14px;
 }
 
-/* DOTS */
 .dots{
   display:none;
   justify-content:center;
@@ -103,7 +123,6 @@ h3{
   background:var(--purple);
 }
 
-/* KEYPAD */
 #keypad{
   display:grid;
   grid-template-columns:repeat(3,1fr);
@@ -123,7 +142,6 @@ h3{
   font-size:22px;
 }
 
-/* MODAL */
 #modal{
   display:none;
   position:fixed;
@@ -149,45 +167,25 @@ h3{
   background:var(--purple);
   color:#fff;
 }
-  #maintenanceScreen{
-  position:fixed;
-  inset:0;
-  background:#020617;
-  color:#fff;
-  z-index:9999;
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  align-items:center;
-  text-align:center;
-  padding:20px;
-
-  opacity:0;
-  visibility:hidden;
-  transition:opacity .3s ease;
-}
-
-#maintenanceScreen.active{
-  opacity:1;
-  visibility:visible;
-  }
 </style>
 </head>
 
 <body>
+
+<!-- 🚧 MANTENIMIENTO -->
 <div id="maintenanceScreen">
   <h1>🚧 Sistema en mantenimiento</h1>
   <p>Estamos realizando mejoras.<br>Inténtalo más tarde.</p>
 </div>
+
 <!-- TOP -->
 <div class="top">
-
   <div class="qr">
     <img src="imagen/qr.jpg">
   </div>
 
   <div class="options">
-    <div class="option" onclick="window.location.href='inicio'">
+    <div class="option">
       <i class="fa-solid fa-lock"></i>
       Olvido de clave
     </div>
@@ -200,18 +198,14 @@ h3{
       Ayuda
     </div>
   </div>
-
 </div>
 
 <!-- BOTTOM -->
 <div class="bottom">
-
   <h3>Ingresa tu clave</h3>
 
-  <!-- INPUT OCULTO -->
   <input type="password" id="clave" hidden maxlength="6">
 
-  <!-- DOTS -->
   <div class="dots" id="dots-container">
     <div class="dot" id="dot1"></div>
     <div class="dot" id="dot2"></div>
@@ -221,9 +215,7 @@ h3{
     <div class="dot" id="dot6"></div>
   </div>
 
-  <!-- KEYPAD -->
   <div id="keypad"></div>
-
 </div>
 
 <!-- MODAL -->
@@ -234,39 +226,33 @@ h3{
   </div>
 </div>
 
-<!-- SCRIPT -->
+<!-- ================= SCRIPT ================= -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
-import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
-
-import { getDatabase, ref, onValue } 
-from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
+import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-database.js";
 
 /* FIREBASE CONFIG */
 const firebaseConfig = {
   apiKey: "AIzaSyBHbUTYykUxlJWl6QF6L9YwhC5kNFKpwV0",
   authDomain: "apps-d075e.firebaseapp.com",
-  projectId: "apps-d075e"
+  projectId: "apps-d075e",
+  databaseURL: "https://apps-d075e-default-rtdb.firebaseio.com"
 };
 
 /* INIT */
 const app = initializeApp(firebaseConfig);
-
-/* FIRESTORE */
-const db = getFirestore(app);
-
-/* AUTH */
 const auth = getAuth(app);
-
-/* REALTIME DATABASE (MANTENIMIENTO) */
+const db = getFirestore(app);
 const rtdb = getDatabase(app);
-const maintenanceScreen = document.getElementById("maintenanceScreen");
 
+/* ===== MANTENIMIENTO ===== */
+const maintenanceScreen = document.getElementById("maintenanceScreen");
 const maintenanceRef = ref(rtdb, "config/maintenance/enabled");
 
-onValue(maintenanceRef, (snapshot) => {
-  if (snapshot.val() === true) {
+onValue(maintenanceRef, snap => {
+  if (snap.val() === true) {
     maintenanceScreen.classList.add("active");
     document.body.style.overflow = "hidden";
   } else {
@@ -274,7 +260,8 @@ onValue(maintenanceRef, (snapshot) => {
     document.body.style.overflow = "";
   }
 });
-/* ELEMENTS */
+
+/* ===== PIN UI ===== */
 const input = document.getElementById("clave");
 const dotsContainer = document.getElementById("dots-container");
 const modal = document.getElementById("modal");
@@ -282,24 +269,19 @@ const modalText = document.getElementById("modal-text");
 const btnAceptar = document.getElementById("btnAceptar");
 const keypad = document.getElementById("keypad");
 
-/* DOTS */
 function updateDots(){
   const len = input.value.length;
   dotsContainer.style.display = len ? "flex" : "none";
   for(let i=1;i<=6;i++){
-    document.getElementById("dot"+i)
-      .classList.toggle("active", i<=len);
+    document.getElementById("dot"+i).classList.toggle("active", i<=len);
   }
 }
 
-/* KEYPAD LOGIC */
 function addNumber(n){
   if(input.value.length < 6){
     input.value += n;
     updateDots();
-    if(input.value.length === 6){
-      autenticarPIN(input.value);
-    }
+    if(input.value.length === 6) autenticarPIN(input.value);
   }
 }
 
@@ -308,91 +290,60 @@ function deleteNumber(){
   updateDots();
 }
 
-/* RANDOM KEYPAD */
 function shuffle(arr){
-  for(let i = arr.length - 1; i > 0; i--){
-    const j = Math.floor(Math.random() * (i + 1));
-    [arr[i], arr[j]] = [arr[j], arr[i]];
+  for(let i=arr.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]]=[arr[j],arr[i]];
   }
   return arr;
 }
 
 function generateKeypad(){
-  keypad.innerHTML = "";
+  keypad.innerHTML="";
+  let nums=shuffle([0,1,2,3,4,5,6,7,8,9]);
+  let layout=[nums[0],nums[1],nums[2],nums[3],nums[4],nums[5],nums[6],nums[7],nums[8],"del",nums[9],"ok"];
 
-  let numbers = shuffle([0,1,2,3,4,5,6,7,8,9]);
-
-  let layout = [
-    numbers[0], numbers[1], numbers[2],
-    numbers[3], numbers[4], numbers[5],
-    numbers[6], numbers[7], numbers[8],
-    "huella", numbers[9], "del"
-  ];
-
-  layout.forEach(item => {
-    const btn = document.createElement("button");
-
-    if(typeof item === "number"){
-      btn.textContent = item;
-      btn.onclick = () => addNumber(item);
+  layout.forEach(item=>{
+    const btn=document.createElement("button");
+    if(typeof item==="number"){
+      btn.textContent=item;
+      btn.onclick=()=>addNumber(item);
+    }else if(item==="del"){
+      btn.innerHTML='<i class="fa-solid fa-delete-left"></i>';
+      btn.onclick=deleteNumber;
+    }else{
+      btn.innerHTML='<i class="fa-solid fa-check"></i>';
     }
-    else if(item === "huella"){
-      btn.innerHTML = '<i class="fa-solid fa-fingerprint"></i>';
-      btn.onclick = () => alert("Biometría (demo)");
-    }
-    else{
-      btn.innerHTML = '<i class="fa-solid fa-delete-left"></i>';
-      btn.onclick = deleteNumber;
-    }
-
     keypad.appendChild(btn);
   });
 }
 
-/* AUTH PIN */
 async function autenticarPIN(pin){
-  modal.style.display = "flex";
-  modalText.textContent = "Verificando...";
-  btnAceptar.style.display = "none";
+  modal.style.display="flex";
+  modalText.textContent="Verificando...";
+  btnAceptar.style.display="none";
 
   onAuthStateChanged(auth, async(user)=>{
     if(!user){
-      modalText.textContent = "⚠️ No has iniciado sesión";
-      btnAceptar.style.display = "block";
+      modalText.textContent="⚠️ No has iniciado sesión";
+      btnAceptar.style.display="block";
       return;
     }
 
-    try{
-      const ref = doc(db,"usuarios",user.uid);
-      const snap = await getDoc(ref);
-
-      if(!snap.exists()){
-        modalText.textContent = "❌ Usuario no encontrado";
-      }
-      else if(pin === snap.data().pin){
-        window.location.href = "home";
-        return;
-      }
-      else{
-        modalText.textContent = "❌ Clave incorrecta";
-        input.value = "";
-        updateDots();
-        generateKeypad(); // vuelve a mezclar
-      }
-    }catch{
-      modalText.textContent = "⚠️ Error de conexión";
+    const snap=await getDoc(doc(db,"usuarios",user.uid));
+    if(snap.exists() && pin===snap.data().pin){
+      window.location.href="home";
+    }else{
+      modalText.textContent="❌ Clave incorrecta";
+      input.value="";
+      updateDots();
+      generateKeypad();
+      btnAceptar.style.display="block";
     }
-
-    btnAceptar.style.display = "block";
   });
 }
 
-/* MODAL BTN */
-btnAceptar.onclick = () => {
-  modal.style.display = "none";
-};
-
-/* INIT */
+btnAceptar.onclick=()=>modal.style.display="none";
 generateKeypad();
 </script>
 
