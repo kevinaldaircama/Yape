@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Solicitud de Acceso</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+:root {
+  --primary: #7B2C83;
+  --secondary: #5b1f61;
+  --bg: #eef1f6;
+  --card: #ffffff;
+  --text: #1f2937;
+  --muted: #6b7280;
+  --border: #d1d5db;
+  --error: #dc2626;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+}
+
+body {
+  background: linear-gradient(135deg, #e9ecf3, #f8f9fc);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.container {
+  width: 100%;
+  max-width: 520px;
+  background: var(--card);
+  padding: 28px;
+  border-radius: 16px;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.header h2 {
+  color: var(--text);
+  margin-bottom: 6px;
+}
+
+.header p {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.form-group {
+  margin-bottom: 16px;
+}
+
+label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 14px;
+  color: #374151;
+  font-weight: 600;
+}
+
+input, select, textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font-size: 15px;
+  transition: .3s;
+  background: #fafafa;
+}
+
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(123,44,131,.2);
+  background: #fff;
+}
+
+button {
+  padding: 13px;
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  width: 100%;
+  border-radius: 12px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: .3s;
+  font-weight: bold;
+}
+
+button:hover {
+  background: var(--secondary);
+}
+
+.footer {
+  text-align: center;
+  margin-top: 12px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.error {
+  color: var(--error);
+  font-size: 14px;
+  text-align: center;
+  margin-top: 10px;
+}
+
+.required {
+  color: var(--error);
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <div class="header">
+    <h2>Solicitud de Acceso</h2>
+    <p>Acceso al sistema – completa todos los datos</p>
+  </div>
+
+  <div class="form-group">
+    <label>ID del cliente <span class="required">*</span></label>
+    <input id="id" placeholder="Ejemplo: 12345">
+  </div>
+
+  <div class="form-group">
+    <label>Usuario de Telegram <span class="required">*</span></label>
+    <input id="usuario" placeholder="Ejemplo: @admin123">
+  </div>
+
+  <div class="form-group">
+    <label>Días solicitados <span class="required">*</span></label>
+    <input id="dias" type="number" placeholder="Ejemplo: 15" min="1">
+  </div>
+
+  <div class="form-group">
+    <label>Método de pago preferido <span class="required">*</span></label>
+    <select id="metodo">
+      <option value="">Seleccionar...</option>
+      <option>Yape</option>
+      <option>Plin</option>
+      <option>Transferencia</option>
+      <option>Otro</option>
+    </select>
+  </div>
+
+  <div class="form-group">
+    <label>Mensaje adicional (opcional)</label>
+    <textarea id="mensaje" rows="3" placeholder="Escribe algún detalle si deseas..."></textarea>
+  </div>
+
+  <button onclick="enviar()">Enviar Solicitud por WhatsApp</button>
+
+  <p id="error" class="error"></p>
+
+  <div class="footer">
+    Todos los campos marcados con * son obligatorios
+  </div>
+
+</div>
+
+<script>
+function enviar() {
+
+  const id = document.getElementById("id").value.trim();
+  const usuario = document.getElementById("usuario").value.trim();
+  const dias = document.getElementById("dias").value.trim();
+  const metodo = document.getElementById("metodo").value;
+  const mensajeExtra = document.getElementById("mensaje").value.trim();
+
+  const error = document.getElementById("error");
+
+  if (!id || !usuario || !dias || !metodo) {
+    error.innerText = "⚠️ Debes completar todos los campos obligatorios";
+    return;
+  }
+
+  if (dias <= 0) {
+    error.innerText = "⚠️ Los días deben ser mayor a 0";
+    return;
+  }
+
+  error.innerText = "";
+
+  const whatsapp = "51922561959"; // CAMBIA AQUÍ TU NÚMERO
+
+  let texto =
+`Hola, deseo solicitar acceso:
+
+🆔 ID: ${id}
+👤 Usuario: ${usuario}
+📅 Días solicitados: ${dias}
+💳 Método de pago: ${metodo}`;
+
+  if (mensajeExtra) {
+    texto += `\n\n📝 Mensaje:\n${mensajeExtra}`;
+  }
+
+  const url = `https://wa.me/${whatsapp}?text=${encodeURIComponent(texto)}`;
+
+  window.open(url, "_blank");
+}
+</script>
+
+</body>
+  </html>
