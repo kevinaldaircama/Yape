@@ -1,40 +1,241 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Yapear</title>
-  <link rel="manifest" href="manifest.json" />
-  <meta name="theme-color" content="#720e9e" />
-  <link rel="icon" type="image/png" href="imagen/app_icon_xxxhdpi.png">
-  <link rel="stylesheet" href="cc/style.css">
+<meta charset="UTF-8">
+<title>Yapear</title>
+<link rel="manifest" href="manifest.json" /> <meta name="theme-color" content="#720e9e" /> <link rel="icon" type="image/png" href="imagen/app_icon_xxxhdpi.png">
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+<style>
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background-color: #f2f2f2;
+}
+
+.app {
+    max-width: 420px;
+    margin: auto;
+    background-color: white;
+    min-height: 100vh;
+    border: 1px solid #ddd;
+}
+
+/* Barra superior estilo Yape */
+.topbar {
+    display: flex;
+    align-items: center;
+    padding: 14px;
+    background-color: white;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.topbar .close {
+    font-size: 20px;
+    margin-right: 10px;
+    cursor: pointer;
+}
+
+.topbar .title {
+    font-size: 17px;
+    font-weight: bold;
+}
+
+/* Buscador */
+.search-container {
+    padding: 10px;
+}
+
+.search-box {
+    display: flex;
+    align-items: center;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 8px 10px;
+    background-color: #fafafa;
+}
+
+.search-box input {
+    border: none;
+    width: 100%;
+    outline: none;
+    font-size: 14px;
+}
+
+.search-box .icon {
+    font-size: 16px;
+    color: #666;
+}
+
+/* Título de sección */
+.section-title {
+    padding: 10px;
+    font-size: 14px;
+    color: black;
+    border-top: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+    background-color: #fafafa;
+}
+
+/* Lista de contactos */
+.contact-list {
+    background-color: white;
+}
+
+.contact {
+    padding: 12px 10px;
+    border-bottom: 1px solid #e0e0e0;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.contact:hover {
+    background-color: #f5f5f5;
+}
+
+.contact-name {
+    font-size: 14px;
+    color: #222;
+}
+
+.contact-number {
+    font-size: 12px;
+    color: #666;
+    margin-top: 3px;
+}
+
+/* Mensaje vacío */
+.empty {
+    padding: 15px;
+    color: #777;
+    font-size: 14px;
+}
+</style>
+
 </head>
+
 <body>
 
-  <div class="topbar">
-    <div class="icon">✕</div>
-    <h1>Yapear</h1>
-    <div class="icon"></div>
-  </div>
+<div class="app">
 
-  <div class="tabs">
-    <div class="tab">Contactos</div>
-    <div class="tab inactive">Yapeos pendientes</div>
-  </div>
+    <div class="topbar">
+        <div class="close">✕</div>
+        <div class="title">Yapear</div>
+    </div>
 
-  <div class="search-bar">
-    <input type="text" placeholder="Ingresa celular o busca contacto">
-  </div>
+    <div class="search-container">
+        <div class="search-box">
+            <input type="text" id="buscador" placeholder="Busca el celular o contacto">
+            <div class="icon">🔍</div>
+        </div>
+    </div>
 
-  <div class="contact-list">
-    <!-- Se llena dinámicamente -->
-  </div>
+    <div class="section-title">
+        Todos tus contactos
+    </div>
 
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+    <div class="contact-list">
+        <!-- Aquí se cargarán los contactos desde Firebase -->
+    </div>
 
-  <!-- Script principal -->
-  <script src="app/yapear.js"></script>
+</div>
+
+<script>
+// Configuración Firebase
+const firebaseConfig = {
+  apiKey: "AIzaSyBHbUTYykUxlJWl6QF6L9YwhC5kNFKpwV0",
+  authDomain: "apps-d075e.firebaseapp.com",
+  databaseURL: "https://apps-d075e-default-rtdb.firebaseio.com",
+  projectId: "apps-d075e",
+  storageBucket: "apps-d075e.firebasestorage.app",
+  messagingSenderId: "813273124209",
+  appId: "1:813273124209:web:81030c787f0992b19e7ad0",
+  measurementId: "G-6DK205T44V"
+};
+
+// Inicializar Firebase
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+const contactList = document.querySelector(".contact-list");
+const buscador = document.getElementById("buscador");
+
+let contactosGlobal = {};
+
+// Renderizar contactos
+function renderizarContactos(datos) {
+  contactList.innerHTML = "";
+
+  if (!datos || Object.keys(datos).length === 0) {
+    contactList.innerHTML = `
+      <div class="empty">
+        No se encontraron contactos.
+      </div>
+    `;
+    return;
+  }
+
+  Object.entries(datos).forEach(([apodo, contacto]) => {
+    const nombre = contacto.nombre?.trim();
+    const numero = contacto.numero?.trim();
+
+    if (!numero) return;
+
+    let mostrarNombre = (!apodo.startsWith("sin_apodo_") && apodo !== nombre)
+      ? apodo
+      : nombre || "Sin nombre";
+
+    contactList.innerHTML += `
+      <div class="contact" onclick="window.location.href='envio.html?apodo=${encodeURIComponent(apodo)}'">
+        <div class="contact-name">${mostrarNombre}</div>
+        <div class="contact-number">${numero}</div>
+      </div>
+    `;
+  });
+}
+
+// Escuchar cambios en la BD
+db.ref("contactos").on("value", snapshot => {
+  const datos = snapshot.val();
+  contactosGlobal = datos || {};
+  renderizarContactos(contactosGlobal);
+});
+
+// BUSCADOR REAL POR NOMBRE O NÚMERO
+buscador.addEventListener("input", () => {
+  const texto = buscador.value.toLowerCase().trim();
+
+  if (texto === "") {
+    renderizarContactos(contactosGlobal);
+    return;
+  }
+
+  const filtrados = {};
+
+  Object.entries(contactosGlobal).forEach(([apodo, contacto]) => {
+    const nombre = (contacto.nombre || "").toLowerCase();
+    const numero = (contacto.numero || "").toLowerCase();
+    const alias = apodo.toLowerCase();
+
+    if (
+      nombre.includes(texto) ||
+      numero.includes(texto) ||
+      alias.includes(texto)
+    ) {
+      filtrados[apodo] = contacto;
+    }
+  });
+
+  renderizarContactos(filtrados);
+});
+</script>
+
 </body>
-</html>
+  </html>
