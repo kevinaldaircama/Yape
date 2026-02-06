@@ -1,221 +1,208 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Seleccionar Destino</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Seleccionar Destino</title>
 
-  <link rel="manifest" href="manifest.json" />
-  <meta name="theme-color" content="#720e9e" />
-  <link rel="icon" type="image/png" href="imagen/app_icon_xxxhdpi.png">
+<link rel="manifest" href="manifest.json" />
+<meta name="theme-color" content="#720e9e" />
 
-  <style>
-    * { box-sizing: border-box; font-family: Arial, sans-serif; }
-    body { margin: 0; background: #fff; }
+<style>
+body {
+  margin: 0;
+  font-family: Arial;
+  background: #fff;
+}
 
-    .title-bar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 15px 20px;
-      font-size: 18px;
-      border-bottom: 1px solid #ddd;
-    }
+.title-bar {
+  display: flex;
+  justify-content: space-between;
+  padding: 15px;
+  border-bottom: 1px solid #ddd;
+}
 
-    .close-btn {
-      background: none;
-      border: none;
-      font-size: 26px;
-      cursor: pointer;
-    }
+.options {
+  padding: 10px;
+}
 
-    .options {
-      display: flex;
-      flex-direction: column;
-      padding: 15px;
-      gap: 10px;
-    }
+.option-card {
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 12px;
+  margin-bottom: 10px;
+  cursor: pointer;
+}
 
-    .option-card {
-      padding: 15px;
-      border: 1px solid #ddd;
-      border-radius: 10px;
-      cursor: pointer;
-      transition: 0.2s;
-    }
+.option-card span {
+  font-weight: bold;
+  display: block;
+}
 
-    .option-card:hover {
-      background: #f5f5f5;
-    }
+.option-card small {
+  color: #666;
+}
 
-    /* Modal */
-    .modal-confirm {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0,0,0,0.4);
-      display: none;
-      justify-content: center;
-      align-items: center;
-    }
+.modal {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.5);
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
 
-    .modal-content {
-      background: white;
-      padding: 20px;
-      border-radius: 12px;
-      width: 90%;
-      max-width: 380px;
-      text-align: center;
-    }
+.modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  width: 90%;
+  max-width: 350px;
+}
 
-    .modal-content input {
-      width: 100%;
-      padding: 10px;
-      margin: 8px 0;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-    }
+input {
+  width: 100%;
+  padding: 8px;
+  margin: 5px 0;
+}
 
-    .modal-btns {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 10px;
-    }
-
-    .btn {
-      padding: 10px;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      width: 48%;
-    }
-
-    .btn-cancelar {
-      background: #ccc;
-    }
-
-    .btn-yapear {
-      background: #720e9e;
-      color: white;
-    }
-  </style>
+button {
+  padding: 10px;
+  margin-top: 10px;
+}
+</style>
 </head>
 
 <body>
 
-  <div class="title-bar">
-    <span>Seleccionar Destino</span>
-    <button class="close-btn" onclick="window.history.back()">×</button>
+<div class="title-bar">
+  <span>Seleccionar Destino</span>
+  <button onclick="history.back()">X</button>
+</div>
+
+<div class="options" id="lista-destinos"></div>
+
+<div class="modal" id="modal">
+  <div class="modal-content">
+    <h3>Confirmar Envío</h3>
+
+    <p id="info"></p>
+
+    <input id="nombre" placeholder="Nombre del destinatario">
+    <input id="monto" placeholder="Monto">
+    <input id="digitos" placeholder="3 últimos dígitos">
+
+    <button onclick="confirmar()">Confirmar</button>
+    <button onclick="cerrar()">Cancelar</button>
   </div>
+</div>
 
-  <div class="options" id="lista-destinos"></div>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 
-  <!-- MODAL MEJORADO -->
-  <div class="modal-confirm" id="modal-confirm">
-    <div class="modal-content">
-      <h3>Confirmar destino</h3>
+<script>
 
-      <p id="modal-mensaje"></p>
+const firebaseConfig = {
+  apiKey: "AIzaSyBHbUTYykUxlJWl6QF6L9YwhC5kNFKpwV0",
+  authDomain: "apps-d075e.firebaseapp.com",
+  databaseURL: "https://apps-d075e-default-rtdb.firebaseio.com",
+  projectId: "apps-d075e",
+  storageBucket: "apps-d075e.firebasestorage.app",
+  messagingSenderId: "813273124209",
+  appId: "1:813273124209:web:81030c787f0992b19e7ad0"
+};
 
-      <input id="input-nombre" placeholder="Nombre del destinatario">
-      <input id="input-monto" placeholder="Monto a enviar" type="number">
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
 
-      <div class="modal-btns">
-        <button class="btn btn-cancelar" onclick="cerrarModal()">Cancelar</button>
-        <button class="btn btn-yapear" onclick="continuar()">Continuar</button>
-      </div>
-    </div>
-  </div>
+const lista = document.getElementById("lista-destinos");
 
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+let seleccionado = "";
 
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyBHbUTYykUxlJWl6QF6L9YwhC5kNFKpwV0",
-      authDomain: "apps-d075e.firebaseapp.com",
-      databaseURL: "https://apps-d075e-default-rtdb.firebaseio.com",
-      projectId: "apps-d075e",
-      storageBucket: "apps-d075e.firebasestorage.app",
-      messagingSenderId: "813273124209",
-      appId: "1:813273124209:web:81030c787f0992b19e7ad0"
-    };
+function destinoValido(d) {
+  const invalidos = ["sin destino", "***", "a", "b", "x", "yape", "plin"];
+  return d && d.length > 2 && !invalidos.includes(d.toLowerCase());
+}
 
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
+db.ref("contactos").on("value", snap => {
 
-    const lista = document.getElementById("lista-destinos");
-    const modal = document.getElementById("modal-confirm");
-    const mensaje = document.getElementById("modal-mensaje");
+  lista.innerHTML = "";
 
-    let destinoActual = "";
+  const numeros = {};
 
-    // CARGAR DESTINOS ÚNICOS
-    db.ref("contactos").once("value").then(snapshot => {
-      lista.innerHTML = "";
+  snap.forEach(c => {
+    const data = c.val();
+    const num = data.numero;
+    const dest = data.destino;
+    const nom = data.nombre || "Sin nombre";
 
-      const destinos = {};
+    if (!num || !destinoValido(dest)) return;
 
-      snapshot.forEach(child => {
-        const data = child.val();
-
-        if (data.destino) {
-          destinos[data.destino] = data;
-        }
-      });
-
-      Object.keys(destinos).forEach(destino => {
-        const data = destinos[destino];
-
-        const card = document.createElement("div");
-        card.className = "option-card";
-
-        card.innerHTML = `
-          <strong>${destino}</strong><br>
-          <small>${data.nombre || "Sin nombre"}</small>
-        `;
-
-        card.onclick = () => abrirModal(destino, data.nombre);
-
-        lista.appendChild(card);
-      });
-
-      if (Object.keys(destinos).length === 0) {
-        lista.innerHTML = "<p>No hay destinos registrados</p>";
-      }
-    });
-
-    function abrirModal(destino, nombre) {
-      destinoActual = destino;
-      mensaje.innerText = `¿Deseas yapear al destino "${destino}"?`;
-
-      document.getElementById("input-nombre").value = nombre || "";
-      document.getElementById("input-monto").value = "";
-
-      modal.style.display = "flex";
+    if (!numeros[num]) {
+      numeros[num] = {
+        nombre: nom,
+        destinos: new Set()
+      };
     }
 
-    function cerrarModal() {
-      modal.style.display = "none";
+    numeros[num].destinos.add(dest);
+  });
+
+  let hay = false;
+
+  for (let num in numeros) {
+    if (numeros[num].destinos.size > 1) {
+
+      hay = true;
+
+      const card = document.createElement("div");
+      card.className = "option-card";
+
+      card.innerHTML = `
+        <span>${numeros[num].nombre}</span>
+        <small>${num}</small>
+        <small>${[...numeros[num].destinos].join(" / ")}</small>
+      `;
+
+      card.onclick = () => abrir(num, numeros[num].nombre);
+
+      lista.appendChild(card);
     }
+  }
 
-    function continuar() {
-      const nombre = document.getElementById("input-nombre").value;
-      const monto = document.getElementById("input-monto").value;
+  if (!hay) {
+    lista.innerHTML = "<p>No hay números con múltiples destinos.</p>";
+  }
 
-      if (!nombre || !monto) {
-        alert("Completa todos los campos");
-        return;
-      }
+});
 
-      const params = new URLSearchParams();
-      params.set("destino", destinoActual);
-      params.set("nombre", nombre);
-      params.set("monto", monto);
+function abrir(numero, nombre) {
+  seleccionado = numero;
+  document.getElementById("info").innerText =
+    "Enviar a: " + nombre + " (" + numero + ")";
+  document.getElementById("modal").style.display = "flex";
+}
 
-      window.location.href = "comprobante1.html?" + params.toString();
-    }
-  </script>
+function cerrar() {
+  document.getElementById("modal").style.display = "none";
+}
+
+function confirmar() {
+  const nombre = document.getElementById("nombre").value;
+  const monto = document.getElementById("monto").value;
+  const dig = document.getElementById("digitos").value;
+
+  if (!nombre || !monto || !dig) {
+    alert("Completa todos los campos");
+    return;
+  }
+
+  alert("Listo para enviar a " + seleccionado);
+  cerrar();
+}
+
+</script>
 
 </body>
 </html>
