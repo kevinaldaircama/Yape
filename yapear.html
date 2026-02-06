@@ -2,8 +2,14 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
 <title>Yapear</title>
-<link rel="manifest" href="manifest.json" /> <meta name="theme-color" content="#720e9e" /> <link rel="icon" type="image/png" href="imagen/app_icon_xxxhdpi.png">
+
+<link rel="manifest" href="manifest.json" />
+<meta name="theme-color" content="#720e9e" />
+<link rel="icon" type="image/png" href="imagen/app_icon_xxxhdpi.png">
+
 <!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
@@ -13,28 +19,34 @@
     box-sizing: border-box;
     margin: 0;
     padding: 0;
-    font-family: Arial, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
 }
 
-body {
+html, body {
+    height: 100%;
     background-color: #f2f2f2;
 }
 
 .app {
-    max-width: 420px;
+    width: 100%;
+    max-width: 480px;
     margin: auto;
     background-color: white;
     min-height: 100vh;
-    border: 1px solid #ddd;
+    display: flex;
+    flex-direction: column;
 }
 
-/* Barra superior estilo Yape */
+/* Barra superior */
 .topbar {
     display: flex;
     align-items: center;
     padding: 14px;
     background-color: white;
     border-bottom: 1px solid #e0e0e0;
+    position: sticky;
+    top: 0;
+    z-index: 10;
 }
 
 .topbar .close {
@@ -57,8 +69,8 @@ body {
     display: flex;
     align-items: center;
     border: 1px solid #ccc;
-    border-radius: 8px;
-    padding: 8px 10px;
+    border-radius: 10px;
+    padding: 10px;
     background-color: #fafafa;
 }
 
@@ -66,15 +78,16 @@ body {
     border: none;
     width: 100%;
     outline: none;
-    font-size: 14px;
+    font-size: 15px;
+    background: transparent;
 }
 
 .search-box .icon {
-    font-size: 16px;
+    font-size: 18px;
     color: #666;
 }
 
-/* Título de sección */
+/* Título sección */
 .section-title {
     padding: 10px;
     font-size: 14px;
@@ -86,36 +99,50 @@ body {
 
 /* Lista de contactos */
 .contact-list {
-    background-color: white;
+    flex: 1;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
 .contact {
-    padding: 12px 10px;
-    border-bottom: 1px solid #e0e0e0;
+    padding: 14px 12px;
+    border-bottom: 1px solid #e8e8e8;
     cursor: pointer;
-    transition: background 0.2s;
+    transition: background 0.1s;
 }
 
-.contact:hover {
+.contact:active {
     background-color: #f5f5f5;
 }
 
 .contact-name {
-    font-size: 14px;
+    font-size: 15px;
     color: #222;
 }
 
 .contact-number {
-    font-size: 12px;
+    font-size: 13px;
     color: #666;
     margin-top: 3px;
 }
 
-/* Mensaje vacío */
-.empty {
-    padding: 15px;
+/* Estados */
+.empty, .loading {
+    padding: 20px;
+    text-align: center;
     color: #777;
     font-size: 14px;
+}
+
+/* Responsive real */
+@media (min-width: 600px) {
+    .app {
+        border: 1px solid #ddd;
+        margin-top: 10px;
+        margin-bottom: 10px;
+        border-radius: 10px;
+        overflow: hidden;
+    }
 }
 </style>
 
@@ -142,7 +169,7 @@ body {
     </div>
 
     <div class="contact-list">
-        <!-- Aquí se cargarán los contactos desde Firebase -->
+        <div class="loading">Cargando contactos...</div>
     </div>
 
 </div>
@@ -169,8 +196,9 @@ const buscador = document.getElementById("buscador");
 
 let contactosGlobal = {};
 
-// Renderizar contactos
+// Renderizado optimizado
 function renderizarContactos(datos) {
+  const fragment = document.createDocumentFragment();
   contactList.innerHTML = "";
 
   if (!datos || Object.keys(datos).length === 0) {
@@ -192,27 +220,42 @@ function renderizarContactos(datos) {
       ? apodo
       : nombre || "Sin nombre";
 
-    contactList.innerHTML += `
-      <div class="contact" onclick="window.location.href='envio.html?apodo=${encodeURIComponent(apodo)}'">
-        <div class="contact-name">${mostrarNombre}</div>
-        <div class="contact-number">${numero}</div>
-      </div>
+    const div = document.createElement("div");
+    div.className = "contact";
+    div.onclick = () => {
+      window.location.href = 'envio.html?apodo=' + encodeURIComponent(apodo);
+    };
+
+    div.innerHTML = `
+      <div class="contact-name">${mostrarNombre}</div>
+      <div class="contact-number">${numero}</div>
     `;
+
+    fragment.appendChild(div);
   });
+
+  contactList.appendChild(fragment);
 }
 
-// Escuchar cambios en la BD
-db.ref("contactos").on("value", snapshot => {
-  const datos = snapshot.val();
-  contactosGlobal = datos || {};
+// CARGA ULTRA RÁPIDA INICIAL
+db.ref("contactos").once("value").then(snapshot => {
+  contactosGlobal = snapshot.val() || {};
   renderizarContactos(contactosGlobal);
 });
 
-// BUSCADOR REAL POR NOMBRE O NÚMERO
+// ACTUALIZACIONES EN TIEMPO REAL SIN RECARGAR TODO
+db.ref("contactos").on("child_changed", () => {
+  db.ref("contactos").once("value").then(snapshot => {
+    contactosGlobal = snapshot.val() || {};
+    renderizarContactos(contactosGlobal);
+  });
+});
+
+// Buscador optimizado
 buscador.addEventListener("input", () => {
   const texto = buscador.value.toLowerCase().trim();
 
-  if (texto === "") {
+  if (!texto) {
     renderizarContactos(contactosGlobal);
     return;
   }
@@ -238,4 +281,4 @@ buscador.addEventListener("input", () => {
 </script>
 
 </body>
-  </html>
+</html>
