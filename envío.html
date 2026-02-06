@@ -121,9 +121,38 @@ const lista = document.getElementById("lista-destinos");
 let telefonoSeleccionado = "";
 let destinoSeleccionado = "";
 
-function destinoValido(d) {
-  const invalidos = ["sin destino", "***", "a", "b", "x"];
-  return d && d.length > 2 && !invalidos.includes(d.toLowerCase());
+// 🔒 FILTRO REALMENTE ESTRICTO DE DESTINOS
+function destinoValido(destino) {
+  if (!destino) return false;
+
+  const invalidos = [
+    "sin destino",
+    "***",
+    "a",
+    "b",
+    "c",
+    "x",
+    "y",
+    "z",
+    "prueba",
+    "test"
+  ];
+
+  destino = destino.trim().toLowerCase();
+
+  if (invalidos.includes(destino)) return false;
+
+  // Solo permitir destinos reales conocidos
+  const permitidos = [
+    "yape",
+    "plin",
+    "bcp",
+    "interbank",
+    "bbva",
+    "scotiabank"
+  ];
+
+  return permitidos.includes(destino);
 }
 
 db.ref("contactos").on("value", snap => {
@@ -134,11 +163,14 @@ db.ref("contactos").on("value", snap => {
 
   snap.forEach(c => {
     const data = c.val();
+
     const num = data.numero;
     const dest = data.destino;
     const nom = data.nombre || "Sin nombre";
 
-    if (!num || !destinoValido(dest)) return;
+    if (!num) return;
+
+    if (!destinoValido(dest)) return;
 
     if (!numeros[num]) {
       numeros[num] = {
@@ -153,6 +185,8 @@ db.ref("contactos").on("value", snap => {
   let hay = false;
 
   for (let num in numeros) {
+
+    // SOLO SI TIENE MÁS DE UN DESTINO
     if (numeros[num].destinos.size > 1) {
 
       hay = true;
@@ -173,7 +207,7 @@ db.ref("contactos").on("value", snap => {
   }
 
   if (!hay) {
-    lista.innerHTML = "<p>No hay números con múltiples destinos.</p>";
+    lista.innerHTML = "<p>No hay números con múltiples destinos reales.</p>";
   }
 
 });
@@ -219,6 +253,5 @@ function confirmar() {
 }
 
 </script>
-
 </body>
 </html>
