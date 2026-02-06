@@ -91,7 +91,7 @@ button {
 
     <input id="nombre" placeholder="Nombre del destinatario">
     <input id="monto" placeholder="Monto">
-    <input id="digitos" placeholder="3 últimos dígitos">
+    <input id="digitos" placeholder="3 últimos dígitos del número">
 
     <button onclick="confirmar()">Confirmar</button>
     <button onclick="cerrar()">Cancelar</button>
@@ -104,7 +104,7 @@ button {
 <script>
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBHbUTYykUxlJWl6QF6L9YwhC5kNFKpwV0",
+  apiKey: "AIzaSyBHbUTY...",
   authDomain: "apps-d075e.firebaseapp.com",
   databaseURL: "https://apps-d075e-default-rtdb.firebaseio.com",
   projectId: "apps-d075e",
@@ -118,10 +118,11 @@ const db = firebase.database();
 
 const lista = document.getElementById("lista-destinos");
 
-let seleccionado = "";
+let telefonoSeleccionado = "";
+let destinoSeleccionado = "";
 
 function destinoValido(d) {
-  const invalidos = ["sin destino", "***", "a", "b", "x", "yape", "plin"];
+  const invalidos = ["sin destino", "***", "a", "b", "x"];
   return d && d.length > 2 && !invalidos.includes(d.toLowerCase());
 }
 
@@ -165,7 +166,7 @@ db.ref("contactos").on("value", snap => {
         <small>${[...numeros[num].destinos].join(" / ")}</small>
       `;
 
-      card.onclick = () => abrir(num, numeros[num].nombre);
+      card.onclick = () => abrirModal(num, numeros[num]);
 
       lista.appendChild(card);
     }
@@ -177,10 +178,14 @@ db.ref("contactos").on("value", snap => {
 
 });
 
-function abrir(numero, nombre) {
-  seleccionado = numero;
+function abrirModal(numero, info) {
+  telefonoSeleccionado = numero;
+
   document.getElementById("info").innerText =
-    "Enviar a: " + nombre + " (" + numero + ")";
+    "Enviar a: " + info.nombre + " (" + numero + ")";
+
+  destinoSeleccionado = [...info.destinos][0];
+
   document.getElementById("modal").style.display = "flex";
 }
 
@@ -198,8 +203,19 @@ function confirmar() {
     return;
   }
 
-  alert("Listo para enviar a " + seleccionado);
-  cerrar();
+  if (!telefonoSeleccionado.endsWith(dig)) {
+    alert("Los 3 últimos dígitos no coinciden");
+    return;
+  }
+
+  const url =
+    "comprobante1.html?" +
+    "nombre=" + encodeURIComponent(nombre) +
+    "&telefono=" + encodeURIComponent(telefonoSeleccionado) +
+    "&monto=" + encodeURIComponent(monto) +
+    "&destino=" + encodeURIComponent(destinoSeleccionado);
+
+  window.location.href = url;
 }
 
 </script>
