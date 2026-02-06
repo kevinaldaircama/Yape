@@ -93,7 +93,7 @@ button {
     <input id="monto" placeholder="Monto">
     <input id="digitos" placeholder="3 últimos dígitos del número">
 
-    <button onclick="confirmar()">Confirmar</button>
+    <button onclck="confirmar()">Confirmar</button>
     <button onclick="cerrar()">Cancelar</button>
   </div>
 </div>
@@ -101,10 +101,11 @@ button {
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 
-<script>
+
+    <script>
 
 const firebaseConfig = {
-  apiKey: "AIzaSyBHbUTY...",
+  apiKey: "TU_API_KEY",
   authDomain: "apps-d075e.firebaseapp.com",
   databaseURL: "https://apps-d075e-default-rtdb.firebaseio.com",
   projectId: "apps-d075e",
@@ -120,29 +121,12 @@ const lista = document.getElementById("lista-destinos");
 
 let telefonoSeleccionado = "";
 let destinoSeleccionado = "";
+let nombreSeleccionado = "";
 
-// 🔒 FILTRO REALMENTE ESTRICTO DE DESTINOS
+// Filtro de destinos reales
 function destinoValido(destino) {
   if (!destino) return false;
 
-  const invalidos = [
-    "sin destino",
-    "***",
-    "a",
-    "b",
-    "c",
-    "x",
-    "y",
-    "z",
-    "prueba",
-    "test"
-  ];
-
-  destino = destino.trim().toLowerCase();
-
-  if (invalidos.includes(destino)) return false;
-
-  // Solo permitir destinos reales conocidos
   const permitidos = [
     "yape",
     "plin",
@@ -152,73 +136,92 @@ function destinoValido(destino) {
     "scotiabank"
   ];
 
-  return permitidos.includes(destino);
+  return permitidos.includes(destino.toLowerCase().trim());
 }
 
 db.ref("contactos").on("value", snap => {
 
   lista.innerHTML = "";
 
-  const numeros = {};
+  // Agrupar exactamente por número
+  const contactos = {};
 
   snap.forEach(c => {
     const data = c.val();
 
-    const num = data.numero;
-    const dest = data.destino;
-    const nom = data.nombre || "Sin nombre";
+    const numero = data.numero;
+    const destino = data.destino;
+    const nombre = data.nombre || "Sin nombre";
 
-    if (!num) return;
+    if (!numero) return;
 
-    if (!destinoValido(dest)) return;
-
-    if (!numeros[num]) {
-      numeros[num] = {
-        nombre: nom,
+    if (!contactos[numero]) {
+      contactos[numero] = {
+        nombre: nombre,
         destinos: new Set()
       };
     }
 
-    numeros[num].destinos.add(dest);
+    if (destinoValido(destino)) {
+      contactos[numero].destinos.add(destino);
+    }
   });
 
-  let hay = false;
+  let contador = 0;
 
-  for (let num in numeros) {
+  for (let numero in contactos) {
 
-    // SOLO SI TIENE MÁS DE UN DESTINO
-    if (numeros[num].destinos.size > 1) {
+    contador++;
 
-      hay = true;
+    const info = contactos[numero];
 
-      const card = document.createElement("div");
-      card.className = "option-card";
+    const card = document.createElement("div");
+    card.className = "option-card";
 
-      card.innerHTML = `
-        <span>${numeros[num].nombre}</span>
-        <small>${num}</small>
-        <small>${[...numeros[num].destinos].join(" / ")}</small>
-      `;
+    let mensajeDestino = "";
 
-      card.onclick = () => abrirModal(num, numeros[num]);
-
-      lista.appendChild(card);
+    if (info.destinos.size === 0) {
+      mensajeDestino = "No cuenta con otra billetera digital";
+    } else if (info.destinos.size === 1) {
+      mensajeDestino =
+        "Se encuentra registrado en: " +
+        [...info.destinos][0];
+    } else {
+      mensajeDestino =
+        "Se encuentra registrado en: " +
+        [...info.destinos].join(" / ");
     }
+
+    card.innerHTML = `
+      <span>${info.nombre}</span>
+      <small>${numero}</small>
+      <small>${mensajeDestino}</small>
+    `;
+
+    card.onclick = () => abrirModal(numero, info);
+
+    lista.appendChild(card);
   }
 
-  if (!hay) {
-    lista.innerHTML = "<p>No hay números con múltiples destinos reales.</p>";
+  if (contador === 0) {
+    lista.innerHTML = "<p>No hay contactos registrados.</p>";
   }
 
 });
 
 function abrirModal(numero, info) {
+
   telefonoSeleccionado = numero;
+  nombreSeleccionado = info.nombre;
+
+  // Si tiene destinos, usar el primero como predeterminado
+  destinoSeleccionado =
+    info.destinos.size > 0
+      ? [...info.destinos][0]
+      : "Yape";
 
   document.getElementById("info").innerText =
     "Enviar a: " + info.nombre + " (" + numero + ")";
-
-  destinoSeleccionado = [...info.destinos][0];
 
   document.getElementById("modal").style.display = "flex";
 }
@@ -238,7 +241,7 @@ function confirmar() {
   }
 
   if (!telefonoSeleccionado.endsWith(dig)) {
-    alert("Los 3 últimos dígitos no coinciden");
+    alert("Los 3 últimos dígitos no coinciden con el número real");
     return;
   }
 
