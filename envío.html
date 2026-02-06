@@ -3,245 +3,139 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Seleccionar Destino</title>
-
-<link rel="manifest" href="manifest.json" />
-<meta name="theme-color" content="#720e9e" />
+<title>Enviar Yape</title>
 
 <style>
+* {
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Arial, sans-serif;
+}
+
 body {
   margin: 0;
-  font-family: Arial;
-  background: #fff;
+  background: #f2f2f2;
 }
 
-.title-bar {
-  display: flex;
-  justify-content: space-between;
-  padding: 15px;
-  border-bottom: 1px solid #ddd;
-}
-
-.options {
-  padding: 10px;
-}
-
-.option-card {
-  border: 1px solid #ddd;
-  border-radius: 10px;
-  padding: 12px;
-  margin-bottom: 10px;
-  cursor: pointer;
-}
-
-.option-card span {
-  font-weight: bold;
-  display: block;
-}
-
-.option-card small {
-  color: #666;
-}
-
-.modal {
-  position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  background: rgba(0,0,0,0.5);
-  display: none;
-  align-items: center;
-  justify-content: center;
-}
-
-.modal-content {
+.app {
+  max-width: 420px;
+  margin: auto;
   background: white;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Barra superior */
+.topbar {
+  background: #720e9e;
+  color: white;
+  padding: 15px;
+  text-align: center;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+/* Contenido */
+.content {
   padding: 20px;
-  border-radius: 10px;
-  width: 90%;
-  max-width: 350px;
+  flex: 1;
+}
+
+.label {
+  font-size: 13px;
+  color: #555;
+  margin-bottom: 5px;
+  margin-top: 10px;
+  font-weight: 600;
 }
 
 input {
   width: 100%;
-  padding: 8px;
-  margin: 5px 0;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  font-size: 14px;
+  outline: none;
+  transition: border 0.3s;
 }
 
-button {
+input:focus {
+  border-color: #720e9e;
+}
+
+.btn {
+  margin-top: 20px;
+  width: 100%;
+  padding: 14px;
+  background: #720e9e;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.btn:hover {
+  background: #5b0b7e;
+}
+
+/* Footer estilo app */
+.footer {
+  text-align: center;
   padding: 10px;
-  margin-top: 10px;
+  font-size: 12px;
+  color: #888;
 }
 </style>
+
 </head>
 
 <body>
 
-<div class="title-bar">
-  <span>Seleccionar Destino</span>
-  <button onclick="history.back()">X</button>
-</div>
+<div class="app">
 
-<div class="options" id="lista-destinos"></div>
-
-<div class="modal" id="modal">
-  <div class="modal-content">
-    <h3>Confirmar Envío</h3>
-
-    <p id="info"></p>
-
-    <input id="nombre" placeholder="Nombre del destinatario">
-    <input id="monto" placeholder="Monto">
-    <input id="digitos" placeholder="3 últimos dígitos del número">
-
-    <button onclck="confirmar()">Confirmar</button>
-    <button onclick="cerrar()">Cancelar</button>
+  <div class="topbar">
+    Enviar Pago
   </div>
+
+  <div class="content">
+
+    <div class="label">Nombre de la persona</div>
+    <input type="text" id="nombre" placeholder="Ej: Juan Pérez">
+
+    <div class="label">Número de teléfono</div>
+    <input type="text" id="telefono" placeholder="Ej: 999888777">
+
+    <div class="label">Monto</div>
+    <input type="number" id="monto" placeholder="Ej: 20.50">
+
+    <div class="label">Destino</div>
+    <input type="text" id="destino" placeholder="Ej: Yape, Plin, BCP">
+
+    <button class="btn" onclick="enviar()">
+      Continuar
+    </button>
+
+  </div>
+
+  <div class="footer">
+    Simulador de envío estilo Yape
+  </div>
+
 </div>
 
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script>
 
+function enviar() {
 
-    <script>
+  const nombre = document.getElementById("nombre").value.trim();
+  const telefonoSeleccionado = document.getElementById("telefono").value.trim();
+  const monto = document.getElementById("monto").value.trim();
+  const destinoSeleccionado = document.getElementById("destino").value.trim();
 
-const firebaseConfig = {
-  apiKey: "TU_API_KEY",
-  authDomain: "apps-d075e.firebaseapp.com",
-  databaseURL: "https://apps-d075e-default-rtdb.firebaseio.com",
-  projectId: "apps-d075e",
-  storageBucket: "apps-d075e.firebasestorage.app",
-  messagingSenderId: "813273124209",
-  appId: "1:813273124209:web:81030c787f0992b19e7ad0"
-};
-
-firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
-
-const lista = document.getElementById("lista-destinos");
-
-let telefonoSeleccionado = "";
-let destinoSeleccionado = "";
-let nombreSeleccionado = "";
-
-// Filtro de destinos reales
-function destinoValido(destino) {
-  if (!destino) return false;
-
-  const permitidos = [
-    "yape",
-    "plin",
-    "bcp",
-    "interbank",
-    "bbva",
-    "scotiabank"
-  ];
-
-  return permitidos.includes(destino.toLowerCase().trim());
-}
-
-db.ref("contactos").on("value", snap => {
-
-  lista.innerHTML = "";
-
-  // Agrupar exactamente por número
-  const contactos = {};
-
-  snap.forEach(c => {
-    const data = c.val();
-
-    const numero = data.numero;
-    const destino = data.destino;
-    const nombre = data.nombre || "Sin nombre";
-
-    if (!numero) return;
-
-    if (!contactos[numero]) {
-      contactos[numero] = {
-        nombre: nombre,
-        destinos: new Set()
-      };
-    }
-
-    if (destinoValido(destino)) {
-      contactos[numero].destinos.add(destino);
-    }
-  });
-
-  let contador = 0;
-
-  for (let numero in contactos) {
-
-    contador++;
-
-    const info = contactos[numero];
-
-    const card = document.createElement("div");
-    card.className = "option-card";
-
-    let mensajeDestino = "";
-
-    if (info.destinos.size === 0) {
-      mensajeDestino = "No cuenta con otra billetera digital";
-    } else if (info.destinos.size === 1) {
-      mensajeDestino =
-        "Se encuentra registrado en: " +
-        [...info.destinos][0];
-    } else {
-      mensajeDestino =
-        "Se encuentra registrado en: " +
-        [...info.destinos].join(" / ");
-    }
-
-    card.innerHTML = `
-      <span>${info.nombre}</span>
-      <small>${numero}</small>
-      <small>${mensajeDestino}</small>
-    `;
-
-    card.onclick = () => abrirModal(numero, info);
-
-    lista.appendChild(card);
-  }
-
-  if (contador === 0) {
-    lista.innerHTML = "<p>No hay contactos registrados.</p>";
-  }
-
-});
-
-function abrirModal(numero, info) {
-
-  telefonoSeleccionado = numero;
-  nombreSeleccionado = info.nombre;
-
-  // Si tiene destinos, usar el primero como predeterminado
-  destinoSeleccionado =
-    info.destinos.size > 0
-      ? [...info.destinos][0]
-      : "Yape";
-
-  document.getElementById("info").innerText =
-    "Enviar a: " + info.nombre + " (" + numero + ")";
-
-  document.getElementById("modal").style.display = "flex";
-}
-
-function cerrar() {
-  document.getElementById("modal").style.display = "none";
-}
-
-function confirmar() {
-  const nombre = document.getElementById("nombre").value;
-  const monto = document.getElementById("monto").value;
-  const dig = document.getElementById("digitos").value;
-
-  if (!nombre || !monto || !dig) {
-    alert("Completa todos los campos");
-    return;
-  }
-
-  if (!telefonoSeleccionado.endsWith(dig)) {
-    alert("Los 3 últimos dígitos no coinciden con el número real");
+  if (!nombre || !telefonoSeleccionado || !monto || !destinoSeleccionado) {
+    alert("Por favor completa todos los campos");
     return;
   }
 
@@ -256,5 +150,6 @@ function confirmar() {
 }
 
 </script>
+
 </body>
 </html>
