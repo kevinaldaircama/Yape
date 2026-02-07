@@ -5,7 +5,7 @@ SCRIPT="/usr/local/bin/yape"
 function banner() {
 clear
 echo "====================================================="
-echo "        PANEL PROFESIONAL - YAPE SERVER V2.0         "
+echo "        PANEL PROFESIONAL - YAPE SERVER V3.0         "
 echo "====================================================="
 }
 
@@ -13,12 +13,43 @@ function ip() {
   curl -s ifconfig.me
 }
 
+function reparar_nginx() {
+  if [ ! -d "/etc/nginx" ]; then
+    echo "Reinstalando nginx..."
+    apt update -y
+    apt install nginx -y
+  fi
+
+  if [ ! -f "/etc/nginx/sites-available/default" ]; then
+    mkdir -p /etc/nginx/sites-available
+    mkdir -p /etc/nginx/sites-enabled
+  fi
+
+  cat > /etc/nginx/sites-available/default <<EOF
+server {
+    listen 80;
+    server_name _;
+    root /var/www/html;
+    index index.html index.htm;
+
+    location / {
+        try_files \$uri \$uri.html \$uri/ /index.html;
+    }
+}
+EOF
+
+  ln -sf /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
+
+  systemctl restart nginx
+}
+
 function verificar_nginx() {
   if ! command -v nginx &> /dev/null; then
-    echo "Instalando nginx..."
-    apt install nginx -y
-    systemctl start nginx
-    systemctl enable nginx
+    reparar_nginx
+  fi
+
+  if [ ! -f "/etc/nginx/nginx.conf" ]; then
+    reparar_nginx
   fi
 }
 
@@ -35,7 +66,7 @@ function verificar_dns() {
     echo "Tu IP es: $MIIP"
     echo "El dominio apunta a: $DNS"
     echo ""
-    echo "Debes crear un registro A:"
+    echo "Configura un registro A:"
     echo "Host: $DOM"
     echo "Tipo: A"
     echo "Valor: $MIIP"
@@ -48,41 +79,27 @@ banner
 
 verificar_nginx
 
-echo "Instalando paquetes necesarios..."
 apt update -y
 apt install git certbot python3-certbot-nginx dnsutils -y
 
 mkdir -p /var/www/html
 
-cat > /etc/nginx/sites-available/default <<EOF
-server {
-    listen 80;
-    server_name _;
-    root /var/www/html;
-    index index.html index.htm;
-
-    location / {
-        try_files \$uri \$uri.html \$uri/ /index.html;
-    }
-}
-EOF
-
-systemctl restart nginx
+reparar_nginx
 
 MIIP=$(ip)
 
 echo ""
-echo "====================================================="
-echo " Archivos instalados exitosamente"
+echo "==============================================="
+echo " Servidor instalado correctamente"
 echo " Accede desde:"
 echo " 👉 http://$MIIP"
-echo "====================================================="
+echo "==============================================="
 }
 
 function clonar_repo() {
 banner
 
-echo "Instalando tu repositorio..."
+echo "Instalando tu proyecto..."
 
 rm -rf /var/www/html/*
 git clone https://github.com/kevinaldaircama/yape /var/www/html
@@ -106,6 +123,9 @@ echo "Nueva URL: http://$MIIP:$P"
 
 function dominio() {
 banner
+
+verificar_nginx
+
 read -p "Ingresa tu dominio o subdominio: " DOM
 
 verificar_dns $DOM
@@ -117,22 +137,23 @@ systemctl restart nginx
 certbot --nginx -d $DOM --non-interactive --agree-tos -m admin@$DOM
 
 echo ""
-echo "====================================================="
+echo "==============================================="
 echo " SSL instalado correctamente"
 echo " URL final:"
 echo " 👉 https://$DOM"
-echo "====================================================="
+echo "==============================================="
 }
 
 function actualizar() {
 banner
 cd /var/www/html
 git pull
-echo "Proyecto actualizado desde GitHub"
+echo "Proyecto actualizado"
 }
 
 function desinstalar() {
 banner
+
 echo "Eliminando todo..."
 
 apt purge nginx certbot python3-certbot-nginx -y
@@ -141,8 +162,7 @@ rm -rf /var/www/html
 rm -f $SCRIPT
 sed -i '/yape/d' ~/.bashrc
 
-echo "Sistema desinstalado correctamente"
-echo "El panel ya no volverá a aparecer"
+echo "Sistema eliminado completamente"
 }
 
 function instalar_menu() {
@@ -154,12 +174,12 @@ source ~/.bashrc
 
 function menu() {
 banner
-echo "1. Instalar servidor web"
-echo "2. Instalar mi repositorio"
+echo "1. Instalar servidor"
+echo "2. Instalar repositorio"
 echo "3. Cambiar puerto"
 echo "4. Configurar dominio + SSL"
-echo "5. Actualizar proyecto (git pull)"
-echo "6. Desinstalar sistema"
+echo "5. Actualizar proyecto"
+echo "6. Desinstalar todo"
 echo "7. Salir"
 echo ""
 read -p "Opción: " op
