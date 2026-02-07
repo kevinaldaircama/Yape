@@ -1,45 +1,69 @@
 #!/bin/bash
 
 SCRIPT="/usr/local/bin/yape"
+AUTO_MENU="/etc/profile.d/yape_auto.sh"
 
 function banner() {
 clear
-echo "==============================================="
-echo "     INSTALADOR PROFESIONAL - YAPE PANEL       "
-echo "==============================================="
+echo "===================================================="
+echo "        PANEL PROFESIONAL - YAPE SERVER PRO         "
+echo "===================================================="
 }
 
-function ip() {
+function ip_publica() {
   curl -s ifconfig.me
 }
 
 function verificar_dns() {
   DOM=$1
-  MIIP=$(ip)
+  IP=$(ip_publica)
   DNS=$(dig +short $DOM | tail -n1)
 
-  if [[ "$DNS" == "$MIIP" ]]; then
+  if [[ "$DNS" == "$IP" ]]; then
     return 0
   else
     echo ""
-    echo "❌ El dominio NO apunta a este servidor"
-    echo "Tu IP es: $MIIP"
+    echo "❌ ERROR: El dominio NO apunta a este servidor"
+    echo "Tu IP actual: $IP"
     echo "El dominio apunta a: $DNS"
     echo ""
-    echo "Debes crear un registro A:"
-    echo "Host: $DOM"
+    echo "CONFIGURACIÓN CORRECTA:"
     echo "Tipo: A"
-    echo "Valor: $MIIP"
+    echo "Host: $DOM"
+    echo "Valor: $IP"
+    echo ""
+    echo "Corrige el DNS e intenta de nuevo"
     exit 1
   fi
 }
 
-function instalar() {
+function mensaje_instalado() {
+  IP=$(ip_publica)
+
+  PUERTO=$(grep "listen" /etc/nginx/sites-available/default | awk '{print $2}' | tr -d ';')
+
+  echo ""
+  echo "===================================================="
+  echo "   ARCHIVOS INSTALADOS EXITOSAMENTE"
+  echo "===================================================="
+
+  if [[ "$PUERTO" == "80" ]]; then
+     echo "URL: http://$IP"
+  else
+     echo "URL: http://$IP:$PUERTO"
+  fi
+
+  echo "Para abrir el panel escribe: menu"
+  echo "===================================================="
+}
+
+function instalar_servidor() {
 banner
 
-echo "Instalando paquetes..."
+echo "Instalando servicios..."
+
 apt update -y
-apt install nginx git certbot python3-certbot-nginx dnsutils -y
+apt install nginx git certbot python3-certbot-nginx dnsutils curl -y
 
 mkdir -p /var/www/html
 
@@ -58,87 +82,106 @@ EOF
 
 systemctl restart nginx
 
-MIIP=$(ip)
+mensaje_instalado
+}
+
+function cambiar_puerto() {
+banner
+
+read -p "Nuevo puerto: " PORT
+
+sed -i "s/listen .*/listen $PORT;/" /etc/nginx/sites-available/default
+
+systemctl restart nginx
+
+IP=$(ip_publica)
 
 echo ""
-echo "==============================================="
-echo " Archivos instalados exitosamente"
+echo "Puerto cambiado correctamente"
+echo "Nueva URL: http://$IP:$PORT"
+}
+
+function instalar_dominio() {
+banner
+
+read -p "Ingresa tu dominio o subdominio: " DOMINIO
+
+verificar_dns $DOMINIO
+
+sed -i "s/server_name .*/server_name $DOMINIO;/" /etc/nginx/sites-available/default
+
+systemctl restart nginx
+
+certbot --nginx -d $DOMINIO --non-interactive --agree-tos -m admin@$DOMINIO
+
+echo ""
+echo "==========================================="
+echo " SSL INSTALADO CORRECTAMENTE"
 echo " Accede desde:"
-echo " 👉 http://$MIIP"
-echo "==============================================="
-}
-
-function puerto() {
-banner
-read -p "Nuevo puerto: " P
-
-sed -i "s/listen .*/listen $P;/" /etc/nginx/sites-available/default
-
-systemctl restart nginx
-
-MIIP=$(ip)
-
-echo "Puerto cambiado"
-echo "Nueva URL: http://$MIIP:$P"
-}
-
-function dominio() {
-banner
-read -p "Ingresa tu dominio o subdominio: " DOM
-
-verificar_dns $DOM
-
-sed -i "s/server_name .*/server_name $DOM;/" /etc/nginx/sites-available/default
-
-systemctl restart nginx
-
-certbot --nginx -d $DOM --non-interactive --agree-tos -m admin@$DOM
-
-echo ""
-echo "==============================================="
-echo " SSL instalado correctamente"
-echo " URL final:"
-echo " 👉 https://$DOM"
-echo "==============================================="
+echo " 👉 https://$DOMINIO"
+echo "==========================================="
 }
 
 function desinstalar() {
 banner
-echo "Eliminando todo..."
+
+echo "Desinstalando sistema..."
 
 apt purge nginx certbot python3-certbot-nginx -y
 rm -rf /etc/nginx
 rm -rf /var/www/html
 rm -f $SCRIPT
-sed -i '/yape/d' ~/.bashrc
+rm -f $AUTO_MENU
 
-echo "Sistema desinstalado correctamente"
-echo "El menú ya no volverá a aparecer"
+sed -i '/alias menu/d' ~/.bashrc
+
+echo ""
+echo "======================================"
+echo " Sistema desinstalado correctamente"
+echo " El menú ya NO volverá a aparecer"
+echo "======================================"
+
+exit 0
+}
+
+function auto_script() {
+echo "bash $SCRIPT" > $AUTO_MENU
+chmod +x $AUTO_MENU
+
+echo "Auto inicio activado"
+echo "Cada vez que entres al servidor se abrirá el panel"
 }
 
 function instalar_menu() {
 cp $0 $SCRIPT
 chmod +x $SCRIPT
-echo "alias menu='$SCRIPT'" >> ~/.bashrc
+
+if ! grep -q "alias menu" ~/.bashrc; then
+  echo "alias menu='$SCRIPT'" >> ~/.bashrc
+fi
+
 source ~/.bashrc
 }
 
 function menu() {
 banner
+
 echo "1. Instalar servidor web"
 echo "2. Cambiar puerto"
 echo "3. Configurar dominio + SSL"
-echo "4. Desinstalar sistema"
-echo "5. Salir"
+echo "4. Activar auto script"
+echo "5. Desinstalar sistema"
+echo "6. Salir"
 echo ""
-read -p "Opción: " op
+read -p "Selecciona una opción: " op
 
 case $op in
-1) instalar ;;
-2) puerto ;;
-3) dominio ;;
-4) desinstalar ;;
-5) exit ;;
+1) instalar_servidor ;;
+2) cambiar_puerto ;;
+3) instalar_dominio ;;
+4) auto_script ;;
+5) desinstalar ;;
+6) exit ;;
 *) echo "Opción inválida" ;;
 esac
 }
